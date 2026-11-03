@@ -605,6 +605,43 @@
     font-size: 10px; line-height: 1.55; letter-spacing: 0.04em;
   }
   .cdetail .frontline-note b { color: var(--red); }
+  /* CONFLICTS: trends, intelligence sections */
+  .conflict-sort { display: flex; gap: 0; margin: 10px 12px 4px; border: 1px solid var(--line2); }
+  .conflict-sort button { flex: 1; padding: 6px 4px; font-size: 9px; letter-spacing: 0.14em; color: var(--dim); }
+  .conflict-sort button:hover { color: var(--paper); }
+  .conflict-sort button.on { color: var(--paper); background: rgba(0,240,255,0.14); }
+  .conflict-sort button span { color: var(--red); margin-left: 3px; }
+  .conflict-row .trow { display: flex; align-items: center; gap: 8px; margin: 5px 0 2px; font-size: 9px; color: var(--dim); }
+  .conflict-row .trow .tsrc { margin-left: auto; opacity: 0.7; letter-spacing: 0.04em; }
+  .cspark { display: block; flex: none; }
+  .trend { font-size: 9px; letter-spacing: 0.08em; padding: 1px 5px; border: 1px solid currentColor; white-space: nowrap; }
+  .trend.up { color: var(--red); background: rgba(255,48,92,0.10); } .trend.down { color: var(--green); } .trend.flat { color: var(--dim); } .trend.na { color: var(--dim); border-color: transparent; }
+  .cdetail .trend-head { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; } .cdetail .trend-head .tlabel { color: var(--dim); font-size: 10px; }
+  .cdetail .cchart { display: block; width: 100%; height: 70px; } .cdetail .cchart .ax { fill: var(--dim); font-size: 9px; font-family: inherit; }
+  .cdetail .csrc { margin-top: 6px; font-size: 9px; color: var(--dim); letter-spacing: 0.03em; line-height: 1.5; }
+  .cdetail .devs { display: flex; flex-direction: column; gap: 6px; }
+  .cdetail .dev { padding: 7px 10px; border-left: 2px solid var(--cyan); background: rgba(0,240,255,0.04); cursor: pointer; }
+  .cdetail .dev:hover, .cdetail .dev:focus-visible { background: rgba(0,240,255,0.10); outline: none; }
+  .cdetail .dev .when { display: block; font-size: 9px; letter-spacing: 0.1em; color: var(--cyan); text-transform: uppercase; }
+  .cdetail .dev .what { display: block; color: var(--paper); font-size: 12px; line-height: 1.45; margin-top: 2px; }
+  .cdetail .acled-kpis { display: flex; gap: 10px; margin-bottom: 8px; }
+  .cdetail .acled-kpis > div { flex: 1; padding: 8px 10px; border: 1px solid var(--line2); background: rgba(255,48,92,0.05); }
+  .cdetail .acled-kpis b { display: block; font-size: 18px; color: var(--paper); font-variant-numeric: tabular-nums; }
+  .cdetail .acled-kpis span { font-size: 9px; color: var(--dim); letter-spacing: 0.1em; text-transform: uppercase; }
+  .cdetail i.sw { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; vertical-align: 0; }
+  .cdetail .acled-top { margin-top: 8px; border: 1px solid var(--line); }
+  .cdetail .zone-row { display: flex; gap: 8px; align-items: flex-start; padding: 5px 0; } .cdetail .zone-row i.sw { margin-top: 4px; border-radius: 2px; flex: none; }
+  .cdetail .zone-row + .frontline-note { margin-top: 6px; }
+  .cdetail .human-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; margin-top: 8px; }
+  .cdetail .hcell { padding: 8px 10px; border: 1px solid var(--line2); background: rgba(0,240,255,0.03); display: flex; flex-direction: column; gap: 5px; }
+  .cdetail .hcell .hc { font-size: 10px; letter-spacing: 0.12em; color: var(--cyan); text-transform: uppercase; }
+  .cdetail .hcell b { font-size: 15px; color: var(--paper); font-variant-numeric: tabular-nums; margin-right: 6px; } .cdetail .hcell span { font-size: 10px; color: var(--dim); }
+  .cdetail .sublbl { font-size: 9px; letter-spacing: 0.16em; color: var(--dim); text-transform: uppercase; margin: 12px 0 6px; }
+  .cdetail .xchips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .cdetail .xchip { display: inline-flex; gap: 6px; align-items: baseline; padding: 4px 8px; border: 1px solid var(--line2); font-size: 10px; color: var(--paper); text-decoration: none; }
+  .cdetail .xchip:hover { border-color: var(--cyan); } .cdetail .xchip .xl { color: var(--dim); } .cdetail .xchip .xp { font-variant-numeric: tabular-nums; }
+  .cdetail .xchip .xc.pos { color: var(--green); } .cdetail .xchip .xc.neg { color: var(--red); }
+  .cdetail code { font-size: 10px; color: var(--cyan); }
   .cdetail .related-conflict {
     padding: 8px 10px;
     border-left: 2px solid var(--violet);
@@ -7738,7 +7775,7 @@ PELICAN-9
     };
     // Background below is curated (as of late 2025). What is happening NOW
     // comes from the live feed — see conflictCoverage().
-    const CONFLICTS_CURATED_AS_OF = 'late 2025';
+    const CONFLICTS_CURATED_AS_OF = 'early 2026';
     const CONFLICTS = [
       { id: 'ru-ua',  sideA: 'Russia',        sideB: 'Ukraine',      type: 'war',         since: 2022,
         title: 'Russia–Ukraine War',
@@ -7758,7 +7795,11 @@ PELICAN-9
             ['2024-08', 'Ukrainian forces conduct surprise incursion into Kursk Oblast'],
             ['2025', 'Slow Russian gains in Donetsk; mass drone and missile strikes on the power grid'],
             ['2025-08-15', 'Trump–Putin summit in Alaska ends without a ceasefire'],
+            ['2025-11', 'US 28-point peace plan; revised with Kyiv in Geneva talks'],
+            ['2025-12', 'Russia claims Pokrovsk; Berlin talks on security guarantees for Ukraine'],
+            ['2026-01', 'Trilateral US–Russia–Ukraine talks begin; winter strikes on the power grid'],
           ],
+          humanitarian: 'Millions without power or heating after repeated strikes on the grid; ~3.7 million internally displaced (UNHCR).',
           figures: ['Vladimir Putin', 'Volodymyr Zelenskyy', 'Sergei Shoigu', 'Valerii Zaluzhnyi'],
           locations: [
             { name: 'Kyiv',     lat: 50.45, lon: 30.52, role: 'capital · invasion repelled 2022' },
@@ -7825,7 +7866,7 @@ PELICAN-9
         } },
       { id: 'il-ps',  sideA: 'Israel',        sideB: 'Palestine',    type: 'war',         since: 2023,
         title: 'Israel–Hamas War',
-        summary: 'Gaza war since Oct 2023; a US-brokered ceasefire took effect in Oct 2025 — see live coverage for its current state.',
+        summary: 'Gaza war since Oct 2023; US-brokered ceasefire since Oct 2025, with Israel holding about half of the Strip behind the "yellow line" and repeated deadly strikes.',
         detail: {
           scale: 'Most intense Israeli-Palestinian conflict since 1973',
           casualties: '~40k+ Palestinians killed (Gaza Ministry of Health); ~1.4k Israelis killed Oct 7',
@@ -7840,7 +7881,10 @@ PELICAN-9
             ['2025-03-18', 'Israel resumes large-scale strikes; ceasefire collapses'],
             ['2025-10-10', 'US-brokered ceasefire (20-point plan) takes effect'],
             ['2025-10-13', 'Last living hostages freed; ~2,000 Palestinian prisoners released'],
+            ['2025-11-17', 'UN Security Council Resolution 2803 endorses the plan and an International Stabilization Force'],
+            ['2026-01', 'Phase two announced: Board of Peace and a Palestinian technocratic committee for Gaza'],
           ],
+          humanitarian: 'Famine confirmed in Gaza City in Aug 2025 (IPC); conditions eased after the ceasefire but most of the population still depends on aid. Palestinian refugees fall under UNRWA, not UNHCR figures.',
           figures: ['Benjamin Netanyahu', 'Yahya Sinwar (deceased 2024)', 'Mahmoud Abbas'],
           locations: [
             { name: 'Gaza City',  lat: 31.50, lon: 34.47, role: 'main combat zone' },
@@ -7911,6 +7955,8 @@ PELICAN-9
             ['2024-09', 'Israel launches major air campaign + ground operation'],
             ['2024-11', 'Ceasefire agreement reached'],
             ['2025', 'Ceasefire nominally holds amid frequent Israeli strikes; Beirut pushes Hezbollah disarmament plan'],
+            ['2025-11-23', 'Israeli strike in Beirut kills Hezbollah military chief Haytham Ali Tabatabai'],
+            ['2025-12', 'Civilian envoys join the ceasefire mechanism talks in Naqoura'],
           ],
           figures: ['Hassan Nasrallah (killed 2024)', 'Naim Qassem', 'Benjamin Netanyahu'],
           locations: [
@@ -7972,7 +8018,14 @@ PELICAN-9
         summary: 'Disputed Line of Actual Control with periodic Himalayan standoffs.' },
       { id: 'cn-jp',  sideA: 'China',         sideB: 'Japan',        type: 'territorial', since: 1972,
         title: 'China–Japan Senkaku/Diaoyu',
-        summary: 'Disputed East China Sea islands; routine air and maritime incidents.' },
+        summary: 'Disputed East China Sea islands; worst diplomatic crisis in years after PM Takaichi\'s Taiwan remarks (Nov 2025).',
+        detail: {
+          timeline: [
+            ['2012-09', 'Japan nationalises three Senkaku islands; anti-Japan protests in China'],
+            ['2013-11', 'China declares an East China Sea air defence zone'],
+            ['2025-11', 'PM Takaichi says a Taiwan contingency could justify Japanese military action; Beijing retaliates with travel warnings and a seafood ban'],
+          ],
+        } },
       { id: 'cn-ph',  sideA: 'China',         sideB: 'Philippines',  type: 'territorial', since: 2012,
         title: 'China–Philippines South China Sea',
         summary: 'Spratly/Scarborough disputes; Philippine coast guard standoffs.' },
@@ -7993,6 +8046,7 @@ PELICAN-9
             ['2025-04-22', 'Pahalgam attack kills 26 civilians in Indian Kashmir'],
             ['2025-05-07', 'India launches Operation Sindoor — four days of missile, drone and artillery exchanges'],
             ['2025-05-10', 'Ceasefire agreed'],
+            ['2025-11-10', 'Car bombing near Delhi\'s Red Fort; suicide attack at an Islamabad court the next day'],
           ],
           figures: ['Narendra Modi', 'Shehbaz Sharif', 'Asim Munir'],
           locations: [
@@ -8104,10 +8158,41 @@ PELICAN-9
         summary: 'Major sanctions regime, NATO/Ukraine flashpoint.' },
       { id: 'us-ir',  sideA: 'United States', sideB: 'Iran',         type: 'cold',        since: 1979,
         title: 'US–Iran',
-        summary: 'Sanctions, nuclear program standoff, regional proxy clashes.' },
+        summary: 'Sanctions and nuclear standoff; US strikes on Iranian nuclear sites (June 2025), then mass protests and a deadly crackdown in Iran (Jan 2026).',
+        detail: {
+          timeline: [
+            ['1979-11', 'US embassy hostage crisis'],
+            ['2015-07', 'Nuclear deal (JCPOA) signed'],
+            ['2018-05', 'US withdraws from the JCPOA; "maximum pressure" sanctions'],
+            ['2020-01-03', 'US drone strike kills Qasem Soleimani'],
+            ['2025-06-22', 'US bombs Fordow, Natanz and Isfahan'],
+            ['2025-09', 'UN "snapback" sanctions reimposed'],
+            ['2025-12-28', 'Nationwide protests erupt; deadly crackdown and internet blackout in January'],
+          ],
+        } },
       { id: 'us-kp',  sideA: 'United States', sideB: 'North Korea',  type: 'cold',        since: 1950,
         title: 'US–North Korea',
         summary: 'Sanctions and nuclear/missile standoff.' },
+      { id: 'us-ve',  sideA: 'United States', sideB: 'Venezuela',    type: 'war',         since: 2025,
+        title: 'US–Venezuela',
+        summary: 'US strikes on alleged drug boats from Sept 2025, then the 3 Jan 2026 raid on Caracas that captured Nicolás Maduro.',
+        detail: {
+          scale: 'Largest US military operation in Latin America since Panama (1989)',
+          background: 'Washington accuses the Maduro government of running a drug-trafficking state ("Cartel de los Soles"). A naval build-up in the Caribbean from August 2025 led to lethal strikes on boats, an oil-tanker blockade and finally a direct strike on Caracas.',
+          timeline: [
+            ['2025-08', 'US naval build-up in the southern Caribbean'],
+            ['2025-09-02', 'First lethal US strike on an alleged drug boat'],
+            ['2025-11', 'Operation Southern Spear; USS Gerald R. Ford arrives; Cartel de los Soles designated a terrorist group'],
+            ['2025-12', 'Blockade of sanctioned oil tankers'],
+            ['2026-01-03', 'US strikes on Caracas; Maduro captured and flown to New York to face charges'],
+            ['2026-01', 'Delcy Rodríguez sworn in as acting president'],
+          ],
+          figures: ['Donald Trump', 'Nicolás Maduro', 'Delcy Rodríguez', 'María Corina Machado', 'Marco Rubio'],
+          locations: [
+            { name: 'Caracas', lat: 10.49, lon: -66.88, role: 'capital · struck Jan 2026' },
+            { name: 'Puerto Rico', lat: 18.22, lon: -66.59, role: 'US staging area' },
+          ],
+        } },
       { id: 'am-az',  sideA: 'Armenia',       sideB: 'Azerbaijan',   type: 'territorial', since: 1988,
         title: 'Armenia–Azerbaijan Nagorno-Karabakh',
         summary: 'Azerbaijan retook Karabakh in 2023; peace agreement initialled in Aug 2025.',
@@ -8134,7 +8219,7 @@ PELICAN-9
         summary: 'Caracas claims western Guyana; renewed rhetoric over oil discoveries.' },
       { id: 'et-eg',  sideA: 'Ethiopia',      sideB: 'Egypt',        type: 'territorial', since: 2011,
         title: 'Ethiopia–Egypt GERD (Nile)',
-        summary: 'Dispute over Grand Ethiopian Renaissance Dam and Nile flow.' },
+        summary: 'Dispute over the Grand Ethiopian Renaissance Dam, inaugurated in Sept 2025 without a deal with Egypt and Sudan.' },
       { id: 'gr-tr',  sideA: 'Greece',        sideB: 'Turkey',       type: 'territorial', since: 1923,
         title: 'Greece–Turkey Aegean / Cyprus',
         summary: 'Maritime boundary, airspace and Cyprus disputes.' },
@@ -8172,7 +8257,7 @@ PELICAN-9
       // ── Added: recent inter-state conflicts ─────────────────────────
       { id: 'th-kh',  sideA: 'Thailand',      sideB: 'Cambodia',     type: 'territorial', since: 2008,
         title: 'Thailand–Cambodia Border',
-        summary: 'Temple-border dispute; five days of deadly fighting in July 2025, then a ceasefire and the Kuala Lumpur accord (Oct 2025).',
+        summary: 'Temple-border dispute; deadly fighting in July 2025 and again in December despite the Kuala Lumpur accord (Oct 2025).',
         detail: {
           displaced: '~300k displaced on both sides at the July 2025 peak',
           timeline: [
@@ -8182,6 +8267,7 @@ PELICAN-9
             ['2025-07-24', 'Fighting with jets, rockets and artillery'],
             ['2025-07-28', 'Ceasefire agreed in Malaysia'],
             ['2025-10-26', 'Kuala Lumpur peace declaration signed'],
+            ['2025-12', 'Fighting resumes along the border with Thai airstrikes; new ceasefire late December'],
           ],
           locations: [
             { name: 'Preah Vihear', lat: 14.39, lon: 104.68, role: 'disputed temple area' },
@@ -8197,19 +8283,28 @@ PELICAN-9
             ['2021-08', 'Taliban return to power in Kabul'],
             ['2023-2024', 'TTP attacks in Pakistan surge; cross-border strikes'],
             ['2025-10', 'Heavy border clashes; ceasefire agreed in Doha (Oct 19)'],
+            ['2025-11', 'Istanbul talks fail; border crossings stay closed, cross-border strikes continue'],
           ],
         } },
       { id: 'cd-rw',  sideA: 'Democratic Republic of the Congo', sideB: 'Rwanda', type: 'proxy', since: 2021,
         title: 'DR Congo–Rwanda (M23)',
-        summary: 'Rwanda-backed M23 seized Goma and Bukavu in early 2025; a Washington peace agreement (June 2025) has not ended the fighting.',
+        summary: 'Rwanda-backed M23 seized Goma and Bukavu in early 2025, then Uvira in Dec 2025 — days after the Washington Accords were signed.',
         detail: {
           displaced: '~7 million internally displaced in eastern DRC',
+          zonesDate: 'early 2026',
+          zones: [
+            { name: 'M23 / AFC-held', note: 'Goma, Bukavu and large parts of North and South Kivu', color: '#ff70ff',
+              poly: [[-0.15, 29.05], [-0.5, 29.75], [-1.35, 29.6], [-1.65, 29.35], [-2.5, 28.95], [-3.35, 29.15], [-3.3, 28.75], [-2.7, 28.4], [-1.9, 28.6], [-1.2, 28.7], [-0.6, 28.85]] },
+          ],
           timeline: [
             ['2012', 'M23 briefly captures Goma'],
             ['2021-11', 'M23 resurges in North Kivu'],
             ['2025-01-27', 'M23 takes Goma'],
             ['2025-02-16', 'M23 takes Bukavu'],
             ['2025-06-27', 'DRC–Rwanda peace agreement signed in Washington'],
+            ['2025-11-15', 'Doha framework agreement between Kinshasa and M23'],
+            ['2025-12-04', 'Tshisekedi and Kagame sign the Washington Accords'],
+            ['2025-12-10', 'M23 captures Uvira days later, then announces a pull-back under US pressure'],
           ],
           locations: [
             { name: 'Goma',   lat: -1.68, lon: 29.22, role: 'captured by M23, Jan 2025' },
@@ -8248,6 +8343,16 @@ PELICAN-9
             ['2024-08', 'Famine confirmed in Zamzam camp'],
             ['2025-03', 'Army retakes central Khartoum'],
             ['2025-10-26', 'RSF captures El Fasher; mass atrocities reported'],
+            ['2025-11', 'Famine confirmed in El Fasher and Kadugli; RSF announces a unilateral humanitarian truce'],
+            ['2025-12', 'RSF seizes Babanusa and the Heglig oil field; war shifts to Kordofan'],
+          ],
+          humanitarian: 'World\'s largest displacement and hunger crisis: famine (IPC 5) confirmed in El Fasher and Kadugli; ~21 million people in acute food insecurity.',
+          zonesDate: 'early 2026',
+          zones: [
+            { name: 'RSF-held', note: 'All five Darfur states and much of West Kordofan', color: '#ff8a2a',
+              poly: [[19.6, 23.6], [19.6, 26.4], [16.0, 27.8], [13.6, 27.6], [12.8, 29.4], [11.0, 29.6], [9.7, 28.6], [9.6, 26.5], [10.2, 24.8], [11.0, 22.6], [12.8, 22.2], [15.6, 22.9]] },
+            { name: 'Contested (Kordofan)', note: 'El Obeid, Kadugli and Dilling under pressure', color: '#ffd84a',
+              poly: [[13.8, 29.6], [13.6, 31.5], [12.0, 32.2], [10.0, 31.5], [9.6, 29.6], [11.0, 29.7], [12.8, 29.5]] },
           ],
           locations: [
             { name: 'El Fasher', lat: 13.63, lon: 25.35, role: 'fell to RSF, Oct 2025' },
@@ -8266,6 +8371,16 @@ PELICAN-9
             ['2024', 'Arakan Army takes most of Rakhine State'],
             ['2025-03-28', 'M7.7 earthquake near Mandalay'],
             ['2025-12', 'Junta begins phased elections'],
+            ['2026-01', 'Final election phases; military-backed USDP claims victory'],
+          ],
+          zonesDate: 'early 2026',
+          zones: [
+            { name: 'Arakan Army', note: 'Most of Rakhine State (except Sittwe and Kyaukphyu)', color: '#3ddc84',
+              poly: [[21.2, 92.6], [20.8, 92.3], [19.9, 93.1], [18.8, 93.8], [17.6, 94.3], [17.0, 94.5], [17.3, 94.9], [18.6, 94.7], [19.9, 94.2], [21.0, 93.7], [21.4, 93.0]] },
+            { name: 'Chin resistance', note: 'Most of Chin State', color: '#4ad6ff',
+              poly: [[24.0, 93.4], [23.0, 93.2], [22.0, 93.0], [21.3, 93.4], [21.4, 94.0], [22.6, 94.1], [23.8, 94.0]] },
+            { name: 'KIA & allies', note: 'Large parts of Kachin State', color: '#b47bff',
+              poly: [[27.5, 97.3], [26.6, 98.6], [25.3, 98.7], [24.2, 97.8], [24.7, 96.8], [26.0, 96.5], [27.3, 96.8]] },
           ],
         } },
       { id: 'sahel', internal: true, sideA: 'Mali', sideB: 'Mali', parties: ['Sahel juntas (AES)', 'JNIM / Islamic State'], lat: 14.45, lon: -1.20,
@@ -8279,6 +8394,12 @@ PELICAN-9
             ['2022-08', 'French forces leave Mali'],
             ['2023-09', 'Alliance of Sahel States (AES) formed'],
             ['2025-09', 'JNIM blockades fuel deliveries to Bamako'],
+            ['2025-11', 'Blockade shuts schools and strangles the economy; Western embassies urge nationals to leave Mali'],
+          ],
+          zonesDate: 'early 2026',
+          zones: [
+            { name: 'Heavy insurgent activity', note: 'Central/northern Mali, northern & eastern Burkina Faso, western Niger (Liptako-Gourma)', color: '#ff305c',
+              poly: [[16.5, -4.5], [16.8, 0.5], [15.5, 3.5], [13.0, 3.6], [11.5, 2.0], [11.0, 0.0], [12.0, -2.0], [13.5, -4.5], [14.5, -6.0], [15.5, -5.5]] },
           ],
           locations: [
             { name: 'Bamako', lat: 12.64, lon: -8.00, role: 'Mali capital, blockaded 2025' },
@@ -8319,6 +8440,8 @@ PELICAN-9
             ['2024-12-08', 'Assad regime falls to an HTS-led offensive'],
             ['2025-03', 'Mass killings of Alawites on the coast'],
             ['2025-07', 'Druze–Bedouin clashes in Sweida; Israeli strikes on Damascus'],
+            ['2025-11-10', 'al-Sharaa received at the White House; US Caesar sanctions repealed in December'],
+            ['2026-01', 'Government forces clash with the SDF in Aleppo and the north-east'],
           ],
         } },
       { id: 'ng', internal: true, sideA: 'Nigeria', sideB: 'Nigeria', parties: ['Federal forces', 'Boko Haram / ISWAP & bandit groups'], lat: 11.85, lon: 13.16,
@@ -8330,6 +8453,8 @@ PELICAN-9
             ['2014-04', 'Chibok schoolgirls abducted'],
             ['2016', 'ISWAP splits from Boko Haram'],
             ['2021-05', 'Boko Haram leader Shekau killed'],
+            ['2025-11', 'Mass school abductions in Kebbi and Niger states; Washington threatens intervention'],
+            ['2025-12-25', 'US strikes Islamic State targets in north-western Nigeria'],
           ],
         } },
       { id: 'mx', internal: true, sideA: 'Mexico', sideB: 'Mexico', parties: ['State security forces', 'Cartels (Sinaloa factions, CJNG)'], lat: 24.80, lon: -107.39,
@@ -9230,6 +9355,8 @@ PELICAN-9
       }
       // Frontline polyline
       if (d.frontline) addFrontline(d.frontline, d.frontlineDate);
+      // Control zones + ACLED events
+      renderConflictIntelLayers(c, dotBase);
     }
 
     // ════════════════════════════════════════════════════════════════
@@ -11104,7 +11231,10 @@ PELICAN-9
     }
 
     function renderConflictDetail(c) {
-      rightTitle.innerHTML = c.internal ? `${escapeHtml(c.title)}` : `${escapeHtml(c.sideA)} <b>↔</b> ${escapeHtml(c.sideB)}`;
+      ensureConflictIntel();
+      rightTitle.innerHTML = `<button class="feed-back" id="conflictBack" title="Back to all conflicts (Esc)" aria-label="Back to all conflicts">←</button>` +
+        (c.internal ? `${escapeHtml(c.title)}` : `${escapeHtml(c.sideA)} <b>↔</b> ${escapeHtml(c.sideB)}`);
+      document.getElementById('conflictBack')?.addEventListener('click', exitConflictInspection);
       rightSub.textContent = `since ${c.since}`;
       const t = CONFLICT_TYPES[c.type];
       const col = '#' + t.color.toString(16).padStart(6, '0');
@@ -11190,9 +11320,21 @@ PELICAN-9
             </div>`).join('')
         : '<div class="empty">No historical precedents curated.</div>';
 
+      const intel = conflictIntelSections(c, col);
+      const devs = latestDevelopments(c);
+      const devsHtml = devs.length ? `<div class="devs">${devs.map((a, i) => `<div class="dev" data-dev="${i}" role="button" tabindex="0">
+          <span class="when">${articleAge(a) ? escapeHtml(articleAge(a)) + ' ago' : 'today'}${(a._story?.sources || 1) > 1 ? ` · ${a._story.sources} outlets` : ''}</span>
+          <span class="what">${escapeHtml(a.title)}</span></div>`).join('')}</div>`
+        : '<div class="empty">Nothing in the last 24–36 h of the feed.</div>';
       const html = `
         <div class="cdetail">
           <div class="summary" style="border-left-color:${col}">${escapeHtml(c.summary)}</div>
+
+          <h2>LATEST DEVELOPMENTS <span style="color:var(--dim);letter-spacing:0.04em">live · widest reach first</span></h2>
+          ${devsHtml}
+
+          <h2>MEDIA ATTENTION · 30 DAYS</h2>
+          ${intel.trend}
 
           <h2>SIDES</h2>
           <div class="sides">${sideHtml(c.sideA, c.internal && c.parties[0])}<span class="vs">VS</span>${sideHtml(c.sideB, c.internal && c.parties[1])}</div>
@@ -11206,7 +11348,13 @@ PELICAN-9
 
           ${stats.length ? `<h2>SCALE</h2>${statsHtml}` : ''}
 
+          ${intel.acled ? `<h2>GROUND EVENTS · ACLED 14 DAYS</h2>${intel.acled}` : ''}
+
           ${d.frontline ? `<h2>FRONTLINE / CONTROL LINE</h2>${frontlineHtml}` : ''}
+
+          ${intel.zones ? `<h2>CONTROL ZONES</h2>${intel.zones}` : ''}
+
+          ${intel.human ? `<h2>HUMANITARIAN</h2>${intel.human}` : ''}
 
           ${d.gained ? `<h2>OCCUPIED / CLAIMED TERRITORY</h2>${gainedHtml}` : ''}
 
@@ -11221,8 +11369,34 @@ PELICAN-9
           ${d.figures?.length ? `<h2>KEY FIGURES</h2>${figuresHtml}` : ''}
 
           ${(d.related || []).length ? `<h2>HISTORICAL PRECEDENTS</h2>${relatedHtml}` : ''}
+
+          <h2>RELATED IN WRLD</h2>
+          ${intel.related}
         </div>`;
       feedListEl.innerHTML = html;
+
+      // Intelligence sections: wire clicks
+      const fly = (p, dist = 2.4) => tweenCamera(latLonToVec3(p.lat, p.lon, dist), 1.0);
+      const onAct = (el, fn) => { el.addEventListener('click', fn); el.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fn(); } }); };
+      feedListEl.querySelectorAll('.dev[data-dev]').forEach(el => onAct(el, () => openArticle(devs[+el.dataset.dev])));
+      const acList = conflictAcled(c)?.list || [];
+      feedListEl.querySelectorAll('.loc[data-acled]').forEach(el => el.addEventListener('click', () => { const e = acList[+el.dataset.acled]; if (e) fly({ lat: e[0], lon: e[1] }, 2.0); }));
+      feedListEl.querySelectorAll('.loc[data-relief]').forEach(el => el.addEventListener('click', () => openArticle(intel._relief[+el.dataset.relief])));
+      feedListEl.querySelectorAll('.loc[data-quake]').forEach(el => el.addEventListener('click', () => fly(intel._quakes[+el.dataset.quake], 2.6)));
+      feedListEl.querySelectorAll('.loc[data-dis]').forEach(el => el.addEventListener('click', () => fly(intel._dis[+el.dataset.dis], 2.6)));
+      feedListEl.querySelectorAll('.loc[data-cam]').forEach(el => el.addEventListener('click', () => {
+        const cam = intel._cams?.[+el.dataset.cam]; if (!cam) return;
+        setTab('cams'); setTimeout(() => selectCam(cam), 300);
+      }));
+      document.getElementById('cScanCams')?.addEventListener('click', () => {
+        loadCams().then(() => { if (state.selectedConflict === c) renderConflictDetail(c); });
+        if (state.selectedConflict === c) renderConflictDetail(c);
+      });
+      const ex = CONFLICT_EXPOSURE[c.id];
+      if (ex) loadExposureQuotes(ex.map(x => x[0])).then(() => {
+        const box = state.selectedConflict === c && feedListEl.querySelector('.xchips');
+        if (box) box.innerHTML = ex.map(exposureChip).join('');
+      });
 
       // Wire key-location click → fly camera there
       feedListEl.querySelectorAll('.loc[data-i]').forEach(el => {
@@ -11249,6 +11423,314 @@ PELICAN-9
       bindFeedItemClicks(matchedNews);
     }
 
+    // ── Conflict intelligence (/conflicts, built by the Worker's own cron) ──
+    // Coverage trends (GDELT 30-day timelines, else our own daily history),
+    // ACLED ground events (when the Worker has ACLED secrets) and UNHCR
+    // displacement. Everything degrades to "not available" without it.
+    const cIntel = { data: null, loadedAt: 0, loading: null, failed: false };
+    async function loadConflictIntel(force = false) {
+      if (!API_PROXY) { cIntel.failed = true; return null; }
+      if (!force && cIntel.data && Date.now() - cIntel.loadedAt < 30 * 60e3) return cIntel.data;
+      if (cIntel.loading) return cIntel.loading;
+      cIntel.loading = (async () => {
+        try {
+          const r = await fetch(`${API_PROXY}/conflicts`, { cache: 'no-store' });
+          if (!r.ok) throw new Error('http ' + r.status);
+          const j = await r.json();
+          if (!j || !j.generated) throw new Error('bad payload');
+          cIntel.data = j; cIntel.loadedAt = Date.now(); cIntel.failed = false;
+          return j;
+        } catch (e) { console.warn('conflict intel', e); cIntel.failed = true; return null; }
+        finally { cIntel.loading = null; }
+      })();
+      return cIntel.loading;
+    }
+    // Called from the renderers: first load (or a 30-min refresh) re-renders
+    // the CONFLICTS views once data lands. Guarded so it can't loop.
+    function ensureConflictIntel() {
+      const stale = cIntel.data && Date.now() - cIntel.loadedAt > 30 * 60e3;
+      if (cIntel.loading || (!stale && (cIntel.data || cIntel.failed))) return;
+      loadConflictIntel(!!stale).then(() => {
+        if (state.tab !== 'conflicts') return;
+        if (state.selectedConflict) { renderConflictDetail(state.selectedConflict); renderInspectLocations(state.selectedConflict); drawMap(); }
+        else renderFeedConflicts();
+      });
+    }
+
+    const utcDay = (ms) => new Date(ms).toISOString().slice(0, 10);
+    // 30 daily values for a conflict. GDELT (global media volume) when its
+    // timeline covers ≥10 days; otherwise our own feed's history, trimmed to
+    // the days we have actually tracked.
+    function conflictSeries(id, nDays = 30) {
+      const d = cIntel.data; if (!d) return null;
+      const days = Array.from({ length: nDays }, (_, i) => utcDay(Date.now() - (nDays - 1 - i) * 864e5));
+      const g = d.gdelt?.[id]?.days, h = d.history?.[id];
+      const gN = g ? days.filter(k => g[k] != null).length : 0;
+      if (g && gN >= 10) return { days, vals: days.map(k => g[k] || 0), src: 'GDELT · global media volume', short: 'GDELT' };
+      if (h) {
+        const first = days.findIndex(k => h[k] != null);
+        if (first >= 0) return { days: days.slice(first), vals: days.slice(first).map(k => h[k] || 0), src: 'WRLD feed · articles per day', short: 'feed' };
+      }
+      return null;
+    }
+    // Last 3 complete days vs the 14 before them (today is partial → excluded).
+    function conflictTrend(se) {
+      if (!se) return { dir: 'na', label: 'no history yet' };
+      const v = se.vals.slice(0, -1);
+      const recent = v.slice(-3), base = v.slice(-17, -3);
+      if (recent.length < 3 || base.length < 4) return { dir: 'na', label: `building history · ${se.vals.length} d` };
+      const mean = (a) => a.reduce((s, x) => s + x, 0) / a.length;
+      const r = (mean(recent) + 1) / (mean(base) + 1);
+      const pct = Math.round((r - 1) * 100);
+      const label = `${pct >= 0 ? '+' : ''}${pct}% vs prior 2 wk`;
+      return { dir: r >= 1.4 ? 'up' : r <= 0.7 ? 'down' : 'flat', ratio: r, label };
+    }
+    const trendBadge = (t) => t.dir === 'na' ? '' :
+      `<span class="trend ${t.dir}" title="${escapeHtml(t.label)}">${t.dir === 'up' ? '▲' : t.dir === 'down' ? '▼' : '▬'} ${t.dir === 'flat' ? 'steady' : escapeHtml(t.label.split(' ')[0])}</span>`;
+    function conflictSpark(vals, { w = 76, h = 18, color = 'currentColor' } = {}) {
+      if (!vals || vals.length < 2) return '';
+      const max = Math.max(1, ...vals), step = w / (vals.length - 1);
+      const pts = vals.map((x, i) => `${(i * step).toFixed(1)},${(h - 1 - (x / max) * (h - 3)).toFixed(1)}`).join(' ');
+      return `<svg class="cspark" viewBox="0 0 ${w} ${h}" width="${w}" height="${h}" aria-hidden="true"><polygon points="0,${h} ${pts} ${w},${h}" fill="${color}" opacity="0.14"/><polyline points="${pts}" fill="none" stroke="${color}" stroke-width="1.3" stroke-linejoin="round"/></svg>`;
+    }
+    // Daily bar chart with min/max labels (detail panel).
+    function barChartSvg(days, vals, color, { w = 400, h = 70 } = {}) {
+      const max = Math.max(1, ...vals), n = vals.length, bw = w / n;
+      const bars = vals.map((v, i) => {
+        const bh = Math.max(v ? 1.5 : 0, (v / max) * (h - 26));
+        return `<rect x="${(i * bw + 0.5).toFixed(1)}" y="${(h - 12 - bh).toFixed(1)}" width="${Math.max(1, bw - 1.2).toFixed(1)}" height="${bh.toFixed(1)}" fill="${color}" opacity="${i === n - 1 ? 0.45 : 0.85}"><title>${days[i]} · ${v.toLocaleString()}</title></rect>`;
+      }).join('');
+      const fmt = (k) => new Date(k + 'T00:00:00Z').toLocaleDateString('en-GB', { day: 'numeric', month: 'short', timeZone: 'UTC' });
+      return `<svg class="cchart" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" role="img" aria-label="Daily values, max ${max}">${bars}
+        <text x="0" y="${h - 1}" class="ax">${fmt(days[0])}</text><text x="${w}" y="${h - 1}" class="ax" text-anchor="end">${fmt(days[n - 1])}</text>
+        <text x="${w}" y="9" class="ax" text-anchor="end">max ${max.toLocaleString()}</text></svg>`;
+    }
+
+    // ACLED countries per conflict (ACLED's own spelling). Violent event types
+    // only — the Worker already dropped protests and strategic developments.
+    const CONFLICT_ACLED = {
+      'ru-ua': ['Ukraine', 'Russia'], 'il-ps': ['Palestine', 'Israel'], 'il-lb': ['Lebanon'], 'il-ye': ['Yemen'],
+      'cd-rw': ['Democratic Republic of Congo'], 'sd': ['Sudan'], 'mm': ['Myanmar'], 'sahel': ['Mali', 'Burkina Faso', 'Niger'],
+      'ht': ['Haiti'], 'so': ['Somalia'], 'sy': ['Syria'], 'ng': ['Nigeria'], 'mx': ['Mexico'], 'pk-af': ['Afghanistan', 'Pakistan'],
+      'th-kh': ['Thailand', 'Cambodia'], 'am-az': ['Armenia', 'Azerbaijan'], 'us-ve': ['Venezuela'],
+    };
+    const ACLED_KINDS = [
+      { label: 'Battles', hex: '#ff305c', col: 0xff305c },
+      { label: 'Explosions / remote violence', hex: '#ff8a2a', col: 0xff8a2a },
+      { label: 'Violence against civilians', hex: '#b47bff', col: 0xb47bff },
+    ];
+    function conflictAcled(c) {
+      const a = cIntel.data?.acled, scope = CONFLICT_ACLED[c.id];
+      if (!a?.events || !scope) return null;
+      const set = new Set(scope);
+      const list = a.events.filter(e => set.has(e[5]));
+      const byType = [0, 0, 0], deadByType = [0, 0, 0], byDay = {};
+      let dead = 0;
+      for (const e of list) { byType[e[3]]++; deadByType[e[3]] += e[4]; dead += e[4]; byDay[e[2]] = (byDay[e[2]] || 0) + 1; }
+      return { list, dead, byType, deadByType, byDay, from: a.from, to: a.to };
+    }
+
+    // UNHCR uses ISO3; conflict sides use our country names.
+    const CONFLICT_ISO = {
+      'Russia': 'RUS', 'Ukraine': 'UKR', 'Israel': 'ISR', 'Palestine': 'PSE', 'Iran': 'IRN', 'Lebanon': 'LBN', 'China': 'CHN',
+      'Taiwan': 'TWN', 'India': 'IND', 'Japan': 'JPN', 'Philippines': 'PHL', 'Pakistan': 'PAK', 'North Korea': 'PRK', 'South Korea': 'KOR',
+      'United States': 'USA', 'Armenia': 'ARM', 'Azerbaijan': 'AZE', 'Venezuela': 'VEN', 'Guyana': 'GUY', 'Ethiopia': 'ETH', 'Egypt': 'EGY',
+      'Greece': 'GRC', 'Turkey': 'TUR', 'Morocco': 'MAR', 'Algeria': 'DZA', 'Saudi Arabia': 'SAU', 'Cyprus': 'CYP', 'Serbia': 'SRB',
+      'Albania': 'ALB', 'Thailand': 'THA', 'Cambodia': 'KHM', 'Afghanistan': 'AFG', 'Democratic Republic of the Congo': 'COD', 'Rwanda': 'RWA',
+      'Yemen': 'YEM', 'Sudan': 'SDN', 'Myanmar': 'MMR', 'Mali': 'MLI', 'Burkina Faso': 'BFA', 'Niger': 'NER', 'Haiti': 'HTI',
+      'Somalia': 'SOM', 'Syria': 'SYR', 'Nigeria': 'NGA', 'Mexico': 'MEX',
+    };
+    const conflictCountryList = (c) => c.id === 'sahel' ? ['Mali', 'Burkina Faso', 'Niger'] : c.internal ? [c.sideA] : [c.sideA, c.sideB];
+    // Where the conflict is actually fought (ACLED scope, in our spelling) —
+    // so US–Venezuela shows Venezuela's displacement, not America's.
+    const ACLED_TO_OURS = { 'Democratic Republic of Congo': 'Democratic Republic of the Congo' };
+    const conflictTheatre = (c) => CONFLICT_ACLED[c.id] ? CONFLICT_ACLED[c.id].map(n => ACLED_TO_OURS[n] || n) : conflictCountryList(c);
+    const fmtK = (n) => n >= 1e6 ? (n / 1e6).toFixed(n >= 1e7 ? 0 : 1) + 'M' : n >= 1e3 ? Math.round(n / 1e3) + 'k' : String(n);
+
+    // Markets most exposed to each conflict (Yahoo symbols, via /quotes).
+    const CONFLICT_EXPOSURE = {
+      'ru-ua': [['BZ=F', 'Brent crude'], ['TTF=F', 'EU gas (TTF)'], ['ZW=F', 'Wheat'], ['RHM.DE', 'Rheinmetall']],
+      'il-ps': [['BZ=F', 'Brent crude'], ['ILS=X', 'USD/ILS'], ['LMT', 'Lockheed Martin']],
+      'il-ir': [['BZ=F', 'Brent crude'], ['GC=F', 'Gold'], ['LMT', 'Lockheed Martin']],
+      'us-ir': [['BZ=F', 'Brent crude'], ['GC=F', 'Gold'], ['LMT', 'Lockheed Martin']],
+      'il-lb': [['BZ=F', 'Brent crude'], ['ILS=X', 'USD/ILS']],
+      'il-ye': [['BZ=F', 'Brent crude'], ['MAERSK-B.CO', 'Maersk'], ['ZIM', 'ZIM shipping']],
+      'cn-tw': [['TSM', 'TSMC'], ['^TWII', 'Taiex'], ['TWD=X', 'USD/TWD']],
+      'us-cn': [['^HSI', 'Hang Seng'], ['CNY=X', 'USD/CNY'], ['NVDA', 'Nvidia']],
+      'cn-jp': [['^N225', 'Nikkei 225'], ['JPY=X', 'USD/JPY']],
+      'cn-ph': [['PHP=X', 'USD/PHP']],
+      'in-pk': [['^NSEI', 'Nifty 50'], ['PKR=X', 'USD/PKR']],
+      'kp-kr': [['^KS11', 'KOSPI'], ['KRW=X', 'USD/KRW']], 'us-kp': [['^KS11', 'KOSPI'], ['KRW=X', 'USD/KRW']],
+      'us-ru': [['RUB=X', 'USD/RUB'], ['BZ=F', 'Brent crude']],
+      'us-ve': [['BZ=F', 'Brent crude'], ['CVX', 'Chevron']], 've-gy': [['XOM', 'ExxonMobil'], ['CVX', 'Chevron']],
+      'sd': [['GC=F', 'Gold']], 'cd-rw': [['GC=F', 'Gold'], ['HG=F', 'Copper'], ['GLEN.L', 'Glencore (cobalt)']], 'sahel': [['GC=F', 'Gold']],
+      'et-eg': [['EGP=X', 'USD/EGP']], 'gr-tr': [['TRY=X', 'USD/TRY']], 'tr-cy': [['TRY=X', 'USD/TRY']], 'pk-af': [['PKR=X', 'USD/PKR']],
+      'mx': [['MXN=X', 'USD/MXN']], 'ng': [['NGN=X', 'USD/NGN'], ['BZ=F', 'Brent crude']], 'th-kh': [['THB=X', 'USD/THB']],
+      'sa-ir': [['BZ=F', 'Brent crude']], 'sy': [['BZ=F', 'Brent crude']],
+    };
+    const cQuotes = new Map();   // symbol → { q, at }
+    async function loadExposureQuotes(syms) {
+      const need = syms.filter(s => !cQuotes.has(s) || Date.now() - cQuotes.get(s).at > 10 * 60e3);
+      if (!need.length || !API_PROXY) return;
+      try {
+        const r = await fetch(`${API_PROXY}/quotes?range=5d&symbols=${encodeURIComponent(need.join(','))}`);
+        const j = await r.json();
+        for (const q of j.quotes || []) cQuotes.set(q.symbol.toUpperCase(), { q, at: Date.now() });
+        for (const s of need) if (!cQuotes.has(s)) cQuotes.set(s, { q: { error: 'n/a' }, at: Date.now() });
+      } catch (e) { console.warn('exposure quotes', e); }
+    }
+    function exposureChip([sym, label]) {
+      const q = cQuotes.get(sym)?.q;
+      let chg = null;
+      if (q?.c?.length > 1) chg = (q.c[q.c.length - 1] - q.c[0]) / q.c[0] * 100;
+      const cls = chg == null ? '' : chg >= 0 ? 'pos' : 'neg';
+      const price = q?.price != null ? Number(q.price).toLocaleString('en-US', { maximumFractionDigits: q.price < 10 ? 3 : 2 }) : '…';
+      return `<a class="xchip" href="https://finance.yahoo.com/quote/${encodeURIComponent(sym)}" target="_blank" rel="noopener" title="${escapeHtml(sym)} · 5-day change">
+        <span class="xl">${escapeHtml(label)}</span><span class="xp">${q?.error ? '—' : price}</span>${chg != null ? `<span class="xc ${cls}">${chg >= 0 ? '+' : ''}${chg.toFixed(1)}%</span>` : ''}</a>`;
+    }
+
+    // Points that represent a conflict on the ground: key locations, then
+    // the capitals of the sides (or the internal hotspot).
+    function conflictAnchors(c) {
+      const d = c.detail || {};
+      const pts = (d.locations || []).map(l => ({ lat: l.lat, lon: l.lon }));
+      if (c.internal) pts.push({ lat: c.lat, lon: c.lon });
+      if (!pts.length) for (const n of conflictTheatre(c)) { const cap = capitalFor(n); if (cap) pts.push({ lat: cap.lat, lon: cap.lon }); }
+      return pts;
+    }
+    const nearAnchors = (anchors, p, km) => anchors.some(a => kmBetween(a, p) <= km);
+
+    // Latest developments: distinct stories (clustered), widest reach first,
+    // then most recent — the headline facts of the last 24–36 h.
+    function latestDevelopments(c, n = 4) {
+      const seen = new Set(), out = [];
+      const arts = conflictCoverage(c).slice().sort((x, y) =>
+        ((y._story?.sources || 1) - (x._story?.sources || 1)) ||
+        ((parseGdeltDate(y.seendate)?.getTime() || 0) - (parseGdeltDate(x.seendate)?.getTime() || 0)));
+      for (const a of arts) {
+        const key = a._story?.id || a.url;
+        if (seen.has(key)) continue;
+        seen.add(key); out.push(a);
+        if (out.length >= n) break;
+      }
+      return out;
+    }
+
+    // Renders the intelligence sections of the detail panel (HTML strings).
+    function conflictIntelSections(c, col) {
+      const d = c.detail || {};
+      const out = {};
+      const loading = cIntel.loading && !cIntel.data;
+      const off = !cIntel.data;
+      const offNote = loading ? 'Loading conflict data…' : 'Conflict data unavailable — deploy the Worker with the /conflicts endpoint.';
+
+      // Media attention (trend)
+      const se = conflictSeries(c.id);
+      const tr = conflictTrend(se);
+      out.trend = off ? `<div class="empty">${offNote}</div>` : se ? `
+        <div class="trend-head">${trendBadge(tr) || '<span class="trend na">—</span>'}<span class="tlabel">${escapeHtml(tr.label)}</span></div>
+        ${barChartSvg(se.days, se.vals, col)}
+        <div class="csrc">Source: ${escapeHtml(se.src)}. Last bar = today (partial).</div>` : '<div class="empty">No coverage history yet for this conflict — it builds up day by day.</div>';
+
+      // ACLED ground events
+      const ac = conflictAcled(c);
+      if (!CONFLICT_ACLED[c.id]) out.acled = '';
+      else if (off) out.acled = `<div class="empty">${offNote}</div>`;
+      else if (!cIntel.data.acled) out.acled = `<div class="frontline-note">ACLED is not configured on the Worker. Create a free account at <b>acleddata.com</b>, then run <code>wrangler secret put ACLED_USER</code> and <code>ACLED_PASS</code> to map battles, strikes and attacks on civilians here.</div>`;
+      else if (!ac.list.length) out.acled = `<div class="empty">No violent events recorded by ACLED in ${escapeHtml(CONFLICT_ACLED[c.id].join(', '))} over the period.</div>`;
+      else {
+        const days = Array.from({ length: 14 }, (_, i) => utcDay(Date.parse(ac.to + 'T00:00:00Z') - (13 - i) * 864e5));
+        out.acled = `
+          <div class="acled-kpis"><div><b>${ac.list.length.toLocaleString()}</b><span>events</span></div><div><b>${ac.dead.toLocaleString()}</b><span>reported fatalities</span></div></div>
+          ${ACLED_KINDS.map((k, i) => `<div class="stat"><span class="k"><i class="sw" style="background:${k.hex}"></i>${escapeHtml(k.label)}</span><span class="v">${ac.byType[i]} events · ${ac.deadByType[i]} killed</span></div>`).join('')}
+          ${barChartSvg(days, days.map(k => ac.byDay[k] || 0), '#ff305c', { h: 56 })}
+          <div class="acled-top">${ac.list.slice(0, 5).map((e, i) => `<div class="loc" data-acled="${i}"><div class="lname">${escapeHtml(e[6] || e[5])} · ${e[4]} killed</div><div class="lrole">${escapeHtml(ACLED_KINDS[e[3]].label)} · ${escapeHtml(e[2])}</div></div>`).join('')}</div>
+          <div class="csrc">ACLED · ${escapeHtml(ac.from)} → ${escapeHtml(ac.to)} · dots on the map, sized by fatalities. ACLED publishes with a lag of a few days.</div>`;
+      }
+
+      // Control zones
+      out.zones = d.zones?.length ? `${d.zones.map(z => `<div class="zone-row"><i class="sw" style="background:${z.color}"></i><div><div class="lname">${escapeHtml(z.name)}</div><div class="lrole">${escapeHtml(z.note || '')}</div></div></div>`).join('')}
+        <div class="frontline-note">Approximate areas as of <b>${escapeHtml(d.zonesDate || CONFLICTS_CURATED_AS_OF)}</b>, shaded on the map. Curated outlines, not survey-grade — control shifts quickly.</div>` : '';
+
+      // Humanitarian
+      const un = cIntel.data?.unhcr;
+      const rows = un ? conflictTheatre(c).map(n => [n, un.byIso[CONFLICT_ISO[n]]]).filter(([, x]) => x && (x.refugees + x.asylum + x.idps) >= 20000) : [];
+      const isos = new Set(conflictTheatre(c));
+      const relief = state.articles.filter(a => a.src === 'rss:reliefweb' || /reliefweb\.int/.test(a.domain || '')).filter(a => (a._geo?.all || []).some(x => isos.has(x))).slice(0, 4);
+      const humanOn = rows.length || d.humanitarian || relief.length || ['war', 'internal', 'proxy'].includes(c.type);
+      out.human = !humanOn ? '' : `
+        ${d.humanitarian ? `<div class="background">${escapeHtml(d.humanitarian)}</div>` : ''}
+        ${rows.length ? `<div class="human-grid">${rows.map(([n, x]) => `<div class="hcell"><div class="hc">${escapeHtml(n)}</div>
+          <div><b>${fmtK(x.refugees + x.asylum)}</b><span>refugees &amp; asylum-seekers abroad</span></div>
+          <div><b>${fmtK(x.idps)}</b><span>internally displaced</span></div></div>`).join('')}</div>
+          <div class="csrc">UNHCR Refugee Data Finder · ${un.year} figures by country of origin.</div>` : off ? `<div class="empty">${offNote}</div>` : ''}
+        ${relief.length ? `<div class="sublbl">Latest ReliefWeb reports</div>${relief.map((a, i) => `<div class="loc" data-relief="${i}"><div class="lname">${escapeHtml(a.title)}</div><div class="lrole">reliefweb.int${articleAge(a) ? ' · ' + articleAge(a) : ''}</div></div>`).join('')}` : ''}`;
+      out._relief = relief;
+
+      // Related in WRLD: markets, cameras, disasters
+      const ex = CONFLICT_EXPOSURE[c.id] || [];
+      const anchors = conflictAnchors(c);
+      const quakes = state.quakes.filter(q => q.mag >= 4.5 && nearAnchors(anchors, q, 500)).slice(0, 3);
+      const dis = state.disasters.filter(x => nearAnchors(anchors, x, 500)).slice(0, 3);
+      let camsHtml;
+      if (camState.status === 'ready') {
+        const near = [];
+        for (const a of anchors) for (const [cam, km] of nearestCams(a, 3, null, 600)) if (!near.some(([x]) => x === cam)) near.push([cam, km]);
+        near.sort((x, y) => x[1] - y[1]);
+        out._cams = near.slice(0, 4).map(([cam]) => cam);
+        camsHtml = near.length ? near.slice(0, 4).map(([cam, km], i) => `<div class="loc" data-cam="${i}"><div class="lname">${escapeHtml(cam.name)}</div><div class="lrole">${escapeHtml(CAM_SOURCES[cam.src]?.label || cam.src)} · ${Math.round(km)} km away</div></div>`).join('')
+          : '<div class="empty">No open public cameras within 600 km.</div>';
+      } else camsHtml = `<button class="desk-chip" id="cScanCams">${camState.status === 'loading' ? 'Loading cameras…' : 'Scan for open cameras nearby'}</button>`;
+      out._quakes = quakes; out._dis = dis;
+      out.related = `
+        ${ex.length ? `<div class="sublbl">Exposed markets · 5-day change</div><div class="xchips">${ex.map(exposureChip).join('')}</div>` : ''}
+        <div class="sublbl">Open cameras nearby</div>${camsHtml}
+        ${quakes.length || dis.length ? `<div class="sublbl">Natural hazards in the area</div>
+          ${quakes.map((q, i) => `<div class="loc" data-quake="${i}"><div class="lname">M${q.mag.toFixed(1)} earthquake</div><div class="lrole">${escapeHtml(q.place)}</div></div>`).join('')}
+          ${dis.map((x, i) => `<div class="loc" data-dis="${i}"><div class="lname">${escapeHtml(x.title)}</div><div class="lrole">${escapeHtml((DISASTER_TYPES[x.type] || {}).label || x.type)}</div></div>`).join('')}` : ''}`;
+      return out;
+    }
+
+    // Globe: ACLED dots + control zones for the inspected conflict.
+    const acledTex = new Map();
+    function renderConflictIntelLayers(c, dotBase) {
+      const d = c.detail || {};
+      for (const z of d.zones || []) {
+        const col = parseInt(z.color.slice(1), 16);
+        const mesh = buildAreaMesh(z.poly, 1.0035, col, 0.20);
+        if (mesh) { mesh.userData.isAreaFill = true; inspectLocGroup.add(mesh); }
+        const ring = z.poly.map(([la, lo]) => latLonToVec3(la, lo, 1.004));
+        inspectLocGroup.add(new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(ring),
+          new THREE.LineBasicMaterial({ color: col, transparent: true, opacity: 0.8, blending: THREE.AdditiveBlending, depthWrite: false })));
+      }
+      const ac = conflictAcled(c);
+      if (!ac) return;
+      for (const e of ac.list.slice(0, 700)) {
+        const k = ACLED_KINDS[e[3]];
+        if (!acledTex.has(e[3])) acledTex.set(e[3], sharpDotTexture(k.col));
+        const dot = new THREE.Sprite(new THREE.SpriteMaterial({ map: acledTex.get(e[3]), color: k.col, transparent: true, opacity: 0.85, blending: THREE.AdditiveBlending, depthWrite: false }));
+        const base = dotBase * (0.45 + Math.min(1.1, Math.log10(1 + e[4]) * 0.55));
+        dot.scale.setScalar(base);
+        dot.position.copy(latLonToVec3(e[0], e[1], 1.005));
+        dot.userData = { kind: 'inspectMarker', mKind: 'acled', baseScale: base, screenSize: true,
+          loc: { lat: e[0], lon: e[1], name: e[6] || e[5], role: `${k.label} · ${e[4]} killed · ${e[2]}`, kicker: 'ACLED EVENT' } };
+        inspectLocGroup.add(dot);
+      }
+    }
+    // 2D map equivalent.
+    function addConflictIntelLeaflet(c) {
+      const d = c.detail || {};
+      for (const z of d.zones || [])
+        mapOverlay.addLayer(L.polygon(z.poly, { color: z.color, weight: 1.5, fillColor: z.color, fillOpacity: 0.18 }).bindTooltip(`<b>${escapeHtml(z.name)}</b><br/>${escapeHtml(z.note || '')}`, { sticky: true }));
+      const ac = conflictAcled(c);
+      if (!ac) return;
+      for (const e of ac.list.slice(0, 900)) {
+        const k = ACLED_KINDS[e[3]];
+        mapOverlay.addLayer(L.circleMarker([e[0], e[1]], { radius: 2.5 + Math.min(7, Math.log10(1 + e[4]) * 3.5), color: k.hex, weight: 1, fillColor: k.hex, fillOpacity: 0.55 })
+          .bindTooltip(`<b>${escapeHtml(e[6] || e[5])}</b><br/>${escapeHtml(k.label)} · ${e[4]} killed · ${escapeHtml(e[2])}`, { direction: 'top' }));
+      }
+    }
+
     // ── Live coverage per conflict ─────────────────────────────────
     // Specific vocabulary where a country name alone would be too broad;
     // otherwise an inter-state conflict needs BOTH countries detected in the
@@ -11263,6 +11745,7 @@ PELICAN-9
       'am-az': /\b(Armenia\w*|Azerbaijan\w*|Karabakh)\b/,
       'cd-rw': /\b(M23|Goma|Bukavu|North Kivu|South Kivu)\b/,
       'il-ye': /\b(Houthis?|Red Sea shipping|Hodeidah|Sanaa)\b/,
+      'us-ve': /\b(Venezuela\w*|Maduro|Caracas)\b/,
       'sd':    /(?<!South )\b(Sudan(?:ese)?|Darfur|RSF|El Fasher|Khartoum|Kordofan)\b/,
       'mm':    /\b(Myanmar|Burm\w+|junta|Rakhine|Arakan Army)\b/,
       'sahel': /\b(Mali(?:an)?|Burkina\w*|Niger(?!ia)\w*|Sahel|JNIM|Bamako)\b/,
@@ -11301,35 +11784,54 @@ PELICAN-9
 
     function renderFeedConflicts() {
       if (state.selectedConflict) { renderConflictDetail(state.selectedConflict); return; }
+      ensureConflictIntel();
       rightTitle.innerHTML = 'CONFLICTS <b>// WORLD</b>';
-      rightSub.textContent = 'live coverage · 24h';
+      rightSub.textContent = cIntel.data ? 'live · 30-day trends' : 'live coverage · 24h';
       updateConflictActivity();
+      const sortMode = state.conflictSort || 'type';
+      const trendOf = new Map(CONFLICTS.map(c => { const se = conflictSeries(c.id); return [c.id, { se, t: conflictTrend(se) }]; }));
       const act = (c) => conflictActivity.get(c.id)?.score || 0;
       const groups = {};
       for (const c of CONFLICTS) (groups[c.type] = groups[c.type] || []).push(c);
       for (const g of Object.values(groups)) g.sort((a, b) => act(b) - act(a));
       const order = ['war','internal','territorial','proxy','cold','trade'];
       const hot = [...CONFLICTS].filter(c => act(c) > 0).sort((a, b) => act(b) - act(a)).slice(0, 5);
-      let html = hot.length ? `<div class="conflict-hot"><div class="lbl">MOST COVERED NOW</div>${hot.map(c =>
+      const sorts = [['type', 'BY TYPE'], ['escalating', 'ESCALATING'], ['covered', 'MOST COVERED']];
+      const escalating = CONFLICTS.filter(c => trendOf.get(c.id).t.dir === 'up');
+      let html = `<div class="conflict-sort">${sorts.map(([k, l]) => `<button class="${sortMode === k ? 'on' : ''}" data-sort="${k}">${l}${k === 'escalating' && escalating.length ? ` <span>${escalating.length}</span>` : ''}</button>`).join('')}</div>`;
+      html += hot.length && sortMode === 'type' ? `<div class="conflict-hot"><div class="lbl">MOST COVERED NOW</div>${hot.map(c =>
         `<button class="hot-chip" data-id="${c.id}">${escapeHtml(c.internal ? c.title.replace(/ (Civil War|Gang War|Cartel War).*/, '') : sidesLabel(c, '–'))}<span>${act(c)}</span></button>`).join('')}</div>` : '';
-      for (const type of order) {
-        if (!groups[type]) continue;
-        const t = CONFLICT_TYPES[type];
+      const rowHtml = (c) => {
+        const t = CONFLICT_TYPES[c.type];
         const col = '#' + t.color.toString(16).padStart(6, '0');
-        const visible = state.activeConflictTypes.has(type);
-        html += `<div style="padding:10px 12px 4px;font-size:9px;letter-spacing:0.14em;color:${col};text-transform:uppercase;">${t.label} · ${groups[type].length}</div>`;
-        for (const c of groups[type]) {
-          html += `
+        const visible = state.activeConflictTypes.has(c.type);
+        const { se, t: tr } = trendOf.get(c.id);
+        return `
             <div class="conflict-row${visible?'':' off'}" data-id="${c.id}">
               <div class="hd"><span class="sw" style="color:${col};background:${col}"></span>${c.internal ? escapeHtml(c.title) : `${escapeHtml(c.sideA)}<span class="arrow">↔</span>${escapeHtml(c.sideB)}`}
                 <span class="live${act(c) >= 8 ? ' hot' : act(c) ? '' : ' none'}" title="articles in the last 24h">${act(c) ? '● ' + act(c) : '—'}</span></div>
               <div class="meta" style="color:${col}"><span class="tg">${t.label}</span><span>SINCE ${c.since}</span>${c.internal ? `<span style="color:var(--dim)">${escapeHtml(c.parties.join(' vs '))}</span>` : ''}</div>
+              ${se && se.vals.length >= 2 ? `<div class="trow" title="${escapeHtml(se.src)} · ${escapeHtml(tr.label)}">${conflictSpark(se.vals, { color: col })}${trendBadge(tr)}<span class="tsrc">${se.vals.length} d · ${escapeHtml(se.short)}</span></div>` : ''}
               <div class="sum">${escapeHtml(c.summary)}</div>
             </div>`;
+      };
+      if (sortMode === 'type') {
+        for (const type of order) {
+          if (!groups[type]) continue;
+          const t = CONFLICT_TYPES[type];
+          const col = '#' + t.color.toString(16).padStart(6, '0');
+          html += `<div style="padding:10px 12px 4px;font-size:9px;letter-spacing:0.14em;color:${col};text-transform:uppercase;">${t.label} · ${groups[type].length}</div>`;
+          for (const c of groups[type]) html += rowHtml(c);
         }
+      } else {
+        const score = sortMode === 'covered' ? (c) => act(c) : (c) => trendOf.get(c.id).t.ratio ?? -1;
+        const list = [...CONFLICTS].sort((a, b) => (score(b) - score(a)) || (act(b) - act(a)));
+        if (sortMode === 'escalating' && !cIntel.data) html += `<div class="conflict-note">${cIntel.loading ? 'Loading 30-day trends…' : 'Trend data unavailable (Worker /conflicts endpoint).'}</div>`;
+        for (const c of list) html += rowHtml(c);
       }
-      html += `<div class="conflict-note">Background curated as of ${CONFLICTS_CURATED_AS_OF}. Counts = articles in today's feed about each conflict.</div>`;
+      html += `<div class="conflict-note">Background curated as of ${CONFLICTS_CURATED_AS_OF}. ● = articles in today's feed. Sparkline = daily coverage over 30 days (GDELT global media volume, or this feed's own history while GDELT backfills). ▲ escalating = last 3 days ≥ 40% above the prior two weeks.</div>`;
       feedListEl.innerHTML = html;
+      for (const b of feedListEl.querySelectorAll('.conflict-sort [data-sort]')) b.addEventListener('click', () => { state.conflictSort = b.dataset.sort; renderFeedConflicts(); });
       for (const chip of feedListEl.querySelectorAll('.hot-chip')) chip.addEventListener('click', () => {
         const c = CONFLICTS.find(x => x.id === chip.dataset.id); if (c) enterConflictInspection(c);
       });
@@ -12433,7 +12935,7 @@ PELICAN-9
           tipMeta.innerHTML = escapeHtml(d.loc.role || '');
           tipEl.classList.add('on');
         } else if (d.kind === 'inspectMarker') {
-          const kindLabel = { base: 'MILITARY BASE', nuclear: 'NUCLEAR SITE', industry: 'INDUSTRY' }[d.mKind] || d.mKind;
+          const kindLabel = d.loc.kicker || { base: 'MILITARY BASE', nuclear: 'NUCLEAR SITE', industry: 'INDUSTRY' }[d.mKind] || d.mKind;
           tipKicker.textContent = kindLabel;
           tipName.textContent = d.loc.name;
           tipMeta.innerHTML = escapeHtml(d.loc.role || '');
@@ -14111,6 +14613,7 @@ PELICAN-9
         mapOverlay.addLayer(L.marker([loc.lat, loc.lon], { icon: dotIcon('#ffffff', 9) })
           .bindTooltip(`<b>${loc.name}</b><br/>${loc.role || ''}`, { direction: 'top' }));
       }
+      addConflictIntelLeaflet(c);
     }
 
     // Selected country highlight (WIRE etc.)

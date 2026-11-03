@@ -15,6 +15,10 @@
  *                                           outlets), same cron
  *   GET /biz                              → business / tech / entertainment desk
  *                                           (15 outlets) for the IMPACT tab
+ *   GET /conflicts                        → conflict intelligence for the CONFLICTS
+ *                                           tab: daily coverage history, GDELT
+ *                                           30-day timelines, ACLED events (opt.),
+ *                                           UNHCR displacement — own cron, 30 min
  *   GET /quotes?symbols=DIS,MC.PA&range=5d → compact price series (Yahoo),
  *                                           edge-cached 5 min per symbol
  *   GET /caps?ids=Q312,Q2283              → dated market caps from Wikidata (7 d)
@@ -48,6 +52,7 @@
  */
 
 import { collectNews, collectFrance, collectBusiness, fetchQuote } from './news-collector.js';
+import { collectConflicts } from './conflicts-collector.js';
 import { caltransDistrict, nzCameras, spainCameras, icelandCameras, npsWebcams } from './cams.js';
 
 const CORS = {
@@ -65,6 +70,7 @@ export default {
       if (url.pathname === '/news')    return await handleFeed(FEEDS.world, env, ctx);
       if (url.pathname === '/fr')      return await handleFeed(FEEDS.fr, env, ctx);
       if (url.pathname === '/biz')     return await handleFeed(FEEDS.biz, env, ctx);
+      if (url.pathname === '/conflicts') return await handleFeed(FEEDS.conflicts, env, ctx);
       if (url.pathname === '/quotes')  return await handleQuotes(url, ctx);
       if (url.pathname.startsWith('/cams/')) return await handleCams(url, env, ctx);
       if (url.pathname === '/caps')    return await handleCaps(url, ctx);
@@ -81,8 +87,12 @@ export default {
   },
 
   // Cron Trigger (wrangler.toml → [triggers] crons) — rebuild the merged feed.
-  async scheduled(_event, env, ctx) {
-    ctx.waitUntil(Promise.allSettled(Object.values(FEEDS).map(f => refreshFeed(f, env))));
+  // Each cron runs its own invocation, so each gets the full subrequest
+  // budget (50 on the free plan) — running all feeds in one invocation
+  // overflowed it and silently dropped the last GDELT slice.
+  async scheduled(event, env, ctx) {
+    const names = CRON_PLAN[event.cron] || Object.keys(FEEDS);   // unknown cron (e.g. local test) → everything
+    ctx.waitUntil(Promise.allSettled(names.map(n => refreshFeed(FEEDS[n], env))));
   },
 };
 
@@ -93,6 +103,15 @@ const FEEDS = {
   world: { key: 'news:latest', collect: collectNews },
   fr:    { key: 'fr:latest',   collect: collectFrance },
   biz:   { key: 'biz:latest',  collect: collectBusiness },
+  // Slow-moving and GDELT-throttled: refreshed by its own 30-min cron, never
+  // rebuilt in the request path unless it is very old.
+  conflicts: { key: 'conflicts:latest', collect: collectConflicts, freshMs: 90 * 60e3, maxStaleMs: 24 * 3600e3 },
+};
+// Must match the crons in wrangler.toml.
+const CRON_PLAN = {
+  '*/15 * * * *':       ['world'],
+  '7,22,37,52 * * * *': ['fr', 'biz'],
+  '11,41 * * * *':      ['conflicts'],
 };
 const FEED_FRESH_MS = 20 * 60 * 1000;    // cron runs every 15 min
 const FEED_MAX_STALE_MS = 6 * 3600e3;    // past this, rebuild before answering
@@ -134,9 +153,9 @@ async function handleFeed(feed, env, ctx) {
   const stored = await readStoredFeed(feed, env);
   const age = stored ? Date.now() - stored.generated : Infinity;
   let txt = stored?.txt;
-  if (!txt || age > FEED_MAX_STALE_MS) {
+  if (!txt || age > (feed.maxStaleMs || FEED_MAX_STALE_MS)) {
     txt = (await refreshFeed(feed, env)) || txt;        // cold start / cron missing
-  } else if (age > FEED_FRESH_MS) {
+  } else if (age > (feed.freshMs || FEED_FRESH_MS)) {
     ctx.waitUntil(refreshFeed(feed, env).catch(() => {}));  // serve stale, rebuild behind
   }
   if (!txt) return json({ error: 'all sources unavailable', articles: [] }, 503);
