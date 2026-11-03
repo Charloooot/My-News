@@ -17,6 +17,8 @@
  *                                           (15 outlets) for the IMPACT tab
  *   GET /quotes?symbols=DIS,MC.PA&range=5d → compact price series (Yahoo),
  *                                           edge-cached 5 min per symbol
+ *   GET /cams/caltrans?d=1..12            → compact Caltrans camera index (1 h)
+ *   GET /cams/nz                          → compact NZTA camera index (1 h)
  *   GET /gdelt?query=...&maxrecords=250   → GDELT ArtList JSON, edge-cached 10 min
  *   GET /extract?url=https://...          → readable article text, edge-cached 6 h
  *   GET /tle?group=active                 → CelesTrak GP TLE, edge-cached 2 h
@@ -44,6 +46,7 @@
  */
 
 import { collectNews, collectFrance, collectBusiness, fetchQuote } from './news-collector.js';
+import { caltransDistrict, nzCameras } from './cams.js';
 
 const CORS = {
   'Access-Control-Allow-Origin': '*',
@@ -61,6 +64,7 @@ export default {
       if (url.pathname === '/fr')      return await handleFeed(FEEDS.fr, env, ctx);
       if (url.pathname === '/biz')     return await handleFeed(FEEDS.biz, env, ctx);
       if (url.pathname === '/quotes')  return await handleQuotes(url, ctx);
+      if (url.pathname === '/cams/caltrans' || url.pathname === '/cams/nz') return await handleCams(url, ctx);
       if (url.pathname === '/gdelt')   return await handleGdelt(url);
       if (url.pathname === '/extract') return await handleExtract(url);
       if (url.pathname === '/tle')     return await handleTle(url);
@@ -136,6 +140,22 @@ async function handleFeed(feed, env, ctx) {
   return new Response(txt, {
     headers: { 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=120', ...CORS },
   });
+}
+
+// ── /cams ──────────────────────────────────────────────────────────────────
+async function handleCams(reqUrl, ctx) {
+  const isNz = reqUrl.pathname === '/cams/nz';
+  const d = Number(reqUrl.searchParams.get('d'));
+  if (!isNz && !(Number.isInteger(d) && d >= 1 && d <= 12)) return json({ error: 'd must be 1..12' }, 400);
+  const key = new Request(isNz ? 'https://cache/cams/nz' : `https://cache/cams/caltrans/${d}`);
+  const hit = await caches.default.match(key);
+  if (hit) return withCors(hit);
+  const rows = isNz ? await nzCameras() : await caltransDistrict(d);
+  const resp = new Response(JSON.stringify(rows), {
+    headers: { 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=3600', ...CORS },
+  });
+  ctx.waitUntil(caches.default.put(key, resp.clone()));
+  return resp;
 }
 
 // ── /quotes ─────────────────────────────────────────────────────────────────

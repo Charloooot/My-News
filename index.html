@@ -660,6 +660,57 @@
   .tip .name { font-weight: 600; font-size: 12px; }
   .tip .meta { margin-top: 5px; opacity: 0.65; font-size: 10px; letter-spacing: 0.06em; }
 
+  /* ============== CAMERAS ============== */
+  .cam-intro { padding: 12px; font-size: 11px; line-height: 1.55; color: var(--dim); }
+  .cam-region { display: flex; align-items: center; gap: 10px; width: 100%; padding: 10px 12px; border-bottom: 1px solid rgba(0,240,255,0.06); text-align: left; }
+  .cam-region:hover { background: rgba(0,240,255,0.06); }
+  .cam-region .sw { width: 9px; height: 9px; border-radius: 50%; box-shadow: 0 0 8px currentColor; flex: 0 0 9px; }
+  .cam-region .nm { font-size: 12px; color: var(--paper); letter-spacing: 0.06em; }
+  .cam-region .nm small { display: block; font-size: 10px; color: var(--dim); letter-spacing: 0.02em; margin-top: 2px; }
+  .cam-region .n { margin-left: auto; font-size: 11px; color: var(--dim); font-variant-numeric: tabular-nums; }
+  .cam-view { padding: 10px 12px 16px; }
+  .cam-back { font-size: 10px; letter-spacing: 0.14em; color: var(--cyan); margin-bottom: 8px; }
+  .cam-name { font-size: 13px; color: var(--paper); font-weight: 700; line-height: 1.35; }
+  .cam-meta { font-size: 10px; color: var(--dim); margin: 3px 0 8px; letter-spacing: 0.04em; }
+  .cam-frame { position: relative; border: 1px solid var(--line2); background: #000; aspect-ratio: 16 / 10; overflow: hidden; }
+  .cam-frame img, .cam-frame video { width: 100%; height: 100%; object-fit: contain; display: block; background: #000; }
+  .cam-badge { position: absolute; top: 6px; left: 6px; font-size: 9px; letter-spacing: 0.14em; padding: 2px 6px; background: rgba(2,6,14,0.8); color: var(--paper); border: 1px solid var(--line2); }
+  .cam-stamp { font-size: 10px; color: var(--dim); margin-top: 5px; }
+  .cam-actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+  .cam-btn { padding: 5px 9px; font-size: 10px; letter-spacing: 0.1em; border: 1px solid var(--line2); color: var(--cyan); background: rgba(0,240,255,0.05); }
+  .cam-btn:hover, .cam-btn.on { background: rgba(0,240,255,0.18); color: var(--paper); }
+  .cam-h { font-size: 10px; letter-spacing: 0.18em; color: var(--cyan); margin: 16px 0 8px; font-weight: 600; }
+  .cam-near { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .cam-thumb { text-align: left; border: 1px solid var(--line); background: rgba(0,240,255,0.02); min-width: 0; }
+  .cam-thumb:hover { border-color: var(--cyan); }
+  .cam-thumb img { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; display: block; background: #04121f; }
+  .cam-thumb span { display: block; padding: 4px 6px; font-size: 10px; color: var(--paper); line-height: 1.3; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .cam-thumb small { display: block; color: var(--dim); }
+  .cam-wall { position: fixed; inset: 0; z-index: 186; display: none; flex-direction: column; background: rgba(2,6,14,0.94); backdrop-filter: blur(8px); padding: 18px 24px 24px; }
+  .cam-wall.on { display: flex; }
+  .cam-wall-head { display: flex; justify-content: space-between; align-items: center; font-size: 12px; letter-spacing: 0.1em; color: var(--dim); margin-bottom: 14px; }
+  .cam-wall-head b { color: var(--cyan); letter-spacing: 0.2em; }
+  .cam-wall-head .brief-close { position: static; }
+  .cam-wall-grid { flex: 1; min-height: 0; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 10px; align-content: start; }
+  .cam-tile { position: relative; border: 1px solid var(--line); background: #000; aspect-ratio: 16 / 10; overflow: hidden; }
+  .cam-tile:hover { border-color: var(--cyan); }
+  .cam-tile img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .cam-tile.dead img { visibility: hidden; } .cam-tile.dead::after { content: 'OFFLINE'; position: absolute; inset: 0; display: grid; place-items: center; color: var(--dim); font-size: 11px; letter-spacing: 0.2em; }
+  .cam-tile .lbl { position: absolute; left: 0; right: 0; bottom: 0; padding: 4px 8px; font-size: 10px; color: var(--paper); text-align: left; background: linear-gradient(transparent, rgba(0,0,0,0.85)); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .cam-tile .lbl i { display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 6px; }
+
+  /* conflicts: live activity */
+  .conflict-row .hd { display: flex; align-items: center; gap: 6px; }
+  .conflict-row .live { margin-left: auto; font-size: 10px; color: var(--paper); letter-spacing: 0.04em; font-variant-numeric: tabular-nums; }
+  .conflict-row .live.hot { color: var(--red); text-shadow: 0 0 8px rgba(255,48,92,0.6); }
+  .conflict-row .live.none { color: var(--dim); opacity: 0.6; }
+  .conflict-hot { padding: 10px 12px 8px; border-bottom: 1px solid var(--line); display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+  .conflict-hot .lbl { width: 100%; font-size: 9px; letter-spacing: 0.16em; color: var(--dim); margin-bottom: 2px; }
+  .hot-chip { padding: 3px 8px; font-size: 10px; border: 1px solid rgba(255,48,92,0.45); color: var(--paper); background: rgba(255,48,92,0.08); }
+  .hot-chip:hover { border-color: var(--red); }
+  .hot-chip span { margin-left: 6px; color: var(--red); }
+  .conflict-note { padding: 12px; font-size: 10px; color: var(--dim); line-height: 1.5; }
+
   /* ============== DESKS (FRANCE · IMPACT) ============== */
   .desk-stage {
     position: fixed; inset: 78px 0 96px 0; z-index: 6; display: none; overflow-y: auto;
@@ -1318,12 +1369,12 @@
       <button class="tab active" data-tab="wire"><span class="num">01</span>WIRE</button>
       <button class="tab" data-tab="line"><span class="num">02</span>THE LINE</button>
       <button class="tab new" data-tab="france"><span class="num">03</span>FRANCE</button>
-      <button class="tab" data-tab="alliances"><span class="num">04</span>ALLIANCES</button>
-      <button class="tab" data-tab="conflicts"><span class="num">05</span>CONFLICTS</button>
-      <button class="tab" data-tab="markets"><span class="num">06</span>MARKETS</button>
-      <button class="tab new" data-tab="impact"><span class="num">07</span>IMPACT</button>
-      <button class="tab" data-tab="outbreaks"><span class="num">08</span>OUTBREAKS</button>
-      <button class="tab" data-tab="quakes"><span class="num">09</span>DISASTERS</button>
+      <button class="tab" data-tab="conflicts"><span class="num">04</span>CONFLICTS</button>
+      <button class="tab" data-tab="markets"><span class="num">05</span>MARKETS</button>
+      <button class="tab new" data-tab="impact"><span class="num">06</span>IMPACT</button>
+      <button class="tab" data-tab="outbreaks"><span class="num">07</span>OUTBREAKS</button>
+      <button class="tab" data-tab="quakes"><span class="num">08</span>DISASTERS</button>
+      <button class="tab new" data-tab="cams"><span class="num">09</span>CAMERAS</button>
       <button class="tab" data-tab="orbit"><span class="num">10</span>ORBIT</button>
       <button class="tab" data-tab="defcon"><span class="num">11</span>DEFCON</button>
     </nav>
@@ -1375,16 +1426,16 @@
       </div>
     </div>
 
-    <div class="panel" id="alliancePanel" style="display:none;">
-      <div class="panel-h"><span>ALLIANCES <b>// BLOCS</b></span><span id="allianceCount">0/0</span></div>
-      <div class="scroll-list" id="allianceList" style="max-height: calc(100vh - 240px);"></div>
-    </div>
 
     <div class="panel" id="conflictPanel" style="display:none;">
       <div class="panel-h"><span>CONFLICTS <b>// FILTER</b></span></div>
-      <div class="scroll-list" id="conflictTypeList" style="max-height: 220px;"></div>
+      <div class="scroll-list" id="conflictTypeList"></div>
     </div>
 
+    <div class="panel" id="camPanel" style="display:none;">
+      <div class="panel-h"><span>CAMERAS <b>// SOURCES</b></span><span id="camCount">—</span></div>
+      <div class="scroll-list" id="camSourceList"></div>
+    </div>
     <div class="panel" id="constellationPanel" style="display:none;">
       <div class="panel-h"><span>CONSTELLATIONS <b>// FILTER</b></span></div>
       <div class="scroll-list" id="constellationList" style="max-height: 240px;"></div>
@@ -1415,6 +1466,9 @@
     <div class="line-filters" id="lineFilters"></div>
     <div class="line-track" id="lineTrack"></div>
   </div>
+
+  <!-- ============ CAMERA VIDEO WALL ============ -->
+  <div class="cam-wall" id="camWall" role="dialog" aria-label="Camera video wall"></div>
 
   <!-- ============ DESK STAGES (FRANCE · IMPACT) ============ -->
   <div class="desk-stage" id="franceStage">
@@ -7468,7 +7522,11 @@ PELICAN-9
       proxy:       { color: 0xff70ff, label: 'PROXY' },
       cold:        { color: 0xffd84a, label: 'COLD / SANCTIONS' },
       trade:       { color: 0x4ad6ff, label: 'TRADE' },
+      internal:    { color: 0xb47bff, label: 'CIVIL WAR / INSURGENCY' },
     };
+    // Background below is curated (as of late 2025). What is happening NOW
+    // comes from the live feed — see conflictCoverage().
+    const CONFLICTS_CURATED_AS_OF = 'late 2025';
     const CONFLICTS = [
       { id: 'ru-ua',  sideA: 'Russia',        sideB: 'Ukraine',      type: 'war',         since: 2022,
         title: 'Russia–Ukraine War',
@@ -7486,7 +7544,8 @@ PELICAN-9
             ['2022-09', 'Russia annexes four Ukrainian oblasts'],
             ['2023-06', 'Ukraine launches counter-offensive with limited gains'],
             ['2024-08', 'Ukrainian forces conduct surprise incursion into Kursk Oblast'],
-            ['2025-2026', 'Frontlines largely static; ongoing diplomatic talks'],
+            ['2025', 'Slow Russian gains in Donetsk; mass drone and missile strikes on the power grid'],
+            ['2025-08-15', 'Trump–Putin summit in Alaska ends without a ceasefire'],
           ],
           figures: ['Vladimir Putin', 'Volodymyr Zelenskyy', 'Sergei Shoigu', 'Valerii Zaluzhnyi'],
           locations: [
@@ -7554,7 +7613,7 @@ PELICAN-9
         } },
       { id: 'il-ps',  sideA: 'Israel',        sideB: 'Palestine',    type: 'war',         since: 2023,
         title: 'Israel–Hamas War',
-        summary: 'Military operations in Gaza Strip; intermittent ceasefire talks.',
+        summary: 'Gaza war since Oct 2023; a US-brokered ceasefire took effect in Oct 2025 — see live coverage for its current state.',
         detail: {
           scale: 'Most intense Israeli-Palestinian conflict since 1973',
           casualties: '~40k+ Palestinians killed (Gaza Ministry of Health); ~1.4k Israelis killed Oct 7',
@@ -7565,8 +7624,10 @@ PELICAN-9
             ['2023-10-27', 'Israeli ground operations begin in northern Gaza'],
             ['2024-05', 'Israeli forces enter Rafah'],
             ['2024-11', 'Israel-Lebanon ceasefire reached (separate front)'],
-            ['2025', 'Periodic ceasefire phases and hostage exchanges'],
-            ['2026', 'Sporadic operations continue; reconstruction stalled'],
+            ['2025-01-19', 'Ceasefire begins; phased hostage–prisoner exchanges'],
+            ['2025-03-18', 'Israel resumes large-scale strikes; ceasefire collapses'],
+            ['2025-10-10', 'US-brokered ceasefire (20-point plan) takes effect'],
+            ['2025-10-13', 'Last living hostages freed; ~2,000 Palestinian prisoners released'],
           ],
           figures: ['Benjamin Netanyahu', 'Yahya Sinwar (deceased 2024)', 'Mahmoud Abbas'],
           locations: [
@@ -7602,7 +7663,7 @@ PELICAN-9
         } },
       { id: 'il-ir',  sideA: 'Israel',        sideB: 'Iran',         type: 'proxy',       since: 1979,
         title: 'Israel–Iran Shadow War',
-        summary: 'Long-running covert and direct confrontations across the region.',
+        summary: 'Shadow war turned direct: missile exchanges in 2024, then the 12-day war of June 2025 (with US strikes).',
         detail: {
           scale: 'Regional proxy conflict with direct exchanges since 2024',
           casualties: 'Indirect via proxies; direct exchanges have been limited',
@@ -7612,7 +7673,9 @@ PELICAN-9
             ['2010-2020', 'Cyber operations and assassinations of Iranian scientists'],
             ['2024-04', 'Iran launches first direct missile/drone attack on Israel'],
             ['2024-10', 'Direct strikes exchanged between the two states'],
-            ['2025', 'Strategic standoff with continued proxy engagements'],
+            ['2025-06-13', 'Israel strikes Iranian nuclear sites and commanders — start of the 12-day war'],
+            ['2025-06-22', 'US bombs Fordow, Natanz and Isfahan'],
+            ['2025-06-24', 'Ceasefire takes hold'],
           ],
           figures: ['Benjamin Netanyahu', 'Ali Khamenei', 'Masoud Pezeshkian'],
           locations: [
@@ -7635,7 +7698,7 @@ PELICAN-9
             ['2023-10', 'Hezbollah begins solidarity strikes after Oct 7'],
             ['2024-09', 'Israel launches major air campaign + ground operation'],
             ['2024-11', 'Ceasefire agreement reached'],
-            ['2025-2026', 'Fragile ceasefire holds; periodic violations'],
+            ['2025', 'Ceasefire nominally holds amid frequent Israeli strikes; Beirut pushes Hezbollah disarmament plan'],
           ],
           figures: ['Hassan Nasrallah (killed 2024)', 'Naim Qassem', 'Benjamin Netanyahu'],
           locations: [
@@ -7658,7 +7721,7 @@ PELICAN-9
             ['2022-08', 'Pelosi visit triggers large-scale PLA exercises'],
             ['2024-01', 'Taiwan elects DPP\'s Lai Ching-te president'],
             ['2024-05', 'Joint Sword 2024A exercises around Taiwan'],
-            ['2025', 'Continued near-daily incursions across median line'],
+            ['2025-04', '"Strait Thunder-2025A" drills rehearse a blockade of Taiwan'],
           ],
           figures: ['Xi Jinping', 'Lai Ching-te', 'William Lai'],
           locations: [
@@ -7703,7 +7766,7 @@ PELICAN-9
         summary: 'Spratly/Scarborough disputes; Philippine coast guard standoffs.' },
       { id: 'in-pk',  sideA: 'India',         sideB: 'Pakistan',     type: 'territorial', since: 1947,
         title: 'India–Pakistan Kashmir',
-        summary: 'Long-standing dispute; LoC skirmishes and periodic escalation.',
+        summary: 'Kashmir dispute between nuclear powers; short, intense military conflict in May 2025.',
         detail: {
           scale: 'Three full wars, several limited conflicts; both states nuclear-armed',
           casualties: 'Tens of thousands across decades of conflict',
@@ -7715,7 +7778,9 @@ PELICAN-9
             ['1998', 'Both states conduct nuclear tests'],
             ['1999', 'Kargil War'],
             ['2019', 'India revokes Article 370; Kashmir restructured'],
-            ['2025-2026', 'LoC ceasefire largely holding; political tension remains high'],
+            ['2025-04-22', 'Pahalgam attack kills 26 civilians in Indian Kashmir'],
+            ['2025-05-07', 'India launches Operation Sindoor — four days of missile, drone and artillery exchanges'],
+            ['2025-05-10', 'Ceasefire agreed'],
           ],
           figures: ['Narendra Modi', 'Shehbaz Sharif', 'Asim Munir'],
           locations: [
@@ -7811,7 +7876,9 @@ PELICAN-9
             ['2022-08', 'Pelosi visit to Taiwan triggers PLA exercises'],
             ['2022-10', 'US imposes major semiconductor export controls'],
             ['2024', 'Biden adds tariffs on EVs, batteries, solar'],
-            ['2025-2026', 'Tariffs and decoupling continue; periodic high-level engagement'],
+            ['2025-04', 'Tariff spiral: US duties on Chinese goods exceed 100%, China retaliates'],
+            ['2025-05-12', 'Geneva truce cuts tariffs for 90 days'],
+            ['2025-10-30', 'Trump–Xi meeting in Busan; one-year trade truce'],
           ],
           figures: ['Donald Trump', 'Xi Jinping', 'Antony Blinken', 'Wang Yi'],
           locations: [
@@ -7831,7 +7898,7 @@ PELICAN-9
         summary: 'Sanctions and nuclear/missile standoff.' },
       { id: 'am-az',  sideA: 'Armenia',       sideB: 'Azerbaijan',   type: 'territorial', since: 1988,
         title: 'Armenia–Azerbaijan Nagorno-Karabakh',
-        summary: 'Long-running enclave dispute; recent Baku reassertion of control.',
+        summary: 'Azerbaijan retook Karabakh in 2023; peace agreement initialled in Aug 2025.',
         detail: {
           scale: 'Three wars; latest 2023 Baku offensive ended Karabakh autonomy',
           casualties: '~30k+ across all phases',
@@ -7841,7 +7908,7 @@ PELICAN-9
             ['2020-09', 'Second Karabakh War; Azerbaijan retakes most of region'],
             ['2023-09', 'Azerbaijani offensive; full reassertion of control'],
             ['2023', 'Mass exodus of ~100k ethnic Armenians from Karabakh'],
-            ['2025-2026', 'Peace negotiations ongoing; border disputes remain'],
+            ['2025-08-08', 'Peace agreement initialled at the White House; US-backed transit corridor (TRIPP) agreed'],
           ],
           figures: ['Ilham Aliyev', 'Nikol Pashinyan'],
           locations: [
@@ -7890,6 +7957,180 @@ PELICAN-9
       { id: 'rs-xk',  sideA: 'Serbia',        sideB: 'Albania',      type: 'cold',        since: 2008,
         title: 'Serbia–Kosovo flashpoint',
         summary: 'Belgrade rejects Kosovo independence; periodic flare-ups.' },
+      // ── Added: recent inter-state conflicts ─────────────────────────
+      { id: 'th-kh',  sideA: 'Thailand',      sideB: 'Cambodia',     type: 'territorial', since: 2008,
+        title: 'Thailand–Cambodia Border',
+        summary: 'Temple-border dispute; five days of deadly fighting in July 2025, then a ceasefire and the Kuala Lumpur accord (Oct 2025).',
+        detail: {
+          displaced: '~300k displaced on both sides at the July 2025 peak',
+          timeline: [
+            ['2008', 'Preah Vihear temple listing sparks armed standoff'],
+            ['2011', 'Artillery duels along the border'],
+            ['2025-05', 'Cambodian soldier killed in a border skirmish'],
+            ['2025-07-24', 'Fighting with jets, rockets and artillery'],
+            ['2025-07-28', 'Ceasefire agreed in Malaysia'],
+            ['2025-10-26', 'Kuala Lumpur peace declaration signed'],
+          ],
+          locations: [
+            { name: 'Preah Vihear', lat: 14.39, lon: 104.68, role: 'disputed temple area' },
+            { name: 'Ta Muen Thom', lat: 14.35, lon: 103.26, role: 'flashpoint temple, July 2025' },
+          ],
+        } },
+      { id: 'pk-af',  sideA: 'Pakistan',      sideB: 'Afghanistan',  type: 'territorial', since: 1947,
+        title: 'Pakistan–Afghanistan (Durand Line)',
+        summary: 'Unrecognised Durand Line and TTP militancy; heaviest border fighting in years in Oct 2025, followed by a Qatar-mediated ceasefire.',
+        detail: {
+          timeline: [
+            ['1893', 'Durand Line drawn; never accepted by Kabul'],
+            ['2021-08', 'Taliban return to power in Kabul'],
+            ['2023-2024', 'TTP attacks in Pakistan surge; cross-border strikes'],
+            ['2025-10', 'Heavy border clashes; ceasefire agreed in Doha (Oct 19)'],
+          ],
+        } },
+      { id: 'cd-rw',  sideA: 'Democratic Republic of the Congo', sideB: 'Rwanda', type: 'proxy', since: 2021,
+        title: 'DR Congo–Rwanda (M23)',
+        summary: 'Rwanda-backed M23 seized Goma and Bukavu in early 2025; a Washington peace agreement (June 2025) has not ended the fighting.',
+        detail: {
+          displaced: '~7 million internally displaced in eastern DRC',
+          timeline: [
+            ['2012', 'M23 briefly captures Goma'],
+            ['2021-11', 'M23 resurges in North Kivu'],
+            ['2025-01-27', 'M23 takes Goma'],
+            ['2025-02-16', 'M23 takes Bukavu'],
+            ['2025-06-27', 'DRC–Rwanda peace agreement signed in Washington'],
+          ],
+          locations: [
+            { name: 'Goma',   lat: -1.68, lon: 29.22, role: 'captured by M23, Jan 2025' },
+            { name: 'Bukavu', lat: -2.51, lon: 28.86, role: 'captured by M23, Feb 2025' },
+          ],
+        } },
+      { id: 'il-ye',  sideA: 'Israel',        sideB: 'Yemen',        type: 'proxy',       since: 2023,
+        title: 'Israel–Houthis (Yemen) & Red Sea',
+        summary: 'Houthi missiles and drones at Israel and Red Sea shipping since Nov 2023; repeated Israeli and US strikes on Yemen.',
+        detail: {
+          timeline: [
+            ['2023-11', 'Houthis seize the Galaxy Leader; Red Sea shipping attacks begin'],
+            ['2024-01', 'US–UK strikes on Houthi targets begin'],
+            ['2025-03-15', 'US launches a sustained air campaign'],
+            ['2025-05-06', 'Oman-brokered US–Houthi truce on shipping'],
+            ['2025-08', 'Israeli strike kills the Houthi prime minister in Sanaa'],
+          ],
+          locations: [
+            { name: 'Hodeidah port', lat: 14.80, lon: 42.95, role: 'repeatedly struck' },
+            { name: 'Bab el-Mandeb', lat: 12.58, lon: 43.33, role: 'shipping chokepoint' },
+          ],
+        } },
+
+      // ── Added: civil wars & insurgencies (one country, two camps) ──
+      // `internal: true` → drawn as a pulsing hotspot at lat/lon instead of an
+      // arc; `parties` names the camps shown in place of two countries.
+      { id: 'sd', internal: true, sideA: 'Sudan', sideB: 'Sudan', parties: ['Sudanese Armed Forces', 'RSF'], lat: 13.63, lon: 25.35,
+        type: 'internal', since: 2023, title: 'Sudan Civil War',
+        summary: 'Army vs Rapid Support Forces since Apr 2023; RSF took El Fasher in Oct 2025. The world\'s largest displacement crisis.',
+        detail: {
+          scale: 'War across Khartoum, Darfur and Kordofan; famine declared in parts of Darfur',
+          displaced: '~12 million displaced inside Sudan and abroad',
+          timeline: [
+            ['2023-04-15', 'Fighting erupts in Khartoum'],
+            ['2023-06', 'Mass killings in El Geneina (West Darfur)'],
+            ['2024-08', 'Famine confirmed in Zamzam camp'],
+            ['2025-03', 'Army retakes central Khartoum'],
+            ['2025-10-26', 'RSF captures El Fasher; mass atrocities reported'],
+          ],
+          locations: [
+            { name: 'El Fasher', lat: 13.63, lon: 25.35, role: 'fell to RSF, Oct 2025' },
+            { name: 'Khartoum',  lat: 15.50, lon: 32.56, role: 'retaken by army, Mar 2025' },
+            { name: 'Port Sudan', lat: 19.62, lon: 37.22, role: 'wartime seat of government' },
+          ],
+        } },
+      { id: 'mm', internal: true, sideA: 'Myanmar', sideB: 'Myanmar', parties: ['Military junta', 'Resistance & ethnic armies'], lat: 21.97, lon: 96.08,
+        type: 'internal', since: 2021, title: 'Myanmar Civil War',
+        summary: 'Nationwide war since the 2021 coup; rebels hold large border areas. Junta-run elections from Dec 2025.',
+        detail: {
+          displaced: '~3.5 million internally displaced',
+          timeline: [
+            ['2021-02-01', 'Military coup'],
+            ['2023-10-27', 'Operation 1027 rebel offensive in Shan State'],
+            ['2024', 'Arakan Army takes most of Rakhine State'],
+            ['2025-03-28', 'M7.7 earthquake near Mandalay'],
+            ['2025-12', 'Junta begins phased elections'],
+          ],
+        } },
+      { id: 'sahel', internal: true, sideA: 'Mali', sideB: 'Mali', parties: ['Sahel juntas (AES)', 'JNIM / Islamic State'], lat: 14.45, lon: -1.20,
+        type: 'internal', since: 2012, title: 'Sahel Jihadist Insurgency',
+        summary: 'Al-Qaeda (JNIM) and Islamic State affiliates across Mali, Burkina Faso and Niger; JNIM fuel blockade of Bamako in late 2025.',
+        detail: {
+          timeline: [
+            ['2012', 'Northern Mali rebellion; jihadists take the north'],
+            ['2013-01', 'French Operation Serval'],
+            ['2020-2023', 'Coups in Mali, Burkina Faso and Niger'],
+            ['2022-08', 'French forces leave Mali'],
+            ['2023-09', 'Alliance of Sahel States (AES) formed'],
+            ['2025-09', 'JNIM blockades fuel deliveries to Bamako'],
+          ],
+          locations: [
+            { name: 'Bamako', lat: 12.64, lon: -8.00, role: 'Mali capital, blockaded 2025' },
+            { name: 'Ouagadougou', lat: 12.37, lon: -1.52, role: 'Burkina Faso capital' },
+            { name: 'Niamey', lat: 13.51, lon: 2.11, role: 'Niger capital' },
+          ],
+        } },
+      { id: 'ht', internal: true, sideA: 'Haiti', sideB: 'Haiti', parties: ['Transitional authorities & security mission', 'Gang coalitions (Viv Ansanm)'], lat: 18.54, lon: -72.34,
+        type: 'internal', since: 2021, title: 'Haiti Gang War',
+        summary: 'Gang coalitions control most of Port-au-Prince; UN authorised a Gang Suppression Force in Sept 2025.',
+        detail: {
+          displaced: '>1 million internally displaced',
+          timeline: [
+            ['2021-07-07', 'President Moïse assassinated'],
+            ['2024-02', 'Coordinated gang assault; PM Henry resigns'],
+            ['2024-06', 'Kenya-led security mission deploys'],
+            ['2025-09-30', 'UN authorises a Gang Suppression Force'],
+          ],
+        } },
+      { id: 'so', internal: true, sideA: 'Somalia', sideB: 'Somalia', parties: ['Federal government & AU forces', 'al-Shabaab'], lat: 2.05, lon: 45.32,
+        type: 'internal', since: 2006, title: 'Somalia: al-Shabaab Insurgency',
+        summary: 'al-Qaeda-linked insurgency; a 2025 counter-offensive retook towns close to Mogadishu.',
+        detail: {
+          timeline: [
+            ['2006', 'al-Shabaab emerges after Ethiopian intervention'],
+            ['2011', 'Driven out of Mogadishu'],
+            ['2022', 'Government "total war" offensive'],
+            ['2025', 'al-Shabaab retakes towns in Middle Shabelle'],
+          ],
+        } },
+      { id: 'sy', internal: true, sideA: 'Syria', sideB: 'Syria', parties: ['Transitional government', 'Armed factions & sectarian militias'], lat: 34.80, lon: 38.99,
+        type: 'internal', since: 2011, title: 'Syria: Post-Assad Transition',
+        summary: 'Assad fell in Dec 2024; the transition is marred by sectarian violence (coast, Mar 2025; Sweida, Jul 2025) and Israeli strikes.',
+        detail: {
+          timeline: [
+            ['2011-03', 'Uprising, then civil war'],
+            ['2015-09', 'Russian military intervention'],
+            ['2024-12-08', 'Assad regime falls to an HTS-led offensive'],
+            ['2025-03', 'Mass killings of Alawites on the coast'],
+            ['2025-07', 'Druze–Bedouin clashes in Sweida; Israeli strikes on Damascus'],
+          ],
+        } },
+      { id: 'ng', internal: true, sideA: 'Nigeria', sideB: 'Nigeria', parties: ['Federal forces', 'Boko Haram / ISWAP & bandit groups'], lat: 11.85, lon: 13.16,
+        type: 'internal', since: 2009, title: 'Nigeria: Insurgency & Banditry',
+        summary: 'Jihadist insurgency in the north-east and mass-kidnapping banditry in the north-west.',
+        detail: {
+          timeline: [
+            ['2009', 'Boko Haram uprising in Maiduguri'],
+            ['2014-04', 'Chibok schoolgirls abducted'],
+            ['2016', 'ISWAP splits from Boko Haram'],
+            ['2021-05', 'Boko Haram leader Shekau killed'],
+          ],
+        } },
+      { id: 'mx', internal: true, sideA: 'Mexico', sideB: 'Mexico', parties: ['State security forces', 'Cartels (Sinaloa factions, CJNG)'], lat: 24.80, lon: -107.39,
+        type: 'internal', since: 2006, title: 'Mexico Cartel War',
+        summary: 'Cartel violence nationwide; Sinaloa cartel infighting since Sept 2024; US designated major cartels as terrorist groups in 2025.',
+        detail: {
+          timeline: [
+            ['2006-12', 'Military-led drug war begins'],
+            ['2024-07', '"El Mayo" Zambada arrested in the US'],
+            ['2024-09', 'Sinaloa cartel civil war erupts in Culiacán'],
+            ['2025-02', 'US designates cartels as terrorist organisations'],
+          ],
+        } },
     ];
 
     // -------- Satellite owner palette (SATCAT OWNER codes)
@@ -7968,8 +8209,6 @@ PELICAN-9
       tCache: new Map(),
       openArticles: [],        // [{id, ...articleData, related}]
       activeArticleId: null,
-      activeAlliances: new Set(Object.keys(ALLIANCES)),
-      expandedAlliances: new Set(),
       lastAlertedSym: new Map(), // sym -> timestamp
     };
 
@@ -8427,65 +8666,6 @@ PELICAN-9
     }
 
     // ════════════════════════════════════════════════════════════════
-    //  ALLIANCES — arcs + hub markers
-    // ════════════════════════════════════════════════════════════════
-    const alliancesGroup = new THREE.Group();
-    globe.add(alliancesGroup);
-    alliancesGroup.visible = false;
-    const allianceObjects = {};   // name -> { hub, arcs:[], members:[Vec3] }
-
-    function buildAlliance(name, alliance) {
-      const grp = new THREE.Group();
-      const members = alliance.members
-        .map(m => CENTROIDS[m])
-        .filter(Boolean);
-      if (members.length < 2) return null;
-      const cx = members.reduce((s, m) => s + m[0], 0) / members.length;
-      const cy = members.reduce((s, m) => s + m[1], 0) / members.length;
-      const hubR = 1.45;
-      const hubPos = latLonToVec3(cx, cy, hubR);
-
-      // Hub marker
-      const hub = new THREE.Sprite(new THREE.SpriteMaterial({
-        map: glowTexture(alliance.color),
-        color: alliance.color, transparent: true,
-        blending: THREE.AdditiveBlending, depthWrite: false,
-      }));
-      hub.scale.setScalar(0.20);
-      hub.position.copy(hubPos);
-      hub.userData = { kind: 'allianceHub', name };
-      grp.add(hub);
-
-      // Arcs from hub to each member
-      const arcMat = new THREE.LineBasicMaterial({
-        color: alliance.color, transparent: true, opacity: 0.5,
-        blending: THREE.AdditiveBlending, depthWrite: false,
-      });
-      for (const [lat, lon] of members) {
-        const a = latLonToVec3(lat, lon, 1.005);
-        const b = hubPos.clone();
-        const mid = a.clone().add(b).multiplyScalar(0.5).normalize().multiplyScalar(1.55);
-        const curve = new THREE.QuadraticBezierCurve3(a, mid, b);
-        const pts = curve.getPoints(40);
-        grp.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), arcMat));
-
-        // Member dot
-        const dot = new THREE.Sprite(new THREE.SpriteMaterial({
-          map: glowTexture(alliance.color), color: alliance.color,
-          transparent: true, blending: THREE.AdditiveBlending, depthWrite: false,
-        }));
-        dot.scale.setScalar(0.075);
-        dot.position.copy(a);
-        grp.add(dot);
-      }
-      alliancesGroup.add(grp);
-      return grp;
-    }
-    for (const [name, a] of Object.entries(ALLIANCES)) {
-      allianceObjects[name] = buildAlliance(name, a);
-    }
-
-    // ════════════════════════════════════════════════════════════════
     //  CONFLICTS — arcs between adversary countries
     // ════════════════════════════════════════════════════════════════
     const conflictsGroup = new THREE.Group();
@@ -8494,7 +8674,35 @@ PELICAN-9
     state.activeConflictTypes = new Set(Object.keys(CONFLICT_TYPES));
     const conflictObjects = {};   // id → { arc, hub, type }
 
+    // Label for the two camps: countries for inter-state, parties for civil wars.
+    const sideName = (c, k) => c.internal ? c.parties[k === 'A' ? 0 : 1] : (k === 'A' ? c.sideA : c.sideB);
+    const sidesLabel = (c, sep = ' ↔ ') => sideName(c, 'A') + sep + sideName(c, 'B');
+
+    function ringTexture(hex) {
+      const sz = 128, cv = document.createElement('canvas'); cv.width = cv.height = sz;
+      const ctx = cv.getContext('2d'), col = '#' + new THREE.Color(hex).getHexString();
+      ctx.strokeStyle = col; ctx.lineWidth = 6; ctx.shadowColor = col; ctx.shadowBlur = 10;
+      ctx.beginPath(); ctx.arc(sz / 2, sz / 2, sz * 0.38, 0, Math.PI * 2); ctx.stroke();
+      const tex = new THREE.CanvasTexture(cv); tex.colorSpace = THREE.SRGBColorSpace; return tex;
+    }
+    // Civil wars have no second capital: a pulsing hotspot over the theatre.
+    function buildInternalConflict(c) {
+      const color = CONFLICT_TYPES[c.type].color;
+      const p = latLonToVec3(c.lat, c.lon, 1.012);
+      const hub = new THREE.Sprite(new THREE.SpriteMaterial({ map: sharpDotTexture(color), color, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false }));
+      hub.scale.setScalar(0.07); hub.position.copy(p);
+      hub.userData = { kind: 'conflictHub', conflict: c, baseScale: 0.07 };
+      const mat = new THREE.SpriteMaterial({ map: ringTexture(color), color, transparent: true, opacity: 0.6, blending: THREE.AdditiveBlending, depthWrite: false });
+      const ring = new THREE.Sprite(mat);
+      ring.scale.setScalar(0.16); ring.position.copy(p);
+      ring.userData = { kind: 'conflictHub', conflict: c };   // the bigger target is clickable too
+      const grp = new THREE.Group(); grp.add(ring); grp.add(hub);
+      conflictsGroup.add(grp);
+      return { id: c.id, type: c.type, group: grp, arc: null, hub, ring, mat, internal: true };
+    }
+
     function buildConflict(c) {
+      if (c.internal) return buildInternalConflict(c);
       const capA = capitalFor(c.sideA);
       const capB = capitalFor(c.sideB);
       if (!capA || !capB) return null;
@@ -8523,7 +8731,7 @@ PELICAN-9
       }));
       hub.scale.setScalar(c.type === 'war' ? 0.085 : 0.062);
       hub.position.copy(mid);
-      hub.userData = { kind: 'conflictHub', conflict: c };
+      hub.userData = { kind: 'conflictHub', conflict: c, baseScale: c.type === 'war' ? 0.085 : 0.062 };
 
       const dotMat = new THREE.SpriteMaterial({
         map: sharpDotTexture(color), color, transparent: true,
@@ -8756,7 +8964,7 @@ PELICAN-9
         inspectLocGroup.add(label);
       };
       sideLabel(c.sideA, 0xff4466, +labelDy);
-      sideLabel(c.sideB, 0x4d9aff, -labelDy);
+      if (!c.internal) sideLabel(c.sideB, 0x4d9aff, -labelDy);
 
       // ── Gained / claimed territory (filled translucent + outline)
       if (d.gained) {
@@ -10099,6 +10307,7 @@ PELICAN-9
       try { updateSeverityCounts(); } catch {}
       // An open briefing keeps its place + topic but picks up the fresh feed.
       if (state.brief) { try { renderPlaceBrief(); } catch {} }
+      try { updateConflictActivity(); if (state.tab === 'conflicts' && !state.selectedConflict) renderFeedConflicts(); } catch {}
       return { articles: unique.length, stories: stories.length, countries: groups.size, ok: true, cached };
     }
 
@@ -10470,8 +10679,6 @@ PELICAN-9
       exitDrillDown();
       resetBorderHighlight();
       renderCountryList(); applyFilters();
-      renderAllianceList();
-      applyAllianceVisibility();
       if (state.tab === 'wire') renderFeedWire(null);
       if (state.tab === 'outbreaks') renderFeedOutbreaks();
       applyOutbreakVisibility();
@@ -10508,8 +10715,6 @@ PELICAN-9
           if (MAJOR_CITIES[name]) enterDrillDown(name);
           highlightSelectedCountryBorders(name);
           applyFilters();
-          renderAllianceList();
-          applyAllianceVisibility();
           if (state.tab === 'outbreaks') renderFeedOutbreaks();
           applyOutbreakVisibility();
           drawMap();
@@ -10565,91 +10770,6 @@ PELICAN-9
       if (hdr) hdr.innerHTML = `<b style="color:#ff305c">${nC}</b>·<b style="color:#ff8a2a">${nE}</b>·<b style="color:#ffd84a">${nM}</b>`;
     }
 
-    // ════════════════════════════════════════════════════════════════
-    //  UI: ALLIANCE LIST
-    // ════════════════════════════════════════════════════════════════
-    const allianceListEl = document.getElementById('allianceList');
-    const allianceCountEl = document.getElementById('allianceCount');
-    function renderAllianceList() {
-      const total = Object.keys(ALLIANCES).length;
-      const sel = state.selectedCountry;
-      const matchingCount = sel
-        ? Object.values(ALLIANCES).filter(a => a.members.includes(sel)).length
-        : state.activeAlliances.size;
-      allianceCountEl.textContent = sel
-        ? `${matchingCount}/${total} · ${sel.toUpperCase()}`
-        : `${state.activeAlliances.size}/${total}`;
-      allianceListEl.innerHTML = Object.entries(ALLIANCES).map(([name, a]) => {
-        const col = '#' + a.color.toString(16).padStart(6, '0');
-        const on = state.activeAlliances.has(name);
-        const expanded = state.expandedAlliances.has(name);
-        const memberMatch = !sel || a.members.includes(sel);
-        const chips = expanded ? a.members
-          .map(m => {
-            const isSel = m === sel;
-            return `<span class="chip${isSel?' chip-sel':''}" style="color:${col};border-color:${col}${isSel?'':'80'};${isSel?'background:'+col+'30;':''}">${escapeHtml(m)}</span>`;
-          })
-          .join('') : '';
-        const classes = ['alliance-row'];
-        if (!on) classes.push('off');
-        if (sel && !memberMatch) classes.push('dim');
-        if (sel && memberMatch) classes.push('match');
-        return `
-          <div class="${classes.join(' ')}" data-name="${name}">
-            <div class="nm">
-              <span class="sw" style="color:${col};background:${col}"></span>
-              <span>${escapeHtml(name)}</span>
-              <button class="exp${expanded?' on':''}" title="${expanded ? 'hide members' : 'show members'}">${expanded ? 'HIDE ▾' : 'SHOW ▸'}</button>
-            </div>
-            ${a.fullName && a.fullName !== name ? `<div class="full">${escapeHtml(a.fullName)}</div>` : ''}
-            <div class="meta">${a.members.length} MEMBERS · EST. ${a.founded}</div>
-            ${expanded ? `<div class="members">${chips}</div>` : ''}
-          </div>`;
-      }).join('');
-      for (const el of allianceListEl.querySelectorAll('.alliance-row')) {
-        el.addEventListener('click', (e) => {
-          // Country chip click → focus + filter alliances to that country
-          if (e.target.classList?.contains('chip')) {
-            const country = e.target.textContent.trim();
-            state.selectedCountry = country;
-            controls.autoRotate = false;
-            clearTimeout(resumeT);
-            focusCountry(country);
-            renderCountryList();
-            renderAllianceList();
-            applyAllianceVisibility();
-            drawMap();
-            return;
-          }
-          // Expand toggle (member chips visibility)
-          if (e.target.classList?.contains('exp')) {
-            e.stopPropagation();
-            const name = el.dataset.name;
-            if (state.expandedAlliances.has(name)) state.expandedAlliances.delete(name);
-            else state.expandedAlliances.add(name);
-            renderAllianceList();
-            return;
-          }
-          // Anywhere else → toggle that alliance's globe visibility
-          const name = el.dataset.name;
-          if (state.activeAlliances.has(name)) state.activeAlliances.delete(name);
-          else state.activeAlliances.add(name);
-          renderAllianceList();
-          applyAllianceVisibility();
-          drawMap();
-        });
-      }
-    }
-    function applyAllianceVisibility() {
-      const sel = state.selectedCountry;
-      for (const [name, obj] of Object.entries(allianceObjects)) {
-        if (!obj) continue;
-        const active = state.activeAlliances.has(name);
-        const memberMatch = !sel || ALLIANCES[name].members.includes(sel);
-        obj.visible = active && memberMatch;
-      }
-    }
-
     // ── CONFLICTS UI
     const conflictTypeListEl = document.getElementById('conflictTypeList');
     function renderConflictTypeList() {
@@ -10660,9 +10780,8 @@ PELICAN-9
         const on = state.activeConflictTypes.has(key);
         const n = counts[key] || 0;
         return `
-          <div class="alliance-row${on?'':' off'}" data-type="${key}">
-            <div class="nm"><span class="sw" style="color:${col};background:${col}"></span>${t.label}</div>
-            <div class="meta">${n} active</div>
+          <div class="alliance-row${on?'':' off'}" data-type="${key}" style="padding:8px 12px">
+            <div class="nm"><span class="sw" style="color:${col};background:${col}"></span>${t.label}<span style="margin-left:auto;color:var(--dim);font-weight:400">${n}</span></div>
           </div>`;
       }).join('');
       for (const row of conflictTypeListEl.querySelectorAll('.alliance-row')) {
@@ -10686,6 +10805,7 @@ PELICAN-9
 
     // ── Camera focus on a conflict (both capitals in view)
     function focusConflict(c) {
+      if (c.internal) { tweenCamera(latLonToVec3(c.lat, c.lon, 1.9), 1.2); return; }
       const capA = capitalFor(c.sideA);
       const capB = capitalFor(c.sideB);
       if (!capA || !capB) return;
@@ -10713,7 +10833,7 @@ PELICAN-9
       state.conflictSpan = Math.max(0.003, span);
 
       document.body.classList.add('inspecting-conflict');
-      document.getElementById('inspectTitle').textContent = `${c.sideA.toUpperCase()} ↔ ${c.sideB.toUpperCase()}`;
+      document.getElementById('inspectTitle').textContent = c.internal ? c.title.toUpperCase() : sidesLabel(c).toUpperCase();
       const t = CONFLICT_TYPES[c.type];
       const typeEl = document.getElementById('inspectType');
       typeEl.textContent = t.label;
@@ -10757,13 +10877,14 @@ PELICAN-9
     }
 
     function renderConflictDetail(c) {
-      rightTitle.innerHTML = `${escapeHtml(c.sideA)} <b>↔</b> ${escapeHtml(c.sideB)}`;
+      rightTitle.innerHTML = c.internal ? `${escapeHtml(c.title)}` : `${escapeHtml(c.sideA)} <b>↔</b> ${escapeHtml(c.sideB)}`;
       rightSub.textContent = `since ${c.since}`;
       const t = CONFLICT_TYPES[c.type];
       const col = '#' + t.color.toString(16).padStart(6, '0');
       const d = c.detail || {};
 
-      const sideHtml = (country) => {
+      const sideHtml = (country, party) => {
+        if (party) return `<div class="side"><div class="ctry">${escapeHtml(party)}</div><div class="blocs"><span style="color:var(--dim);font-size:9px">${escapeHtml(country)}</span></div></div>`;
         const blocs = alliancesOf(country);
         const blocChips = blocs.map(b => {
           const bc = '#' + b.color.toString(16).padStart(6, '0');
@@ -10799,18 +10920,15 @@ PELICAN-9
         ? `<div class="figures">${d.figures.map(f => `<span class="figure">${escapeHtml(f)}</span>`).join('')}</div>`
         : '<div class="empty">No key figures curated.</div>';
 
-      // Live news: state.articles mentioning either country in the title
-      const aLow = c.sideA.toLowerCase(), bLow = c.sideB.toLowerCase();
-      const matchedNews = state.articles.filter(art => {
-        const tt = (art.title || '').toLowerCase();
-        return tt.includes(aLow) || tt.includes(bLow);
-      }).slice(0, 12);
+      // Live news: stories about THIS conflict (specific vocabulary, or both
+      // countries detected) — ranked by how many outlets carry them.
+      const matchedNews = conflictCoverage(c).slice(0, 12);
       const newsHtml = matchedNews.length
         ? matchedNews.map(a => {
             const layerKey = classify(state.countries.get(articleCountry(a))?.count || 1);
             return renderFeedItem({ ...a }, layerKey);
           }).join('')
-        : '<div class="empty">No live GDELT articles mention either side yet.</div>';
+        : '<div class="empty">No coverage of this conflict in today\'s feed.</div>';
 
       // Military bases / nuclear / industrial
       const markerListHtml = (items, type) => items?.length
@@ -10850,32 +10968,32 @@ PELICAN-9
           <div class="summary" style="border-left-color:${col}">${escapeHtml(c.summary)}</div>
 
           <h2>SIDES</h2>
-          <div class="sides">${sideHtml(c.sideA)}<span class="vs">VS</span>${sideHtml(c.sideB)}</div>
+          <div class="sides">${sideHtml(c.sideA, c.internal && c.parties[0])}<span class="vs">VS</span>${sideHtml(c.sideB, c.internal && c.parties[1])}</div>
+
+          <h2>LIVE COVERAGE · 24H <span style="color:var(--dim);letter-spacing:0.04em">${matchedNews.length} ${matchedNews.length === 1 ? 'story' : 'stories'}</span></h2>
+          <div class="news-list">${newsHtml}</div>
+
+          ${d.timeline?.length ? `<h2>TIMELINE <span style="color:var(--dim);letter-spacing:0.04em">curated · ${CONFLICTS_CURATED_AS_OF}</span></h2>${timelineHtml}` : ''}
 
           ${d.background ? `<h2>BACKGROUND</h2><div class="background">${escapeHtml(d.background)}</div>` : ''}
 
-          <h2>SCALE</h2>${statsHtml}
+          ${stats.length ? `<h2>SCALE</h2>${statsHtml}` : ''}
 
-          <h2>FRONTLINE / CONTROL LINE</h2>${frontlineHtml}
+          ${d.frontline ? `<h2>FRONTLINE / CONTROL LINE</h2>${frontlineHtml}` : ''}
 
           ${d.gained ? `<h2>OCCUPIED / CLAIMED TERRITORY</h2>${gainedHtml}` : ''}
 
-          <h2>MILITARY BASES <span style="color:#ff305c;opacity:0.8">⊕</span></h2>${basesHtml}
+          ${d.locations?.length ? `<h2>KEY LOCATIONS</h2>${locsHtml}` : ''}
 
-          <h2>NUCLEAR SITES <span style="color:#ffd84a;opacity:0.8">☢</span></h2>${nuclearHtml}
+          ${d.bases?.length ? `<h2>MILITARY BASES <span style="color:#ff305c;opacity:0.8">⊕</span></h2>${basesHtml}` : ''}
 
-          <h2>INDUSTRIAL CENTERS <span style="color:#4ad6ff;opacity:0.8">⬡</span></h2>${industrialHtml}
+          ${d.nuclear?.length ? `<h2>NUCLEAR SITES <span style="color:#ffd84a;opacity:0.8">☢</span></h2>${nuclearHtml}` : ''}
 
-          <h2>TIMELINE</h2>${timelineHtml}
+          ${d.industrial?.length ? `<h2>INDUSTRIAL CENTERS <span style="color:#4ad6ff;opacity:0.8">⬡</span></h2>${industrialHtml}` : ''}
 
-          <h2>KEY LOCATIONS</h2>${locsHtml}
+          ${d.figures?.length ? `<h2>KEY FIGURES</h2>${figuresHtml}` : ''}
 
-          <h2>KEY FIGURES</h2>${figuresHtml}
-
-          <h2>HISTORICAL PRECEDENTS</h2>${relatedHtml}
-
-          <h2>LIVE NEWS · GDELT</h2>
-          <div class="news-list">${newsHtml}</div>
+          ${(d.related || []).length ? `<h2>HISTORICAL PRECEDENTS</h2>${relatedHtml}` : ''}
         </div>`;
       feedListEl.innerHTML = html;
 
@@ -10904,14 +11022,69 @@ PELICAN-9
       bindFeedItemClicks(matchedNews);
     }
 
+    // ── Live coverage per conflict ─────────────────────────────────
+    // Specific vocabulary where a country name alone would be too broad;
+    // otherwise an inter-state conflict needs BOTH countries detected in the
+    // story (gazetteer), not either one (every China story ≠ US–China).
+    const CONFLICT_KW = {
+      'ru-ua': /\b(Ukrain\w*|Kyiv|Donbas|Donetsk|Zaporizh\w*|Kharkiv|Zelensk\w*|Pokrovsk)\b/,
+      'il-ps': /\b(Gaza\w*|Hamas|West Bank|Rafah|hostages?)\b/,
+      'il-lb': /\b(Hezbollah|Lebanon|Lebanese|Beirut)\b/,
+      'cn-tw': /\b(Taiwan\w*|Taipei|Taiwan Strait)\b/,
+      'kp-kr': /\b(North Korea\w*|Pyongyang|DMZ|Kim Jong Un)\b/,
+      'in-pk': /\b(Kashmir\w*|Line of Control|Operation Sindoor)\b/,
+      'am-az': /\b(Armenia\w*|Azerbaijan\w*|Karabakh)\b/,
+      'cd-rw': /\b(M23|Goma|Bukavu|North Kivu|South Kivu)\b/,
+      'il-ye': /\b(Houthis?|Red Sea shipping|Hodeidah|Sanaa)\b/,
+      'sd':    /(?<!South )\b(Sudan(?:ese)?|Darfur|RSF|El Fasher|Khartoum|Kordofan)\b/,
+      'mm':    /\b(Myanmar|Burm\w+|junta|Rakhine|Arakan Army)\b/,
+      'sahel': /\b(Mali(?:an)?|Burkina\w*|Niger(?!ia)\w*|Sahel|JNIM|Bamako)\b/,
+      'ht':    /\b(Haiti\w*|Port-au-Prince|Viv Ansanm)\b/,
+      'so':    /\b(al-Shabaab|Al-Shabaab|Somali\w*|Mogadishu)\b/,
+      'sy':    /\b(Syria\w*|Damascus|Sweida|Aleppo|Idlib|al-Sharaa)\b/,
+      'ng':    /\b(Boko Haram|ISWAP|Borno|Zamfara|bandits)\b/,
+      'mx':    /\b(cartels?|Sinaloa|CJNG|Culiac[aá]n)\b/,
+    };
+    // Two countries in one story isn't a conflict story ("Chinese driver
+    // marries American teacher"); require security/economic-tension words too.
+    const TENSION_RE = /\b(war|wars|military|troops|army|navy|missiles?|drones?|strikes?|attacks?|killed|clash\w*|border|ceasefire|truce|talks|summit|sanctions?|tariffs?|trade war|export controls?|nuclear|espionage|spy|spies|drills?|threat\w*|tensions?|retaliat\w*|sovereignty|invasion|blockade|warships?|deal|negotiat\w*|diplomat\w*|hostages?|prisoners?)\b/i;
+    const conflictActivity = new Map();   // id → { score, stories: [lead…] }
+    function conflictCoverage(c) {
+      const kw = CONFLICT_KW[c.id];
+      const out = [];
+      for (const a of state.articles) {
+        if (a.kind === 'alert') continue;                 // GDACS lists many countries
+        const title = a.title || '';
+        const all = a._geo?.all || [];
+        const both = !c.internal && all.includes(c.sideA) && all.includes(c.sideB) && TENSION_RE.test(title);
+        if ((kw && kw.test(title)) || both) out.push(a);
+      }
+      out.sort((x, y) => ((y._story?.sources || 1) - (x._story?.sources || 1)) ||
+        ((parseGdeltDate(y.seendate)?.getTime() || 0) - (parseGdeltDate(x.seendate)?.getTime() || 0)));
+      return out;
+    }
+    function updateConflictActivity() {
+      for (const c of CONFLICTS) {
+        const stories = conflictCoverage(c);
+        const score = stories.reduce((n, a) => n + (a._story?.size || 1), 0);
+        conflictActivity.set(c.id, { score, stories });
+        if (conflictObjects[c.id]) conflictObjects[c.id].activity = score;
+      }
+    }
+
     function renderFeedConflicts() {
       if (state.selectedConflict) { renderConflictDetail(state.selectedConflict); return; }
-      rightTitle.innerHTML = 'CONFLICTS <b>// STATE-VS-STATE</b>';
-      rightSub.textContent = 'curated · world';
+      rightTitle.innerHTML = 'CONFLICTS <b>// WORLD</b>';
+      rightSub.textContent = 'live coverage · 24h';
+      updateConflictActivity();
+      const act = (c) => conflictActivity.get(c.id)?.score || 0;
       const groups = {};
       for (const c of CONFLICTS) (groups[c.type] = groups[c.type] || []).push(c);
-      const order = ['war','territorial','proxy','cold','trade'];
-      let html = '';
+      for (const g of Object.values(groups)) g.sort((a, b) => act(b) - act(a));
+      const order = ['war','internal','territorial','proxy','cold','trade'];
+      const hot = [...CONFLICTS].filter(c => act(c) > 0).sort((a, b) => act(b) - act(a)).slice(0, 5);
+      let html = hot.length ? `<div class="conflict-hot"><div class="lbl">MOST COVERED NOW</div>${hot.map(c =>
+        `<button class="hot-chip" data-id="${c.id}">${escapeHtml(c.internal ? c.title.replace(/ (Civil War|Gang War|Cartel War).*/, '') : sidesLabel(c, '–'))}<span>${act(c)}</span></button>`).join('')}</div>` : '';
       for (const type of order) {
         if (!groups[type]) continue;
         const t = CONFLICT_TYPES[type];
@@ -10921,13 +11094,18 @@ PELICAN-9
         for (const c of groups[type]) {
           html += `
             <div class="conflict-row${visible?'':' off'}" data-id="${c.id}">
-              <div class="hd"><span class="sw" style="color:${col};background:${col}"></span>${escapeHtml(c.sideA)}<span class="arrow">↔</span>${escapeHtml(c.sideB)}</div>
-              <div class="meta" style="color:${col}"><span class="tg">${t.label}</span><span>SINCE ${c.since}</span></div>
+              <div class="hd"><span class="sw" style="color:${col};background:${col}"></span>${c.internal ? escapeHtml(c.title) : `${escapeHtml(c.sideA)}<span class="arrow">↔</span>${escapeHtml(c.sideB)}`}
+                <span class="live${act(c) >= 8 ? ' hot' : act(c) ? '' : ' none'}" title="articles in the last 24h">${act(c) ? '● ' + act(c) : '—'}</span></div>
+              <div class="meta" style="color:${col}"><span class="tg">${t.label}</span><span>SINCE ${c.since}</span>${c.internal ? `<span style="color:var(--dim)">${escapeHtml(c.parties.join(' vs '))}</span>` : ''}</div>
               <div class="sum">${escapeHtml(c.summary)}</div>
             </div>`;
         }
       }
+      html += `<div class="conflict-note">Background curated as of ${CONFLICTS_CURATED_AS_OF}. Counts = articles in today's feed about each conflict.</div>`;
       feedListEl.innerHTML = html;
+      for (const chip of feedListEl.querySelectorAll('.hot-chip')) chip.addEventListener('click', () => {
+        const c = CONFLICTS.find(x => x.id === chip.dataset.id); if (c) enterConflictInspection(c);
+      });
       for (const row of feedListEl.querySelectorAll('.conflict-row')) {
         row.addEventListener('click', () => {
           const id = row.dataset.id;
@@ -11165,22 +11343,6 @@ PELICAN-9
       }
     }
 
-    function renderFeedDiplo() {
-      rightTitle.innerHTML = 'DIPLOMATIC <b>// WIRE</b>';
-      rightSub.textContent = `${state.newsSourceLabel || 'GDELT'} · diplo keywords`;
-      const items = state.articles.filter(a => (a.tags || []).includes('diplo'));
-      if (!items.length) {
-        feedListEl.innerHTML = '<div class="feed-item"><span class="title">no diplomatic signals matched</span></div>';
-        return;
-      }
-      feedListEl.innerHTML = items.slice(0, 80).map(a => {
-        const c = lookup(articleCountry(a));
-        const layer = c ? classify(state.countries.get(c.name)?.count || 1) : 'local';
-        return renderFeedItem(a, layer);
-      }).join('');
-      bindFeedItemClicks(items);
-      if (state.lang === 'fr') translateVisibleFeed();
-    }
 
     function bindFeedItemClicks(items) {
       const els = feedListEl.querySelectorAll('.feed-item[data-url]');
@@ -11725,7 +11887,6 @@ PELICAN-9
     //  TABS
     // ════════════════════════════════════════════════════════════════
     const layerPanel = document.getElementById('layerPanel');
-    const alliancePanel = document.getElementById('alliancePanel');
     const defconStage = document.getElementById('defconStage');
     const overlayEl = document.getElementById('overlay');
     const legendEl = document.getElementById('legend');
@@ -11772,18 +11933,20 @@ PELICAN-9
         t.classList.toggle('active', t.dataset.tab === name);
       }
       wireGroup.visible      = (name === 'wire' || name === 'defcon');
-      alliancesGroup.visible = (name === 'alliances');
       conflictsGroup.visible = (name === 'conflicts');
       marketsGroup.visible   = (name === 'markets');
       outbreaksGroup.visible = (name === 'outbreaks');
       quakeGroup.visible     = (name === 'quakes' || name === 'defcon');
       issGroup.visible       = (name === 'orbit' || name === 'defcon');
       satGroup.visible       = (name === 'orbit');
+      camsGroup.visible      = (name === 'cams');
+      document.getElementById('camPanel').style.display = (name === 'cams') ? '' : 'none';
+      if (name === 'cams') { loadCams(); renderCamSourceList(); }
+      else { stopCamTimers(); closeCamWall(); }
       if (name === 'markets' && !marketsEntries.length) buildMarketsLayer();
       if (name === 'outbreaks' && !outbreakMarkers.length) buildOutbreaksLayer();
 
       layerPanel.style.display         = (name === 'wire') ? '' : 'none';
-      alliancePanel.style.display      = (name === 'alliances') ? '' : 'none';
       document.getElementById('conflictPanel').style.display      = (name === 'conflicts') ? '' : 'none';
       document.getElementById('constellationPanel').style.display = (name === 'orbit') ? '' : 'none';
       document.getElementById('ownerPanel').style.display         = (name === 'orbit') ? '' : 'none';
@@ -11792,7 +11955,6 @@ PELICAN-9
       defconStage.classList.toggle('on', name === 'defcon');
       overlayEl.classList.toggle('defcon', name === 'defcon');
 
-      if (name === 'alliances') applyAllianceVisibility();
       if (name === 'conflicts') applyConflictVisibility();
       applyFilters();
 
@@ -11804,7 +11966,6 @@ PELICAN-9
       switch (name) {
         case 'wire': renderFeedWire(state.selectedCountry); break;
         case 'line': renderLine(); break;
-        case 'alliances': renderFeedDiplo(); break;
         case 'conflicts': renderFeedConflicts(); break;
         case 'quakes': renderFeedQuakes(); break;
         case 'orbit': renderFeedOrbit(); break;
@@ -11813,6 +11974,7 @@ PELICAN-9
         case 'defcon': renderFeedDefcon(); break;
         case 'france': renderFranceDesk(); break;
         case 'impact': renderImpactDesk(); break;
+        case 'cams': renderCamsPanel(); break;
       }
       updateCount();
       // Snap back to Europe on every tab change (unless entering inspection)
@@ -11836,7 +11998,7 @@ PELICAN-9
       for (const x of document.querySelectorAll('#langToggle button')) {
         x.classList.toggle('on', x.dataset.lang === state.lang);
       }
-      if (state.tab === 'wire' || state.tab === 'alliances') {
+      if (state.tab === 'wire') {
         if (state.lang === 'fr') translateVisibleFeed();
         else restoreOriginalFeed();
       }
@@ -11852,7 +12014,7 @@ PELICAN-9
     function updateCount() {
       const total = [...state.countries.values()].reduce((s, c) => s + c.count, 0);
       const ncountries = state.countries.size;
-      if (state.tab === 'wire' || state.tab === 'defcon' || state.tab === 'alliances') {
+      if (state.tab === 'wire' || state.tab === 'defcon') {
         let nC = 0, nE = 0, nM = 0;
         for (const a of state.articles) {
           const s = classifySeverity(a);
@@ -11872,6 +12034,9 @@ PELICAN-9
           countEl.textContent = state.iss ? state.iss.alt.toFixed(0) : '---';
           countLabel.innerHTML = 'KM · ORBITAL ALTITUDE';
         }
+      } else if (state.tab === 'cams') {
+        countEl.textContent = camState.status === 'ready' ? String(visibleCams().length) : '---';
+        countLabel.innerHTML = `OPEN CAMERAS · ${camState.active.size} SOURCES`;
       } else if (state.tab === 'markets') {
         const top = [...state.crypto].sort((a,b)=>Math.abs(b.price_change_percentage_24h ?? 0)-Math.abs(a.price_change_percentage_24h ?? 0))[0];
         countEl.textContent = top ? (top.price_change_percentage_24h ?? 0).toFixed(1) : '--';
@@ -11938,12 +12103,6 @@ PELICAN-9
       if (state.tab === 'quakes' || state.tab === 'defcon') {
         for (const s of quakeGroup.children) if (s.isSprite && s.visible) arr.push(s);
       }
-      if (state.tab === 'alliances') {
-        for (const g of alliancesGroup.children) {
-          if (!g.visible) continue;
-          for (const c of g.children) if (c.isSprite) arr.push(c);
-        }
-      }
       if (state.tab === 'conflicts') {
         for (const g of conflictsGroup.children) {
           if (!g.visible) continue;
@@ -11956,6 +12115,7 @@ PELICAN-9
         }
       }
       if (state.tab === 'orbit' && satPoints) arr.push(satPoints);
+      if (state.tab === 'cams' && camPoints) arr.push(camPoints);
       if (state.tab === 'markets') {
         for (const s of marketsGroup.children) if (s.isSprite) arr.push(s);
       }
@@ -11978,10 +12138,18 @@ PELICAN-9
           break;
         }
       }
-      const o = hits[0]?.object || null;
-      const hoverKey = satHit ? ('sat:' + satHit.noradId) : (o ? o.uuid : null);
+      const camHit = state.tab === 'cams' ? camFromHits(hits) : null;
+      const o = camHit ? null : (hits[0]?.object === camPoints ? null : hits[0]?.object || null);
+      const hoverKey = camHit ? ('cam:' + camHit.id) : satHit ? ('sat:' + satHit.noradId) : (o ? o.uuid : null);
       if (hoverKey !== hovered) {
         hovered = hoverKey;
+        if (camHit) {
+          tipKicker.textContent = 'CAMERA · ' + CAM_SOURCES[camHit.src].label.toUpperCase();
+          tipName.textContent = camHit.name;
+          tipMeta.innerHTML = `${escapeHtml(CAM_SOURCES[camHit.src].org)}${camHit.video || camHit.hls ? ' · <b style="color:var(--paper)">live video</b>' : ''}<br/><span style="opacity:.7">click to view</span>`;
+          tipEl.classList.add('on');
+          return;
+        }
         if (satHit) {
           tipKicker.textContent = 'SATELLITE';
           tipName.textContent = satHit.name;
@@ -12020,17 +12188,11 @@ PELICAN-9
           const when = d.d.date ? new Date(d.d.date).toUTCString().slice(5, 22) : '—';
           tipMeta.innerHTML = `NASA EONET · ${when}`;
           tipEl.classList.add('on');
-        } else if (d.kind === 'allianceHub') {
-          const a = ALLIANCES[d.name];
-          tipKicker.textContent = 'BLOC';
-          tipName.textContent = d.name;
-          tipMeta.innerHTML = `${a.members.length} members · est. ${a.founded}`;
-          tipEl.classList.add('on');
         } else if (d.kind === 'conflictHub') {
           const c = d.conflict;
           const t = CONFLICT_TYPES[c.type];
           tipKicker.textContent = 'CONFLICT';
-          tipName.textContent = `${c.sideA} ↔ ${c.sideB}`;
+          tipName.textContent = c.internal ? c.title : sidesLabel(c);
           tipMeta.innerHTML = `<b style="color:var(--paper)">${t.label}</b> · since ${c.since}<br/><span style="opacity:0.8">${escapeHtml(c.summary).slice(0,110)}…</span>`;
           tipEl.classList.add('on');
         } else if (d.kind === 'inspectLoc') {
@@ -12068,7 +12230,9 @@ PELICAN-9
       mouse.x = (e.clientX / innerWidth) * 2 - 1;
       mouse.y = -(e.clientY / innerHeight) * 2 + 1;
       raycaster.setFromCamera(mouse, camera);
+      raycaster.params.Points = { threshold: 0.025 };
       const hits = raycaster.intersectObjects(currentInteractive(), false);
+      if (state.tab === 'cams') { const c = camFromHits(hits); if (c) selectCam(c); return; }
       const o = hits[0]?.object; if (!o) return;
       const d = o.userData;
       if (d.kind === 'article' || d.kind === 'country') {
@@ -12095,14 +12259,6 @@ PELICAN-9
       } else if (d.kind === 'disaster') {
         const target = latLonToVec3(d.d.lat, d.d.lon, 3.0);
         tweenCamera(target, 1.0);
-      } else if (d.kind === 'allianceHub') {
-        // toggle that one alliance to focus
-        for (const n of Object.keys(ALLIANCES)) {
-          if (n === d.name) state.activeAlliances.add(n);
-          else state.activeAlliances.delete(n);
-        }
-        renderAllianceList();
-        applyAllianceVisibility();
       } else if (d.kind === 'conflictHub') {
         enterConflictInspection(d.conflict);
       } else if (d.kind === 'inspectLoc' || d.kind === 'inspectMarker') {
@@ -12854,6 +13010,332 @@ PELICAN-9
       renderer.setSize(innerWidth, innerHeight);
     });
 
+    // ════════════════════════════════════════════════════════════════
+    //  CAMERAS — official open-data public cameras (traffic / road weather)
+    //  Only agencies that publish their cameras on purpose. No private feeds.
+    // ════════════════════════════════════════════════════════════════
+    const CAM_SOURCES = {
+      tfl:      { label: 'London',      org: 'Transport for London · JamCams',     color: 0x4ad6ff, center: [51.51, -0.12],  refreshS: 60 },
+      caltrans: { label: 'California',  org: 'Caltrans CCTV (live video)',          color: 0xffd84a, center: [36.5, -119.5],  refreshS: 60 },
+      fi:       { label: 'Finland',     org: 'Fintraffic · road weather cameras',   color: 0x3fff8e, center: [62.5, 25.5],    refreshS: 300 },
+      hk:       { label: 'Hong Kong',   org: 'Transport Department',                color: 0xff70ff, center: [22.33, 114.17], refreshS: 60 },
+      nz:       { label: 'New Zealand', org: 'NZ Transport Agency',                 color: 0xff8a2a, center: [-41.0, 174.0],  refreshS: 60 },
+      sg:       { label: 'Singapore',   org: 'Land Transport Authority',            color: 0xff305c, center: [1.35, 103.82],  refreshS: 60 },
+    };
+    const camState = {
+      status: 'idle', cams: [], errors: {}, active: new Set(Object.keys(CAM_SOURCES)),
+      drawn: [], selected: null, video: false, timelapse: null, preset: 0, timer: null, wallTimer: null,
+    };
+    const camsGroup = new THREE.Group();
+    camsGroup.visible = false;
+    globe.add(camsGroup);
+    let camPoints = null;
+
+    // ── loaders: each returns [{ id, src, name, lat, lon, img, hls, video, dir, presets }]
+    const camLoaders = {
+      async tfl() {
+        const j = await (await fetch('https://api.tfl.gov.uk/Place/Type/JamCam')).json();
+        return j.map(p => {
+          const prop = Object.fromEntries((p.additionalProperties || []).map(x => [x.key, x.value]));
+          if (prop.available === 'false' || !prop.imageUrl) return null;
+          return { id: p.id, src: 'tfl', name: p.commonName, lat: p.lat, lon: p.lon, img: prop.imageUrl, video: prop.videoUrl || '', dir: prop.view || '' };
+        });
+      },
+      async caltrans() {
+        if (!API_PROXY) throw new Error('needs Worker');
+        const ds = await Promise.all(Array.from({ length: 12 }, (_, i) =>
+          fetch(`${API_PROXY}/cams/caltrans?d=${i + 1}`).then(r => r.ok ? r.json() : []).catch(() => [])));
+        return ds.flat().map(([id, name, lat, lon, img, hls, dir]) => ({ id, src: 'caltrans', name, lat, lon, img, hls, dir }));
+      },
+      async fi() {
+        const j = await (await fetch('https://tie.digitraffic.fi/api/weathercam/v1/stations')).json();
+        return (j.features || []).map(f => {
+          const presets = (f.properties?.presets || []).filter(p => p.inCollection !== false).map(p => p.id);
+          if (!presets.length || f.properties?.collectionStatus === 'REMOVED_PERMANENTLY') return null;
+          const [lon, lat] = f.geometry.coordinates;
+          const name = String(f.properties.name || f.id).replace(/^[a-z]+\d+_/i, '').replace(/_/g, ' ');
+          return { id: f.id, src: 'fi', name, lat, lon, presets, img: `https://weathercam.digitraffic.fi/${presets[0]}.jpg` };
+        });
+      },
+      async hk() {
+        const xml = new DOMParser().parseFromString(await (await fetch('https://static.data.gov.hk/td/traffic-snapshot-images/code/Traffic_Camera_Locations_En.xml')).text(), 'text/xml');
+        return [...xml.querySelectorAll('image')].map(n => {
+          const g = (t) => n.querySelector(t)?.textContent?.trim();
+          const url = g('url'); if (!url) return null;
+          return { id: 'hk-' + g('key'), src: 'hk', name: (g('description') || '').replace(/\s*\[[^\]]+\]$/, ''), lat: +g('latitude'), lon: +g('longitude'), img: url, dir: g('district') || '' };
+        });
+      },
+      async nz() {
+        if (!API_PROXY) throw new Error('needs Worker');
+        const rows = await (await fetch(`${API_PROXY}/cams/nz`)).json();
+        return rows.map(([id, name, lat, lon, img, hls, dir]) => ({ id, src: 'nz', name, lat, lon, img, dir }));
+      },
+      async sg() {
+        const j = await (await fetch('https://api.data.gov.sg/v1/transport/traffic-images')).json();
+        return (j.items?.[0]?.cameras || []).map(c => ({ id: 'sg-' + c.camera_id, src: 'sg', name: 'Camera ' + c.camera_id,
+          lat: c.location.latitude, lon: c.location.longitude, img: c.image, ts: c.timestamp }));
+      },
+    };
+
+    async function loadCams() {
+      if (camState.status !== 'idle') return;
+      camState.status = 'loading';
+      renderCamsPanel(); renderCamSourceList();
+      const results = await Promise.all(Object.keys(CAM_SOURCES).map(async (k) => {
+        try {
+          const list = (await camLoaders[k]()).filter(c => c && Number.isFinite(c.lat) && Number.isFinite(c.lon));
+          if (!list.length) throw new Error('empty');
+          return list;
+        } catch (e) { camState.errors[k] = String(e.message || e); console.warn('cams', k, e); return []; }
+      }));
+      camState.cams = results.flat();
+      camState.status = 'ready';
+      buildCamPoints();
+      renderCamSourceList();
+      if (state.tab === 'cams') { renderCamsPanel(); updateCount(); drawMap(); }
+    }
+
+    function visibleCams() { return camState.cams.filter(c => camState.active.has(c.src)); }
+
+    function buildCamPoints() {
+      if (camPoints) { camsGroup.remove(camPoints); camPoints.geometry.dispose(); }
+      const list = visibleCams();
+      camState.drawn = list;
+      const pos = new Float32Array(list.length * 3), col = new Float32Array(list.length * 3);
+      const c3 = new THREE.Color();
+      list.forEach((c, i) => {
+        const v = latLonToVec3(c.lat, c.lon, 1.006);
+        pos[i * 3] = v.x; pos[i * 3 + 1] = v.y; pos[i * 3 + 2] = v.z;
+        c3.setHex(CAM_SOURCES[c.src].color);
+        col[i * 3] = c3.r; col[i * 3 + 1] = c3.g; col[i * 3 + 2] = c3.b;
+      });
+      const g = new THREE.BufferGeometry();
+      g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+      g.setAttribute('color', new THREE.BufferAttribute(col, 3));
+      // Fixed pixel size: dense networks stay legible as dots when zoomed in.
+      camPoints = new THREE.Points(g, new THREE.PointsMaterial({ size: 3.5 * Math.min(2, devicePixelRatio || 1), sizeAttenuation: false, vertexColors: true, transparent: true, opacity: 0.95, depthWrite: false }));
+      camsGroup.add(camPoints);
+    }
+
+    // Front-facing point under the cursor (points behind the globe don't count).
+    function camFromHits(hits) {
+      const camDir = camera.position.clone().normalize();
+      for (const h of hits) {
+        if (h.object !== camPoints || !Number.isInteger(h.index)) continue;
+        const c = camState.drawn[h.index];
+        if (c && latLonToVec3(c.lat, c.lon, 1).dot(camDir) > 0.1) return c;
+      }
+      return null;
+    }
+
+    const kmBetween = (a, b) => {
+      const R = 6371, dLat = (b.lat - a.lat) * Math.PI / 180, dLon = (b.lon - a.lon) * Math.PI / 180;
+      const x = Math.sin(dLat / 2) ** 2 + Math.cos(a.lat * Math.PI / 180) * Math.cos(b.lat * Math.PI / 180) * Math.sin(dLon / 2) ** 2;
+      return 2 * R * Math.asin(Math.sqrt(x));
+    };
+    const nearestCams = (from, n, exclude) => visibleCams().filter(c => c !== exclude)
+      .map(c => [c, kmBetween(from, c)]).sort((a, b) => a[1] - b[1]).slice(0, n);
+    // Cache-buster bucketed to the source's refresh interval (same URL → browser cache).
+    const camImgUrl = (c, url = c.img) => url + (url.includes('?') ? '&' : '?') + 't=' + Math.floor(Date.now() / (CAM_SOURCES[c.src].refreshS * 1000));
+    const camHex = (src) => '#' + CAM_SOURCES[src].color.toString(16).padStart(6, '0');
+
+    function renderCamSourceList() {
+      const el = document.getElementById('camSourceList'); if (!el) return;
+      const counts = {}; for (const c of camState.cams) counts[c.src] = (counts[c.src] || 0) + 1;
+      el.innerHTML = Object.entries(CAM_SOURCES).map(([k, s]) => {
+        const on = camState.active.has(k), n = counts[k] || 0, err = camState.errors[k];
+        return `<div class="alliance-row${on ? '' : ' off'}" data-src="${k}" style="padding:8px 12px" title="${escapeHtml(s.org)}">
+          <div class="nm"><span class="sw" style="color:${camHex(k)};background:${camHex(k)}"></span>${s.label.toUpperCase()}
+          <span style="margin-left:auto;color:${err ? 'var(--orange)' : 'var(--dim)'};font-weight:400">${camState.status === 'loading' ? '…' : err ? 'offline' : n}</span></div></div>`;
+      }).join('');
+      document.getElementById('camCount').textContent = camState.status === 'ready' ? `${visibleCams().length}` : '…';
+      el.querySelectorAll('[data-src]').forEach(row => row.addEventListener('click', () => {
+        const k = row.dataset.src;
+        if (camState.active.has(k)) camState.active.delete(k); else camState.active.add(k);
+        buildCamPoints(); renderCamSourceList(); updateCount(); drawMap();
+        if (!camState.selected) renderCamsPanel();
+      }));
+    }
+
+    function stopCamTimers() {
+      clearInterval(camState.timer); camState.timer = null;
+      clearInterval(camState.timelapse); camState.timelapse = null;
+      const v = document.getElementById('camVideo');
+      if (v) { v._hls?.destroy?.(); v.pause?.(); }
+    }
+
+    function selectCam(c, { fly = true } = {}) {
+      stopCamTimers();
+      camState.selected = c; camState.video = false; camState.preset = 0;
+      if (fly) tweenCamera(latLonToVec3(c.lat, c.lon, 1.55), 1.0);
+      controls.autoRotate = false;
+      renderCamsPanel();
+    }
+
+    function renderCamsPanel() {
+      if (state.tab !== 'cams') return;
+      const c = camState.selected;
+      if (!c) {
+        rightTitle.innerHTML = 'CAMERAS <b>// OPEN DATA</b>';
+        rightSub.textContent = camState.status === 'ready' ? `${visibleCams().length} live` : 'loading…';
+        const counts = {}; for (const x of camState.cams) counts[x.src] = (counts[x.src] || 0) + 1;
+        feedListEl.innerHTML = `
+          <div class="cam-intro">Public traffic & road-weather cameras published as open data by transport agencies. Click a dot on the globe, or pick a region.</div>
+          ${Object.entries(CAM_SOURCES).filter(([k]) => camState.active.has(k)).map(([k, s]) => `
+            <button class="cam-region" data-region="${k}">
+              <span class="sw" style="background:${camHex(k)};color:${camHex(k)}"></span>
+              <span class="nm">${escapeHtml(s.label)}<small>${escapeHtml(s.org)}</small></span>
+              <span class="n">${camState.status === 'ready' ? (camState.errors[k] ? 'offline' : counts[k] || 0) : '…'}</span>
+            </button>`).join('')}
+          <div class="cam-intro" style="opacity:.75">Images refresh automatically. Live video: London (short clips) and California (streams).</div>`;
+        feedListEl.querySelectorAll('[data-region]').forEach(b => b.addEventListener('click', () => {
+          const k = b.dataset.region, [lat, lon] = CAM_SOURCES[k].center;
+          tweenCamera(latLonToVec3(lat, lon, k === 'caltrans' || k === 'fi' || k === 'nz' ? 2.1 : 1.6), 1.0);
+          openCamWall(k);
+        }));
+        return;
+      }
+      const s = CAM_SOURCES[c.src];
+      rightTitle.innerHTML = `${escapeHtml(s.label.toUpperCase())} <b>// CAM</b>`;
+      rightSub.textContent = 'open data';
+      const hasVideo = !!(c.video || c.hls);
+      const isCaltrans = c.src === 'caltrans';
+      const near = nearestCams(c, 6, c);
+      feedListEl.innerHTML = `
+        <div class="cam-view">
+          <button class="cam-back" id="camBack">← ALL REGIONS</button>
+          <div class="cam-name">${escapeHtml(c.name)}</div>
+          <div class="cam-meta">${escapeHtml(s.org)} · ${c.dir ? escapeHtml(c.dir) + ' · ' : ''}${c.lat.toFixed(4)}, ${c.lon.toFixed(4)}</div>
+          <div class="cam-frame" id="camFrame">
+            ${camState.video && hasVideo
+              ? `<video id="camVideo" autoplay muted playsinline loop controls></video>`
+              : `<img id="camImg" src="${escapeHtml(camImgUrl(c, c.presets ? `https://weathercam.digitraffic.fi/${c.presets[camState.preset]}.jpg` : c.img))}" alt="${escapeHtml(c.name)}" />`}
+            <div class="cam-badge" id="camBadge">${camState.video ? '● LIVE' : 'SNAPSHOT'}</div>
+          </div>
+          <div class="cam-stamp" id="camStamp">—</div>
+          <div class="cam-actions">
+            ${hasVideo ? `<button class="cam-btn${camState.video ? ' on' : ''}" id="camVideoBtn">${camState.video ? '■ SNAPSHOT' : '▶ LIVE VIDEO'}</button>` : ''}
+            ${isCaltrans && !camState.video ? `<button class="cam-btn" id="camLapseBtn">⟲ LAST 12 FRAMES</button>` : ''}
+            ${c.presets?.length > 1 ? c.presets.map((p, i) => `<button class="cam-btn${i === camState.preset ? ' on' : ''}" data-preset="${i}">VIEW ${i + 1}</button>`).join('') : ''}
+            <button class="cam-btn" id="camWallBtn">▦ NEARBY WALL</button>
+            <a class="cam-btn" href="${escapeHtml(c.img)}" target="_blank" rel="noopener">SOURCE ↗</a>
+          </div>
+          <h4 class="cam-h">NEARBY CAMERAS</h4>
+          <div class="cam-near">${near.map(([n, km]) => `
+            <button class="cam-thumb" data-id="${escapeHtml(n.id)}">
+              <img loading="lazy" src="${escapeHtml(camImgUrl(n))}" alt="" onerror="this.style.visibility='hidden'" />
+              <span>${escapeHtml(n.name)}<small>${km < 1 ? Math.round(km * 1000) + ' m' : km.toFixed(1) + ' km'}</small></span>
+            </button>`).join('')}</div>
+        </div>`;
+
+      const img = document.getElementById('camImg');
+      const stamp = document.getElementById('camStamp');
+      const markLoaded = () => { stamp.textContent = `refreshed ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })} · every ${s.refreshS >= 120 ? s.refreshS / 60 + ' min' : s.refreshS + ' s'}`; };
+      if (img) {
+        img.addEventListener('load', markLoaded);
+        img.addEventListener('error', () => { stamp.textContent = 'image unavailable right now (camera offline at source)'; });
+        camState.timer = setInterval(async () => {
+          if (document.hidden || camState.selected !== c || camState.timelapse) return;
+          if (c.src === 'sg') {           // Singapore issues a new image URL each minute
+            try { const fresh = (await camLoaders.sg()).find(x => x.id === c.id); if (fresh) c.img = fresh.img; } catch {}
+          }
+          const base = c.presets ? `https://weathercam.digitraffic.fi/${c.presets[camState.preset]}.jpg` : c.img;
+          img.src = base + (base.includes('?') ? '&' : '?') + 't=' + Date.now();
+        }, Math.min(60, s.refreshS) * 1000);
+      }
+      if (camState.video && hasVideo) startCamVideo(c);
+
+      document.getElementById('camBack').addEventListener('click', () => { stopCamTimers(); camState.selected = null; renderCamsPanel(); });
+      document.getElementById('camVideoBtn')?.addEventListener('click', () => { stopCamTimers(); camState.video = !camState.video; renderCamsPanel(); });
+      document.getElementById('camWallBtn').addEventListener('click', () => openCamWall(null, c));
+      document.getElementById('camLapseBtn')?.addEventListener('click', (e) => {
+        if (camState.timelapse) { clearInterval(camState.timelapse); camState.timelapse = null; e.target.classList.remove('on'); img.src = camImgUrl(c); return; }
+        // Caltrans keeps the previous 12 frames next to the current image.
+        const frames = Array.from({ length: 12 }, (_, i) => c.img.replace(/\/([^/]+)\.jpg$/i, (m, n) => `/previous/${n}-${12 - i}.jpg`)).concat(c.img);
+        frames.forEach(u => { const p = new Image(); p.src = u; });
+        let k = 0; e.target.classList.add('on');
+        camState.timelapse = setInterval(() => { img.src = frames[k % frames.length]; stamp.textContent = k % frames.length === 12 ? 'now' : `${12 - (k % frames.length)} updates ago`; k++; }, 450);
+      });
+      feedListEl.querySelectorAll('[data-preset]').forEach(b => b.addEventListener('click', () => { camState.preset = +b.dataset.preset; stopCamTimers(); renderCamsPanel(); }));
+      feedListEl.querySelectorAll('.cam-thumb').forEach(b => b.addEventListener('click', () => {
+        const n = camState.cams.find(x => x.id === b.dataset.id); if (n) selectCam(n);
+      }));
+    }
+
+    // Live video: TfL ships short MP4 loops; Caltrans HLS (native in Safari, hls.js elsewhere).
+    async function startCamVideo(c) {
+      const v = document.getElementById('camVideo'); if (!v) return;
+      const stamp = document.getElementById('camStamp');
+      const fail = () => { stamp.textContent = 'live video unavailable — showing snapshot'; camState.video = false; setTimeout(() => { if (camState.selected === c) renderCamsPanel(); }, 1200); };
+      v.addEventListener('error', fail, { once: true });
+      if (c.video) { v.src = c.video; stamp.textContent = 'TfL short live clip (loops) · refreshed by TfL every few minutes'; return; }
+      if (v.canPlayType('application/vnd.apple.mpegurl')) { v.src = c.hls; stamp.textContent = 'live stream'; return; }
+      try {
+        const { default: Hls } = await import('https://cdn.jsdelivr.net/npm/hls.js@1.5.17/dist/hls.mjs');
+        if (!Hls.isSupported()) return fail();
+        const hls = new Hls({ lowLatencyMode: false });
+        v._hls = hls;
+        hls.on(Hls.Events.ERROR, (_, d) => { if (d.fatal) { hls.destroy(); fail(); } });
+        hls.loadSource(c.hls); hls.attachMedia(v);
+        stamp.textContent = 'live stream';
+      } catch { fail(); }
+    }
+
+    // ── Video wall: up to 12 cameras of a region (or around a camera) ──
+    function openCamWall(srcKey, around) {
+      const wall = document.getElementById('camWall');
+      let list, title;
+      if (around) { list = [around, ...nearestCams(around, 11, around).map(x => x[0])]; title = `Around ${around.name}`; }
+      else {
+        const s = CAM_SOURCES[srcKey];
+        const center = { lat: s.center[0], lon: s.center[1] };
+        list = nearestCams(center, 400).map(x => x[0]).filter(c => c.src === srcKey);
+        // Spread across the region instead of 12 cameras on the same junction.
+        const step = Math.max(1, Math.floor(list.length / 12));
+        list = list.filter((_, i) => i % step === 0).slice(0, 12);
+        title = `${s.label} — ${s.org}`;
+      }
+      if (!list.length) return;
+      wall.innerHTML = `
+        <div class="cam-wall-head"><div><b>VIDEO WALL</b> · ${escapeHtml(title)}</div><button class="brief-close" id="camWallClose">CLOSE ✕</button></div>
+        <div class="cam-wall-grid">${list.map(c => `
+          <button class="cam-tile" data-id="${escapeHtml(c.id)}">
+            <img src="${escapeHtml(camImgUrl(c))}" alt="" onerror="this.closest('.cam-tile').classList.add('dead')" />
+            <span class="lbl"><i style="background:${camHex(c.src)}"></i>${escapeHtml(c.name)}</span>
+          </button>`).join('')}</div>`;
+      wall.classList.add('on');
+      clearInterval(camState.wallTimer);
+      camState.wallTimer = setInterval(() => {
+        if (document.hidden || !wall.classList.contains('on')) return;
+        wall.querySelectorAll('.cam-tile').forEach(t => {
+          const c = camState.cams.find(x => x.id === t.dataset.id); const im = t.querySelector('img');
+          if (c && im && c.src !== 'sg') im.src = c.img + (c.img.includes('?') ? '&' : '?') + 't=' + Date.now();
+        });
+      }, 60000);
+      document.getElementById('camWallClose').addEventListener('click', closeCamWall);
+      wall.querySelectorAll('.cam-tile').forEach(t => t.addEventListener('click', () => {
+        const c = camState.cams.find(x => x.id === t.dataset.id); closeCamWall(); if (c) selectCam(c);
+      }));
+    }
+    function closeCamWall() {
+      const wall = document.getElementById('camWall');
+      wall.classList.remove('on'); clearInterval(camState.wallTimer); wall.innerHTML = '';
+    }
+    addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && document.getElementById('camWall')?.classList.contains('on')) { closeCamWall(); e.stopImmediatePropagation(); }
+    });
+
+    function buildLayerCams() {
+      if (camState.status !== 'ready') return;
+      const renderer2d = (buildLayerCams._r ||= L.canvas({ padding: 0.3 }));
+      for (const c of visibleCams()) {
+        L.circleMarker([c.lat, c.lon], { renderer: renderer2d, radius: c === camState.selected ? 7 : 3.5, color: camHex(c.src), weight: 1, fillOpacity: 0.85 })
+          .bindTooltip(escapeHtml(c.name), { direction: 'top' })
+          .on('click', () => selectCam(c, { fly: false }))
+          .addTo(mapOverlay);
+      }
+    }
+
     // ── Label decluttering ───────────────────────────────────────────
     // Country/city labels used to pile up (Europe was unreadable). Every
     // ~120 ms, project labels to screen space, keep the most-covered ones and
@@ -12959,8 +13441,12 @@ PELICAN-9
         for (const id in conflictObjects) {
           const obj = conflictObjects[id];
           if (!obj.group.visible) continue;
-          const k = (Math.sin(t * (obj.type === 'war' ? 2.4 : 1.2)) * 0.5 + 0.5);
-          obj.mat.opacity = 0.45 + 0.35 * k * (obj.type === 'war' ? 1 : 0.6);
+          // Faster, brighter pulse for conflicts with more live coverage.
+          const heat = Math.min(1, (obj.activity || 0) / 12);
+          const k = (Math.sin(t * ((obj.type === 'war' ? 2.4 : 1.2) + heat * 1.6)) * 0.5 + 0.5);
+          obj.mat.opacity = 0.40 + (0.30 + 0.25 * heat) * k * (obj.type === 'war' || obj.internal ? 1 : 0.6);
+          if (obj.hub?.userData.baseScale) obj.hub.scale.setScalar(obj.hub.userData.baseScale * (1 + heat * 0.6));
+          if (obj.ring) obj.ring.scale.setScalar(0.14 + 0.06 * k + heat * 0.08);
         }
       }
       controls.update();
@@ -12990,10 +13476,11 @@ PELICAN-9
         zoomControl: true,
         attributionControl: true,
       });
-      tileLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-        subdomains: 'abcd',
-        maxZoom: 19,
-        attribution: '&copy; OpenStreetMap &copy; CARTO',
+      // CARTO basemaps now demand an API key (tiles come back watermarked), so
+      // use Esri's keyless Dark Gray Canvas — same dark look, labels included.
+      tileLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
+        maxZoom: 16,
+        attribution: 'Tiles &copy; Esri &mdash; Esri, HERE, Garmin, &copy; OpenStreetMap contributors',
       }).addTo(leafletMap);
       mapOverlay = L.layerGroup().addTo(leafletMap);
       // Re-render overlays when zoom changes (affects icon sizes / cluster spread)
@@ -13098,24 +13585,6 @@ PELICAN-9
       mapOverlay.addLayer(cluster);
     }
 
-    function buildLayerAlliances() {
-      const sel = state.selectedCountry;
-      for (const [name, a] of Object.entries(ALLIANCES)) {
-        if (!state.activeAlliances.has(name)) continue;
-        if (sel && !a.members.includes(sel)) continue;
-        const col = HEX(a.color);
-        const members = a.members.map(m => CENTROIDS[m]).filter(Boolean);
-        if (members.length < 2) continue;
-        const cx = members.reduce((s, m) => s + m[0], 0) / members.length;
-        const cy = members.reduce((s, m) => s + m[1], 0) / members.length;
-        for (const [lat, lon] of members) {
-          mapOverlay.addLayer(L.polyline([[cy ? cx : cx, cy], [lat, lon]], { color: col, weight: 1, opacity: 0.6 }));
-          mapOverlay.addLayer(L.marker([lat, lon], { icon: dotIcon(col, 8) }));
-        }
-        mapOverlay.addLayer(L.marker([cx, cy], { icon: dotIcon(col, 12) }).bindTooltip(name, { permanent: true, direction: 'top', className: 'wrl-label' }));
-      }
-    }
-
     function buildLayerConflicts() {
       const selO = state.selectedConflict;
       for (const c of CONFLICTS) {
@@ -13123,6 +13592,12 @@ PELICAN-9
         if (!selO && !state.activeConflictTypes.has(c.type)) continue;
         const t = CONFLICT_TYPES[c.type];
         const col = HEX(t.color);
+        if (c.internal) {
+          mapOverlay.addLayer(L.circleMarker([c.lat, c.lon], { radius: 9 + Math.min(8, (conflictActivity.get(c.id)?.score || 0) / 2), color: col, weight: 2, fillOpacity: 0.15 })
+            .bindTooltip(`<b>${escapeHtml(c.title)}</b><br/>${t.label} · since ${c.since}`, { direction: 'top' })
+            .on('click', () => enterConflictInspection(c)));
+          continue;
+        }
         const capA = capitalFor(c.sideA), capB = capitalFor(c.sideB);
         if (!capA || !capB) continue;
         const arc = buildArc(capA.lat, capA.lon, capB.lat, capB.lon, 0.6);
@@ -13132,7 +13607,7 @@ PELICAN-9
         // hub at midpoint of arc
         const mid = arc[Math.floor(arc.length / 2)];
         mapOverlay.addLayer(L.marker(mid, { icon: dotIcon(col, c.type === 'war' ? 16 : 12) })
-          .bindTooltip(`<b>${c.sideA} ↔ ${c.sideB}</b><br/>${t.label} · since ${c.since}`, { direction: 'top' })
+          .bindTooltip(`<b>${escapeHtml(c.internal ? c.title : sidesLabel(c))}</b><br/>${t.label} · since ${c.since}`, { direction: 'top' })
           .on('click', () => enterConflictInspection(c)));
       }
     }
@@ -13217,7 +13692,7 @@ PELICAN-9
       // Country name labels
       const capA = capitalFor(c.sideA), capB = capitalFor(c.sideB);
       if (capA) mapOverlay.addLayer(L.marker([capA.lat + 2, capA.lon], { icon: labelIcon(c.sideA.toUpperCase(), true), interactive: false }));
-      if (capB) mapOverlay.addLayer(L.marker([capB.lat - 2, capB.lon], { icon: labelIcon(c.sideB.toUpperCase(), true), interactive: false }));
+      if (capB && !c.internal) mapOverlay.addLayer(L.marker([capB.lat - 2, capB.lon], { icon: labelIcon(c.sideB.toUpperCase(), true), interactive: false }));
 
       // Gained polygon
       if (d.gained) {
@@ -13267,12 +13742,12 @@ PELICAN-9
       }
 
       if (state.tab === 'wire'      || state.tab === 'defcon')   buildLayerNews();
-      if (state.tab === 'alliances') buildLayerAlliances();
       if (state.tab === 'conflicts' && !state.selectedConflict)  buildLayerConflicts();
       if (state.tab === 'conflicts' &&  state.selectedConflict)  buildLayerConflicts();  // still show the one arc
       if (state.tab === 'markets')   buildLayerMarkets();
       if (state.tab === 'outbreaks') buildLayerOutbreaks();
       if (state.tab === 'quakes'    || state.tab === 'defcon')   buildLayerQuakes();
+      if (state.tab === 'cams')      buildLayerCams();
 
       // Auto-fit camera for inspection mode
       if (state.tab === 'conflicts' && state.selectedConflict) {
@@ -13779,10 +14254,8 @@ PELICAN-9
         _catchUp.push(() => { if (Date.now() - lastNewsRefresh > NEWS_EVERY) newsTick(); });
 
         renderCountryList();
-        renderAllianceList();
         renderConflictTypeList();
         applyFilters();
-        applyAllianceVisibility();
         applyConflictVisibility();
         renderFeedWire(null);
         updateCount();
