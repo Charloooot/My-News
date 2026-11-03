@@ -8,6 +8,9 @@
  *   shares the result across all visitors — per-visitor throttling disappears.
  *
  * Endpoints (all return permissive CORS):
+ *   GET /news                             → merged multi-source feed (see
+ *                                           news-collector.js), rebuilt every
+ *                                           15 min by the Cron Trigger
  *   GET /gdelt?query=...&maxrecords=250   → GDELT ArtList JSON, edge-cached 10 min
  *   GET /extract?url=https://...          → readable article text, edge-cached 6 h
  *   GET /tle?group=active                 → CelesTrak GP TLE, edge-cached 2 h
@@ -20,17 +23,21 @@
  *   behind one IP — trips this constantly. The Worker fetches once, edge-caches,
  *   and serves everyone from cache, so the 403 never reaches the client.
  *
- * Deploy (free tier is plenty):
- *   1. npm i -g wrangler && wrangler login
- *   2. wrangler deploy            (uses wrangler.toml below, or `wrangler deploy worker.js`)
- *   3. Put the resulting https://<name>.<you>.workers.dev origin into
+ * Deploy (free tier is plenty) — full steps in wrangler.toml:
+ *   1. npx wrangler login
+ *   2. npx wrangler kv namespace create NEWS   → paste the id into wrangler.toml
+ *   3. npx wrangler deploy
+ *   4. Put the resulting https://<name>.<you>.workers.dev origin into
  *      index.html → const API_PROXY = 'https://<name>.<you>.workers.dev';
+ *   Optional sources: npx wrangler secret put GUARDIAN_KEY  (and ACLED_USER /
+ *   ACLED_PASS). Without them those sources are simply skipped.
  *
- * Minimal wrangler.toml:
- *   name = "wrld-news"
- *   main = "worker.js"
- *   compatibility_date = "2024-11-01"
+ * Storage: the merged feed lives in KV (binding NEWS) when configured, else in
+ * the edge cache. KV is better — the cron writes it once and every colo reads
+ * the same copy; the edge cache is per-colo, so each region rebuilds lazily.
  */
+
+import { collectNews } from './news-collector.js';
 
 const CORS = {
   'Access-Control-Allow-Origin': '*',
@@ -39,11 +46,12 @@ const CORS = {
 };
 
 export default {
-  async fetch(request) {
+  async fetch(request, env, ctx) {
     if (request.method === 'OPTIONS') return new Response(null, { headers: CORS });
 
     const url = new URL(request.url);
     try {
+      if (url.pathname === '/news')    return await handleNews(env, ctx);
       if (url.pathname === '/gdelt')   return await handleGdelt(url);
       if (url.pathname === '/extract') return await handleExtract(url);
       if (url.pathname === '/tle')     return await handleTle(url);
@@ -55,7 +63,67 @@ export default {
     }
     return json({ error: 'not found' }, 404);
   },
+
+  // Cron Trigger (wrangler.toml → [triggers] crons) — rebuild the merged feed.
+  async scheduled(_event, env, ctx) {
+    ctx.waitUntil(refreshNews(env));
+  },
 };
+
+// ── /news ───────────────────────────────────────────────────────────────────
+const NEWS_KEY = 'news:latest';
+const NEWS_FRESH_MS = 20 * 60 * 1000;    // cron runs every 15 min
+const NEWS_MAX_STALE_MS = 6 * 3600e3;    // past this, rebuild before answering
+
+async function readStoredNews(env) {
+  if (env.NEWS) {
+    const txt = await env.NEWS.get(NEWS_KEY);
+    return txt ? { txt, generated: peekGenerated(txt) } : null;
+  }
+  const hit = await caches.default.match(new Request('https://cache/news'));
+  if (!hit) return null;
+  const txt = await hit.text();
+  return { txt, generated: peekGenerated(txt) };
+}
+// `generated` is the first field, so read it without parsing ~1 MB of JSON.
+function peekGenerated(txt) {
+  const m = /"generated":"([^"]+)"/.exec(txt.slice(0, 120));
+  return m ? Date.parse(m[1]) : 0;
+}
+
+async function refreshNews(env) {
+  const data = await collectNews(env);
+  // Never replace a good feed with an empty one (all sources down at once).
+  if (!data.count) return null;
+  const txt = JSON.stringify(data);
+  if (env.NEWS) {
+    await env.NEWS.put(NEWS_KEY, txt);
+  } else {
+    await caches.default.put(new Request('https://cache/news'), new Response(txt, {
+      headers: { 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=86400' },
+    }));
+  }
+  return txt;
+}
+
+async function handleNews(env, ctx) {
+  const stored = await readStoredNews(env);
+  const age = stored ? Date.now() - stored.generated : Infinity;
+  let txt = stored?.txt;
+  if (!txt || age > NEWS_MAX_STALE_MS) {
+    txt = (await refreshNews(env)) || txt;              // cold start / cron missing
+  } else if (age > NEWS_FRESH_MS) {
+    ctx.waitUntil(refreshNews(env).catch(() => {}));    // serve stale, rebuild behind
+  }
+  if (!txt) return json({ error: 'all news sources unavailable', articles: [] }, 503);
+  return new Response(txt, {
+    headers: {
+      'Content-Type': 'application/json',
+      'Cache-Control': 'public, max-age=120',
+      ...CORS,
+    },
+  });
+}
 
 function json(obj, status = 200) {
   return new Response(JSON.stringify(obj), {
@@ -106,7 +174,7 @@ async function handleGdelt(reqUrl) {
 // scrape. Edge-cached 6h because article bodies don't change.
 async function handleExtract(reqUrl) {
   const target = reqUrl.searchParams.get('url');
-  if (!target || !/^https?:\/\//i.test(target)) return json({ error: 'bad url' }, 400);
+  if (!isPublicArticleUrl(target)) return json({ error: 'bad url' }, 400);
 
   const cache = caches.default;
   const cacheKey = new Request('https://cache/extract?u=' + encodeURIComponent(target));
@@ -126,7 +194,7 @@ async function handleExtract(reqUrl) {
   if (body.length < 80) {
     try {
       const r = await fetch(target, { headers: { 'User-Agent': 'Mozilla/5.0 (wrld-news)' } });
-      const html = await r.text();
+      const html = (await r.text()).slice(0, MAX_HTML);
       body = scrapeParagraphs(html);
     } catch (_) { /* leave body empty */ }
   }
@@ -142,6 +210,23 @@ async function handleExtract(reqUrl) {
   });
   await cache.put(cacheKey, resp.clone());
   return resp;
+}
+
+// This endpoint fetches caller-supplied URLs, so keep it from being used as a
+// general-purpose open proxy: http(s) on default ports, real hostnames only (no
+// IP literals, localhost or internal suffixes). News article links always pass.
+const MAX_HTML = 2_000_000;
+function isPublicArticleUrl(raw) {
+  let u;
+  try { u = new URL(raw); } catch { return false; }
+  if (u.protocol !== 'https:' && u.protocol !== 'http:') return false;
+  if (u.port && u.port !== '80' && u.port !== '443') return false;
+  if (u.username || u.password) return false;
+  const h = u.hostname.toLowerCase();
+  if (!h.includes('.') || h.startsWith('[')) return false;                 // bare names, IPv6
+  if (/^\d{1,3}(\.\d{1,3}){3}$/.test(h)) return false;                       // IPv4 literal
+  if (/(^|\.)(localhost|local|internal|lan|home|corp)$/.test(h)) return false;
+  return true;
 }
 
 // Very small readability heuristic: strip non-content tags, keep <p> blocks.

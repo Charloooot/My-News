@@ -1,0 +1,10 @@
+# editor swap / OS cruft
+*.swp
+*.swo
+*~
+.DS_Store
+# Cloudflare Worker build output
+.wrangler/
+node_modules/
+# per-machine Claude Code permissions
+.claude/settings.local.json

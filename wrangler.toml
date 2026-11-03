@@ -1,0 +1,29 @@
+# Cloudflare Worker for WRLD_NEWS (worker.js + news-collector.js).
+#
+#   npx wrangler login
+#   npx wrangler kv namespace create NEWS        # optional: paste id below + uncomment
+#   npx wrangler deploy
+#   → paste https://wrld-news.<you>.workers.dev into index.html → const API_PROXY
+#
+# Optional extra sources (skipped when unset):
+#   npx wrangler secret put GUARDIAN_KEY         # https://open-platform.theguardian.com/access/
+#   npx wrangler secret put ACLED_USER           # https://acleddata.com/ (free, non-commercial)
+#   npx wrangler secret put ACLED_PASS
+#
+# Local test of the collector:  npx wrangler dev --test-scheduled
+#   then curl "http://localhost:8787/__scheduled" and "http://localhost:8787/news"
+
+name = "wrld-news"
+main = "worker.js"
+compatibility_date = "2024-11-01"
+
+# Rebuild the merged news feed every 15 minutes.
+[triggers]
+crons = ["*/15 * * * *"]
+
+# Recommended: uncomment after `wrangler kv namespace create NEWS`. Left
+# commented, the Worker still deploys and falls back to the edge cache
+# (works, but each region rebuilds its own copy).
+# [[kv_namespaces]]
+# binding = "NEWS"
+# id = "PASTE_KV_NAMESPACE_ID_HERE"

@@ -4,11 +4,11 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>WRLD // MONITOR</title>
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
-<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" integrity="sha384-pmjIAcz2bAn0xukfxADbZIb3t8oRT9Sv0rvO+BR5Csr6Dhqq+nZs59P0pPKQJkEV" crossorigin="" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" integrity="sha384-wgw+aLYNQ7dlhK47ZPK7FRACiq7ROZwgFNg0m04avm4CaXS+Z9Y7nMu8yNjBKYC+" crossorigin="" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin=""></script>
+<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js" integrity="sha384-eXVCORTRlv4FUUgS/xmOyr66XBVraen8ATNLMESp92FKXLAMiKkerixTiBvXriZr" crossorigin=""></script>
 <style>
   :root {
     --cyan:   #00f0ff;
@@ -309,6 +309,24 @@
   body.has-ticker .right-rail { top: 102px; max-height: calc(100vh - 220px); }
   .right-rail > * { pointer-events: auto; }
 
+  .rot-toggle {
+    align-self: flex-end;
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 6px 12px;
+    font-size: 10px; letter-spacing: 0.16em;
+    background: rgba(5,11,24,0.92); color: var(--dim);
+    border: 1px solid var(--line); cursor: pointer;
+    transition: color 0.15s, border-color 0.15s, box-shadow 0.15s;
+  }
+  .rot-toggle:hover { color: var(--paper); border-color: var(--line2); }
+  .rot-toggle .rot-ico { font-size: 13px; display: inline-block; }
+  .rot-toggle .rot-state { font-weight: 700; }
+  .rot-toggle.on { color: var(--cyan); border-color: rgba(0,240,255,0.45); box-shadow: 0 0 14px rgba(0,240,255,0.15); }
+  .rot-toggle.on .rot-ico { animation: rot-spin 3.5s linear infinite; }
+  .rot-toggle.on .rot-state { color: var(--cyan); }
+  .rot-toggle.off .rot-state { color: var(--dim); }
+  @keyframes rot-spin { to { transform: rotate(360deg); } }
+
   .feed { flex: 1; min-height: 0; display: flex; flex-direction: column; }
   .feed-list { overflow-y: auto; max-height: 60vh; }
   .feed-list::-webkit-scrollbar { width: 6px; }
@@ -337,6 +355,10 @@
   }
   .feed-item .meta .tag.diplo { color: var(--magenta); border-color: rgba(255,112,255,0.4); background: rgba(255,112,255,0.08); }
   .feed-item .meta .tag.markets { color: var(--green); border-color: rgba(63,255,142,0.4); background: rgba(63,255,142,0.08); }
+  .feed-item .meta .tag.story { color: var(--paper); border-color: rgba(255,255,255,0.35); background: rgba(255,255,255,0.06); }
+  .feed-item .meta .tag.story.big { color: var(--yellow); border-color: rgba(255,216,74,0.5); background: rgba(255,216,74,0.1); }
+  .feed-item .meta .tag.alert { color: var(--red); border-color: rgba(255,48,92,0.5); background: rgba(255,48,92,0.1); }
+  .feed-item .src .via { opacity: 0.6; }
   .feed-item .title { color: var(--paper); }
   .feed-item .title.translated { color: var(--cyan); }
   .feed-item .title .o {
@@ -957,6 +979,138 @@
     margin-top: 8px; opacity: 0.7;
   }
 
+  /* ============== PLACE BRIEFING ============== */
+  .brief-backdrop {
+    position: fixed; inset: 0; z-index: 189;
+    background: rgba(2,6,14,0.9);
+    backdrop-filter: blur(9px);
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.2s ease;
+  }
+  .brief-backdrop.on { opacity: 1; pointer-events: auto; }
+  .brief {
+    position: fixed; z-index: 190;
+    top: 64px; bottom: 64px; left: 50%;
+    transform: translateX(-50%) scale(0.96);
+    width: min(1120px, 94vw);
+    background: rgba(5,11,24,0.98);
+    border: 1px solid var(--cyan);
+    box-shadow: 0 0 90px rgba(0,240,255,0.28), inset 0 0 70px rgba(0,240,255,0.05);
+    display: flex; flex-direction: column;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.2s ease, transform 0.26s cubic-bezier(0.16,1,0.3,1);
+  }
+  .brief.on { opacity: 1; transform: translateX(-50%) scale(1); pointer-events: auto; }
+
+  .brief-head {
+    padding: 20px 30px 16px; border-bottom: 1px solid var(--line);
+    background: linear-gradient(180deg, rgba(0,240,255,0.06), transparent);
+    position: relative; flex-shrink: 0;
+  }
+  .brief-head .kick { font-size: 10px; letter-spacing: 0.28em; color: var(--cyan); text-transform: uppercase; }
+  .brief-head h1 { font-size: 30px; font-weight: 800; color: var(--paper); letter-spacing: 0.02em; margin: 6px 0 4px; }
+  .brief-head h1 .city { color: var(--cyan); }
+  .brief-head .sub { font-size: 11px; color: var(--dim); letter-spacing: 0.08em; }
+  .brief-close {
+    position: absolute; top: 16px; right: 20px;
+    font-size: 11px; letter-spacing: 0.14em; color: var(--dim);
+    border: 1px solid var(--line); background: rgba(0,0,0,0.3);
+    padding: 6px 12px; cursor: pointer;
+  }
+  .brief-close:hover { color: var(--red); border-color: var(--red); }
+
+  .brief-stats { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
+  .brief-stat {
+    padding: 7px 14px; border: 1px solid var(--line);
+    background: rgba(0,240,255,0.03); min-width: 82px;
+  }
+  .brief-stat .v { font-size: 22px; font-weight: 700; color: var(--paper); font-variant-numeric: tabular-nums; line-height: 1.1; }
+  .brief-stat .v.crit { color: var(--red); } .brief-stat .v.elev { color: var(--orange); } .brief-stat .v.mod { color: var(--yellow); }
+  .brief-stat .k { font-size: 9px; letter-spacing: 0.14em; color: var(--dim); text-transform: uppercase; margin-top: 2px; }
+
+  .brief-body { flex: 1; overflow-y: auto; padding: 22px 30px 30px; }
+  .brief-body::-webkit-scrollbar { width: 9px; }
+  .brief-body::-webkit-scrollbar-thumb { background: rgba(0,240,255,0.2); }
+
+  .brief-topics { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 20px; }
+  .brief-topic {
+    padding: 5px 12px; font-size: 10px; letter-spacing: 0.12em;
+    border: 1px solid var(--line2); color: var(--dim);
+    background: transparent; cursor: pointer; text-transform: uppercase;
+  }
+  .brief-topic:hover { color: var(--paper); }
+  .brief-topic.on { color: var(--paper); border-color: var(--cyan); background: rgba(0,240,255,0.14); }
+  .brief-topic .n { opacity: 0.6; margin-left: 5px; }
+
+  .brief-section-h {
+    font-size: 11px; letter-spacing: 0.22em; color: var(--cyan);
+    text-transform: uppercase; margin: 26px 0 12px; padding-bottom: 5px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .brief-lead {
+    display: grid; grid-template-columns: 300px 1fr; gap: 0;
+    border: 1px solid var(--line); background: rgba(0,240,255,0.03);
+    margin-bottom: 6px; cursor: pointer;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  .brief-lead:hover { border-color: var(--cyan); box-shadow: 0 0 30px rgba(0,240,255,0.18); }
+  .brief-lead .img { background: #04121f center/cover no-repeat; min-height: 190px; border-right: 1px solid var(--line); }
+  .brief-lead .txt { padding: 20px 22px; }
+  .brief-lead .badges { display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
+  .brief-lead h2 { font-size: 20px; line-height: 1.35; color: var(--paper); font-weight: 700; }
+  .brief-lead .src { font-size: 11px; color: var(--dim); margin-top: 12px; letter-spacing: 0.08em; }
+  .brief-lead .desc { font-size: 13px; line-height: 1.55; color: rgba(255,255,255,0.78); margin-top: 10px; }
+  .brief-lead .also { font-size: 10px; color: var(--dim); margin-top: 8px; letter-spacing: 0.06em; }
+  .brief-badge.reach { color: var(--paper); border-color: rgba(255,255,255,0.4); background: rgba(255,255,255,0.08); }
+  .brief-lead.no-img { grid-template-columns: 1fr; }
+
+  .brief-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 12px; }
+  .brief-card {
+    border: 1px solid var(--line); background: rgba(0,240,255,0.02);
+    cursor: pointer; display: flex; flex-direction: column;
+    transition: border-color 0.15s, transform 0.12s, box-shadow 0.15s;
+  }
+  .brief-card:hover { border-color: var(--cyan); transform: translateY(-2px); box-shadow: 0 6px 22px rgba(0,0,0,0.4); }
+  .brief-card .img { height: 116px; background: #04121f center/cover no-repeat; border-bottom: 1px solid var(--line); }
+  .brief-card .body { padding: 12px 14px; display: flex; flex-direction: column; flex: 1; }
+  .brief-card .badges { display: flex; gap: 6px; margin-bottom: 8px; flex-wrap: wrap; }
+  .brief-card .t { font-size: 13px; line-height: 1.4; color: var(--paper); font-weight: 600; }
+  .brief-card .s { font-size: 10px; color: var(--dim); margin-top: auto; padding-top: 10px; letter-spacing: 0.06em; }
+
+  .brief-badge {
+    font-size: 8.5px; letter-spacing: 0.1em; padding: 2px 6px;
+    border: 1px solid var(--line2); text-transform: uppercase; white-space: nowrap;
+  }
+  .brief-badge.critical { color: var(--red); border-color: rgba(255,48,92,0.5); background: rgba(255,48,92,0.1); }
+  .brief-badge.elevated { color: var(--orange); border-color: rgba(255,138,42,0.5); background: rgba(255,138,42,0.1); }
+  .brief-badge.moderate { color: var(--yellow); border-color: rgba(255,216,74,0.4); background: rgba(255,216,74,0.08); }
+  .brief-badge.topic { color: var(--cyan); }
+
+  .brief-cities { display: flex; flex-wrap: wrap; gap: 10px; }
+  .brief-city {
+    padding: 10px 16px; border: 1px solid var(--line); cursor: pointer;
+    background: rgba(0,240,255,0.03); min-width: 118px;
+    transition: border-color 0.15s;
+  }
+  .brief-city:hover { border-color: var(--cyan); }
+  .brief-city .cn { font-size: 13px; font-weight: 700; color: var(--paper); }
+  .brief-city .cc { font-size: 10px; color: var(--cyan); margin-top: 3px; letter-spacing: 0.1em; }
+
+  .brief-empty { color: var(--dim); font-style: italic; padding: 20px 0; }
+  .brief-lead:focus-visible, .brief-card:focus-visible, .brief-city:focus-visible,
+  .brief-topic:focus-visible, .brief-btn:focus-visible, .brief-close:focus-visible, .rot-toggle:focus-visible {
+    outline: 2px solid var(--cyan); outline-offset: 2px;
+  }
+
+  .brief-actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 26px; padding-top: 18px; border-top: 1px solid var(--line); }
+  .brief-btn {
+    padding: 11px 20px; font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase;
+    border: 1px solid var(--cyan); color: var(--cyan); background: rgba(0,240,255,0.06);
+    cursor: pointer; transition: all 0.15s;
+  }
+  .brief-btn:hover { background: rgba(0,240,255,0.2); box-shadow: 0 0 22px rgba(0,240,255,0.35); }
+
   /* ============== ALERT TOAST ============== */
   .alerts {
     position: fixed; top: 100px; right: 22px; z-index: 80;
@@ -1086,6 +1240,9 @@
 
   <!-- ============ RIGHT RAIL ============ -->
   <aside class="right-rail">
+    <button id="rotToggle" class="rot-toggle on" title="Toggle globe auto-rotation" aria-pressed="true">
+      <span class="rot-ico">⟳</span><span class="rot-lbl">ROTATION</span><span class="rot-state">ON</span>
+    </button>
     <div class="panel feed">
       <div class="panel-h"><span id="rightTitle">THE WIRE <b>// LIVE</b></span><span id="rightSub">GDELT · 24h</span></div>
       <div class="feed-list" id="feedList"></div>
@@ -1142,6 +1299,13 @@
   <div class="reader" id="reader">
     <div class="reader-tabs" id="readerTabs"></div>
     <div class="reader-content" id="readerContent"></div>
+  </div>
+
+  <!-- ============ PLACE BRIEFING ============ -->
+  <div class="brief-backdrop" id="briefBackdrop"></div>
+  <div class="brief" id="brief" role="dialog" aria-modal="true" aria-labelledby="briefTitle" tabindex="-1">
+    <div class="brief-head" id="briefHead"></div>
+    <div class="brief-body" id="briefBody"></div>
   </div>
 
   <!-- ============ TOOLTIP / ALERTS ============ -->
@@ -6337,7 +6501,7 @@ PELICAN-9
     "imports": {
       "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
       "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/",
-      "topojson-client": "https://cdn.skypack.dev/topojson-client@3",
+      "topojson-client": "https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/+esm",
       "satellite.js": "https://cdn.jsdelivr.net/npm/satellite.js@5.0.0/+esm"
     }
   }
@@ -7617,6 +7781,8 @@ PELICAN-9
       crypto: [],
       polymarket: [],
       selectedCountry: null,
+      rotationEnabled: (() => { try { return localStorage.getItem('wrldmon_rotation') !== 'off'; } catch { return true; } })(),  // user master switch, persisted
+      brief: null,             // { country, city, topic } — active place-briefing overlay
       drillDownCountry: null,
       selectedConflict: null,
       selectedMarketCountry: null,
@@ -8036,12 +8202,23 @@ PELICAN-9
 
       removeCountrySignals(country);
       const totalArticles = c.articles || [];
+      // Stories that name a city go to that city; the rest are spread by the
+      // curated traffic shares as before.
+      const pinned = new Map(cities.map(([name]) => [name, []]));
+      const loose = [];
+      for (const a of totalArticles) {
+        const city = a._geo?.city;
+        if (city && pinned.has(city)) pinned.get(city).push(a); else loose.push(a);
+      }
+      const reach = (list) => list.reduce((n, a) => n + (a._story?.size || 1), 0);
+      const looseCount = Math.max(0, c.count - reach([...pinned.values()].flat()));
       let idx = 0;
       for (const [name, lat, lon, share] of cities) {
-        const numA = Math.max(1, Math.round(totalArticles.length * share));
-        const cityArticles = totalArticles.slice(idx, idx + numA);
-        idx += cityArticles.length;
-        const cityCount = Math.max(1, Math.round(c.count * share));
+        const numA = Math.max(1, Math.round(loose.length * share));
+        const spread = loose.slice(idx, idx + numA);
+        idx += spread.length;
+        const cityArticles = [...pinned.get(name), ...spread];
+        const cityCount = Math.max(1, reach(pinned.get(name)) + Math.round(looseCount * share));
         addAnchorCluster({
           country, anchor: { name, lat, lon },
           count: cityCount, articles: cityArticles.length ? cityArticles : null,
@@ -8790,6 +8967,22 @@ PELICAN-9
       return null;
     }
 
+    // Median epoch age (days) of a TLE set. Line 1 cols 19-32 = YYDDD.DDDDDDDD.
+    function tleAgeDays(txt) {
+      const ages = [];
+      for (const line of txt.split('\n')) {
+        if (!line.startsWith('1 ') || line.length < 32) continue;
+        const yy = parseInt(line.slice(18, 20), 10), doy = parseFloat(line.slice(20, 32));
+        if (Number.isNaN(yy) || Number.isNaN(doy)) continue;
+        const epoch = Date.UTC(yy < 57 ? 2000 + yy : 1900 + yy, 0, 1) + (doy - 1) * 86400000;
+        ages.push((Date.now() - epoch) / 86400000);
+        if (ages.length >= 400) break;
+      }
+      if (!ages.length) return null;
+      ages.sort((a, b) => a - b);
+      return ages[ages.length >> 1];
+    }
+
     async function fetchSATCAT() {
       const sources = [];
       if (API_PROXY) sources.push(`${API_PROXY}/satcat`);
@@ -8887,13 +9080,19 @@ PELICAN-9
         renderConstellationList();
         renderOwnerList();
         updateCount();
-        if (tleSource === 'snapshot')
-          setStatus(`cached snapshot · ${N} satellites · positions live`, 'warn');
+        if (tleSource === 'snapshot') {
+          // TLEs lose accuracy fast (km/day for LEO). Say how old the snapshot is
+          // so nobody mistakes a months-old fallback for live tracking.
+          const ageD = tleAgeDays(tleText);
+          const ageTxt = ageD == null ? '' : ` · ${ageD < 2 ? 'fresh' : Math.round(ageD) + 'd old'}`;
+          const approx = ageD != null && ageD > 14 ? ' · positions approximate' : ' · positions live';
+          setStatus(`cached snapshot${ageTxt} · ${N} satellites${approx}`, ageD != null && ageD > 14 ? 'err' : 'warn');
+        }
         else
           setStatus(`live · ${N} satellites · ${tleSource}`);
 
         // Re-propagate every 5s
-        setInterval(propagateSats, 5000);
+        everyVisible(propagateSats, 5000, { catchUp: true });
       } catch (err) {
         console.error('satellites failed', err);
         satLoadState = 'error';
@@ -9117,7 +9316,9 @@ PELICAN-9
     }
 
     const NEWS_CACHE_KEY = 'wrldmon_news_v3';
-    const NEWS_TTL = 4 * 60 * 60 * 1000;       // 4h fresh cache
+    // With the Worker the feed is rebuilt every 15 min server-side, so a short
+    // client TTL is cheap; direct GDELT is throttled, so cache much longer.
+    const NEWS_TTL = (API_PROXY ? 10 * 60 : 4 * 60 * 60) * 1000;
     const NEWS_STALE = 24 * 60 * 60 * 1000;    // 24h stale-but-usable
     const GDELT_THROTTLE_KEY = 'wrldmon_gdelt_throttled_until';
     const GDELT_THROTTLE_MS = 90 * 1000;       // short cool-down after a failure; we already tried 3 transports, so don't lock out live news for long
@@ -9293,6 +9494,82 @@ PELICAN-9
       ]},
     ];
 
+    // Shared, country-agnostic headline pool. Countries whose curated
+    // `headlines` list is shorter than their target `count` top up from here so
+    // the demo feed reads like distinct stories instead of the same headline
+    // numbered (5)/(8)/(11)…  Reused across countries on purpose — the same
+    // generic story surfacing in different countries' feeds is realistic, and
+    // the demo path skips cross-country title-dedup so none get dropped.
+    const GENERIC_HEADLINES = [
+      'Central bank holds rates as inflation pressure lingers',
+      'Nationwide transit strike snarls the morning commute',
+      'Lawmakers clash over proposed budget cuts',
+      'Health ministry reports sharp drop in seasonal cases',
+      'Regulators open probe into tech-sector data practices',
+      'Severe weather warning issued for coastal regions',
+      'University researchers unveil clean-energy breakthrough',
+      'Opposition demands inquiry into procurement deal',
+      'Trade delegation departs for high-stakes negotiations',
+      'Anti-corruption agency arrests senior official',
+      'Farmers protest new agricultural subsidy rules',
+      'Cybersecurity agency warns of coordinated attacks',
+      'Housing costs dominate debate in national assembly',
+      'Border authorities intercept major smuggling operation',
+      'Public-sector unions threaten a wider walkout',
+      'Election commission finalizes new redistricting map',
+      'Environmental groups sue over pipeline permit',
+      'Manufacturing output rebounds after months-long slump',
+      'Interior ministry unveils sweeping policing reforms',
+      'Aviation authority grounds fleet over safety fault',
+      'Court upholds ruling in high-profile corruption trial',
+      'Coastal cleanup expands after offshore oil spill',
+      'Tech firms pledge investment in domestic chip plants',
+      'Drought prompts emergency water restrictions',
+      'Teachers reject pay offer as term begins',
+      'New rail line promises to cut cross-country travel times',
+      'Currency slides to multi-month low against the dollar',
+      'Wildfire crews battle blaze near the outskirts',
+      'Landmark climate bill advances to final vote',
+      'Consumer confidence dips amid cost-of-living squeeze',
+      'Data leak exposes millions of user records',
+      'Health system braces for a difficult winter',
+      'Startup scene draws record foreign investment',
+      'Ports reopen after week-long labour dispute',
+      'Supreme court to hear challenge to surveillance law',
+      'Grid operator warns of strain during heatwave',
+      'Historic drought reshapes farming season',
+      'Ministers pledge faster action on housing shortage',
+      'Flagship carrier reports record passenger numbers',
+      'Regulators approve merger after lengthy review',
+      'Protests swell over proposed pension changes',
+      'Officials tout falling unemployment in latest data',
+      'Emergency services respond to major rail disruption',
+      'New trade corridor opens with neighbouring states',
+    ];
+
+    // Deterministic per-seed shuffle so each country gets a stable but distinct
+    // ordering of the generic pool (no Math.random → same feed every reload).
+    function shuffleSeeded(arr, seedStr) {
+      let h = 1779033703 ^ seedStr.length;
+      for (let i = 0; i < seedStr.length; i++) h = Math.imul(h ^ seedStr.charCodeAt(i), 3432918353);
+      const rand = () => { h = Math.imul(h ^ (h >>> 15), 2246822507); h ^= h >>> 13; return (h >>> 0) / 4294967296; };
+      const a = arr.slice();
+      for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(rand() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+      return a;
+    }
+
+    // Distinct headline list of length `entry.count` for one country.
+    function demoHeadlinesFor(entry) {
+      const out = [], seen = new Set();
+      const push = h => { const k = h.toLowerCase(); if (!seen.has(k)) { seen.add(k); out.push(h); } };
+      for (const h of entry.headlines) { if (out.length >= entry.count) break; push(h); }
+      for (const h of shuffleSeeded(GENERIC_HEADLINES, entry.country)) { if (out.length >= entry.count) break; push(h); }
+      // Only bites if a future count exceeds curated + generic pool combined.
+      let n = 2;
+      while (out.length < entry.count) push(`${entry.headlines[0]} — update ${n++}`);
+      return out.slice(0, entry.count);
+    }
+
     // Expand DEMO_DISTRIBUTION into a flat article list
     const EMERGENCY_NEWS = (() => {
       const pad = n => String(n).padStart(2, '0');
@@ -9301,29 +9578,266 @@ PELICAN-9
       const list = [];
       const now = Date.now();
       let offsetMin = 0;
-      // Interleave countries so the timeline isn't blocked by country
-      const flat = [];
+      // Precompute each country's distinct headline set, then interleave by
+      // index so the chronological timeline isn't blocked country-by-country.
+      const perCountry = DEMO_DISTRIBUTION.map(entry => ({ entry, headlines: demoHeadlinesFor(entry) }));
       const maxCount = Math.max(...DEMO_DISTRIBUTION.map(e => e.count));
+      const flat = [];
       for (let i = 0; i < maxCount; i++) {
-        for (const entry of DEMO_DISTRIBUTION) {
-          if (i < entry.count) flat.push({ entry, i });
+        for (const pc of perCountry) {
+          if (i < pc.entry.count) flat.push({ pc, i });
         }
       }
-      for (const { entry, i } of flat) {
-        const headline = entry.headlines[i % entry.headlines.length];
+      for (const { pc, i } of flat) {
         offsetMin += 2 + Math.random() * 6;  // 2-8 minutes per article
         const date = new Date(now - offsetMin * 60 * 1000);
         list.push({
-          title: i < entry.headlines.length ? headline : `${headline} (${i+1})`,
-          sourcecountry: entry.country,
-          domain: 'demo.' + (entry.country.toLowerCase().replace(/\s+/g,'').slice(0,3) || 'xx'),
+          title: pc.headlines[i],
+          sourcecountry: pc.entry.country,
+          domain: 'demo.' + (pc.entry.country.toLowerCase().replace(/\s+/g,'').slice(0,3) || 'xx'),
           language: 'English',
           seendate: fmtGdeltDate(date),
-          url: `#demo-${entry.country.replace(/\s+/g,'')}-${i}`,
+          url: `#demo-${pc.entry.country.replace(/\s+/g,'')}-${i}`,
         });
       }
       return list;
     })();
+
+    // ════════════════════════════════════════════════════════════════
+    //  GEOLOCATION — place each story where it HAPPENS, not where it was
+    //  published. GDELT's `sourcecountry` is the outlet's home: a Guardian
+    //  piece on Gaza used to land in London. We scan title + summary for
+    //  country names, demonyms, capitals/major cities and a few unambiguous
+    //  institutions, score them, and only fall back to the outlet country.
+    // ════════════════════════════════════════════════════════════════
+    // Extra terms per country (names themselves, capitals and MAJOR_CITIES are
+    // added automatically). Matching is case-sensitive on purpose: proper nouns
+    // are capitalised, so "turkey" / "china" / "chad" as common words don't hit.
+    // Leaders' names are deliberately left out — they go stale.
+    const GEO_TERMS = {
+      'United States': 'American|Americans|U.S.|US|USA|White House|Pentagon|Capitol Hill|New Mexico|Puerto Rico|Alaska|Hawaii|California|Texas|Florida|New York City|Wall Street',
+      'United Kingdom': 'UK|U.K.|Britain|British|Briton|Britons|England|Scotland|Wales|Scottish|Welsh|Northern Ireland|Downing Street|Westminster',
+      'Canada': 'Canadian|Canadians|Toronto|Montreal|Vancouver|Quebec|Alberta',
+      'Mexico': 'Mexican|Mexicans|Guadalajara|Monterrey|Tijuana|Sinaloa',
+      'Brazil': 'Brazilian|Brazilians|São Paulo|Rio de Janeiro|Amazon rainforest',
+      'Argentina': 'Argentine|Argentinian|Argentines', 'Chile': 'Chilean|Chileans',
+      'Colombia': 'Colombian|Colombians|Medellín', 'Peru': 'Peruvian|Peruvians',
+      'Venezuela': 'Venezuelan|Venezuelans|Maracaibo', 'Ecuador': 'Ecuadorian|Ecuadorean|Guayaquil',
+      'Bolivia': 'Bolivian|Bolivians', 'Uruguay': 'Uruguayan', 'Paraguay': 'Paraguayan',
+      'Cuba': 'Cuban|Cubans', 'Dominican Republic': 'Dominican|Santo Domingo', 'Guatemala': 'Guatemalan',
+      'Honduras': 'Honduran|Tegucigalpa', 'Panama': 'Panamanian|Panama Canal', 'Costa Rica': 'Costa Rican|San José',
+      'Nicaragua': 'Nicaraguan|Managua', 'El Salvador': 'Salvadoran|San Salvador', 'Haiti': 'Haitian|Haitians|Port-au-Prince',
+      'Jamaica': 'Jamaican|Kingston',
+      'France': 'French|Élysée|Elysee|Marseille|Lyon|Corsica|New Caledonia', 'Germany': 'German|Germans|Bundestag|Berlin|Munich|Frankfurt|Hamburg',
+      'Spain': 'Spanish|Spaniards|Barcelona|Catalonia|Catalan|Valencia', 'Italy': 'Italian|Italians|Milan|Naples|Sicily|Vatican',
+      'Portugal': 'Portuguese|Porto', 'Netherlands': 'Dutch|Holland|The Hague|Rotterdam', 'Belgium': 'Belgian|Antwerp',
+      'Switzerland': 'Swiss|Geneva|Zurich|Davos', 'Austria': 'Austrian', 'Sweden': 'Swedish|Swedes|Gothenburg',
+      'Norway': 'Norwegian|Norwegians', 'Denmark': 'Danish|Danes|Greenland|Faroe', 'Finland': 'Finnish|Finns',
+      'Iceland': 'Icelandic', 'Ireland': 'Irish|Republic of Ireland', 'Poland': 'Polish|Poles|Krakow|Kraków|Gdansk',
+      'Czech Republic': 'Czech|Czechia|Czechs', 'Slovakia': 'Slovak|Slovaks', 'Hungary': 'Hungarian|Hungarians',
+      'Romania': 'Romanian|Romanians', 'Bulgaria': 'Bulgarian|Bulgarians', 'Greece': 'Greek|Greeks|Thessaloniki',
+      'Croatia': 'Croatian|Croats', 'Slovenia': 'Slovenian', 'Serbia': 'Serbian|Serbs', 'Bosnia and Herzegovina': 'Bosnia|Bosnian|Sarajevo|Republika Srpska',
+      'Albania': 'Albanian', 'North Macedonia': 'Macedonian|Skopje', 'Malta': 'Maltese|Valletta', 'Lithuania': 'Lithuanian',
+      'Latvia': 'Latvian', 'Estonia': 'Estonian', 'Belarus': 'Belarusian|Belarusians', 'Moldova': 'Moldovan|Transnistria|Chisinau',
+      'Ukraine': 'Ukrainian|Ukrainians|Kyiv|Kiev|Kharkiv|Odesa|Odessa|Lviv|Dnipro|Zaporizhzhia|Kherson|Donetsk|Luhansk|Donbas|Crimea|Crimean|Mariupol|Bakhmut|Pokrovsk',
+      'Russia': 'Russian|Russians|Kremlin|Moscow|St Petersburg|Saint Petersburg|Kursk|Belgorod|Siberia|Chechnya',
+      'Turkey': 'Türkiye|Turkiye|Turkish|Turks|Istanbul|Ankara|Erdogan', 'Cyprus': 'Cypriot',
+      'Georgia': 'Georgian Dream|Tbilisi', 'Armenia': 'Armenian|Armenians', 'Azerbaijan': 'Azerbaijani|Azeri|Nagorno-Karabakh|Karabakh',
+      'Kazakhstan': 'Kazakh|Almaty', 'Uzbekistan': 'Uzbek', 'Turkmenistan': 'Turkmen', 'Tajikistan': 'Tajik', 'Kyrgyzstan': 'Kyrgyz|Bishkek',
+      'Mongolia': 'Mongolian', 'China': 'Chinese|Beijing|Shanghai|Shenzhen|Guangzhou|Wuhan|Xinjiang|Uyghur|Uighur|Tibet|Tibetan|PRC',
+      'Taiwan': 'Taiwanese|Taipei|Taiwan Strait', 'Hong Kong': 'Hongkongers', 'Japan': 'Japanese|Tokyo|Osaka|Okinawa|Fukushima',
+      'South Korea': 'South Korean|South Koreans|Seoul|Busan|Korean', 'North Korea': 'North Korean|North Koreans|Pyongyang|DPRK',
+      'India': 'Indian|Indians|New Delhi|Delhi|Mumbai|Bengaluru|Bangalore|Kolkata|Chennai|Manipur|Kerala',
+      'Pakistan': 'Pakistani|Pakistanis|Karachi|Lahore|Balochistan|Khyber Pakhtunkhwa|Peshawar', 'Bangladesh': 'Bangladeshi|Dhaka|Rohingya camps',
+      'Nepal': 'Nepali|Nepalese', 'Sri Lanka': 'Sri Lankan', 'Bhutan': 'Bhutanese', 'Afghanistan': 'Afghan|Afghans|Taliban|Kabul|Kandahar',
+      'Iran': 'Iranian|Iranians|Tehran|Persian Gulf|IRGC|Isfahan', 'Iraq': 'Iraqi|Iraqis|Baghdad|Mosul|Basra|Kurdistan Region|Erbil',
+      'Syria': 'Syrian|Syrians|Damascus|Aleppo|Idlib|Homs', 'Lebanon': 'Lebanese|Beirut|Hezbollah',
+      'Israel': 'Israeli|Israelis|Tel Aviv|Knesset|IDF', 'Palestine': 'Palestinian|Palestinians|Gaza|Gazans|West Bank|Hamas|Rafah|Khan Younis|Jenin|Ramallah',
+      'Jordan': 'Jordanian|Amman', 'Saudi Arabia': 'Saudi|Saudis|Riyadh|Jeddah|Mecca', 'Yemen': 'Yemeni|Houthi|Houthis|Sanaa|Aden|Red Sea shipping',
+      'Oman': 'Omani|Muscat', 'United Arab Emirates': 'UAE|Emirati|Dubai|Abu Dhabi', 'Qatar': 'Qatari|Doha', 'Kuwait': 'Kuwaiti', 'Bahrain': 'Bahraini|Manama',
+      'Thailand': 'Thai|Bangkok', 'Vietnam': 'Vietnamese|Viet Nam|Ho Chi Minh City', 'Cambodia': 'Cambodian|Khmer', 'Laos': 'Lao|Laotian|Vientiane',
+      'Myanmar': 'Burmese|Burma|Rohingya|Yangon|Rakhine|Naypyitaw', 'Malaysia': 'Malaysian|Malaysians', 'Indonesia': 'Indonesian|Indonesians|Java|Bali|Sumatra|Papua province',
+      'Philippines': 'Philippine|Filipino|Filipinos|Manila|Mindanao', 'Singapore': 'Singaporean', 'Brunei': 'Bruneian',
+      'Australia': 'Australian|Australians|Sydney|Melbourne|Brisbane|Perth|New South Wales|Queensland', 'New Zealand': 'Kiwi|New Zealanders|Auckland',
+      'Papua New Guinea': 'PNG|Port Moresby', 'Fiji': 'Fijian',
+      'Egypt': 'Egyptian|Egyptians|Cairo|Sinai|Suez Canal|Alexandria', 'Libya': 'Libyan|Libyans|Benghazi', 'Tunisia': 'Tunisian|Tunis',
+      'Algeria': 'Algerian|Algiers', 'Morocco': 'Moroccan|Rabat|Casablanca|Western Sahara',
+      'Sudan': 'Sudanese|Khartoum|Darfur|El Fasher|Port Sudan|Kordofan|RSF', 'South Sudan': 'South Sudanese|Juba',
+      'Ethiopia': 'Ethiopian|Ethiopians|Addis Ababa|Tigray|Amhara|Oromia', 'Eritrea': 'Eritrean|Asmara', 'Somalia': 'Somali|Somalis|Mogadishu|al-Shabaab|Al-Shabaab|Puntland|Somaliland',
+      'Kenya': 'Kenyan|Kenyans|Nairobi|Mombasa', 'Uganda': 'Ugandan|Kampala', 'Tanzania': 'Tanzanian|Dar es Salaam|Zanzibar',
+      'Rwanda': 'Rwandan|Kigali', 'Burundi': 'Burundian', 'Democratic Republic of the Congo': 'DR Congo|DRC|Congolese|Kinshasa|Goma|M23|North Kivu|South Kivu|Democratic Republic of Congo|Congo',
+      'Republic of the Congo': 'Brazzaville|Congo-Brazzaville', 'Central African Republic': 'Bangui|CAR', 'Cameroon': 'Cameroonian|Douala',
+      'Nigeria': 'Nigerian|Nigerians|Lagos|Abuja|Boko Haram|Niger Delta|Kano', 'Niger': 'Nigerien|Niamey', 'Mali': 'Malian|Bamako|Timbuktu',
+      'Burkina Faso': 'Burkinabe|Ouagadougou', 'Chad': 'Chadian|NDjamena|N\'Djamena', 'Senegal': 'Senegalese|Dakar', 'Ghana': 'Ghanaian|Accra',
+      'Ivory Coast': 'Ivorian|Abidjan|Côte d\'Ivoire|Cote d\'Ivoire', 'Guinea': 'Guinean|Conakry', 'Sierra Leone': 'Sierra Leonean|Freetown',
+      'Liberia': 'Liberian|Monrovia', 'Togo': 'Togolese|Lomé', 'Benin': 'Beninese|Cotonou', 'Montenegro': 'Montenegrin|Podgorica',
+      'Luxembourg': 'Luxembourgish', 'Angola': 'Angolan|Luanda', 'Zambia': 'Zambian|Lusaka', 'Zimbabwe': 'Zimbabwean|Harare',
+      'Mozambique': 'Mozambican|Maputo|Cabo Delgado', 'Malawi': 'Malawian|Lilongwe', 'Botswana': 'Botswanan|Gaborone', 'Namibia': 'Namibian|Windhoek',
+      'South Africa': 'South African|South Africans|Johannesburg|Cape Town|Durban|Pretoria', 'Lesotho': 'Basotho', 'Eswatini': 'Swazi|Swaziland',
+      'Madagascar': 'Malagasy|Antananarivo', 'Mauritius': 'Mauritian', 'Seychelles': 'Seychellois',
+    };
+    // Words that consume a span without naming a country, so the shorter
+    // match inside them can't fire ("Indian Ocean" ≠ India, "Equatorial Guinea"
+    // ≠ Guinea, "Gulf of Mexico" ≠ Mexico, "Latin America" ≠ United States).
+    const GEO_SINKS = ['Indian Ocean', 'Equatorial Guinea', 'Guinea-Bissau', 'Gulf of Mexico', 'Gulf of America', 'Latin America',
+      'South America', 'North America', 'Central America', 'American Samoa', 'Native American', 'Jordan River', 'Michael Jordan',
+      'Georgia Tech', 'Paris Agreement', 'Paris Saint-Germain', 'New England', 'New Jersey', 'Turkey Day', 'Korean War',
+      'Hong Kong-listed', 'Chinese New Year', 'Dutch auction', 'French fries', 'Turkish Airlines', 'Emirates airline', 'Qatar Airways',
+      'Washington Post', 'New York Times', 'Wall Street Journal', 'Times of India', 'South China Morning Post', 'Japan Times'];
+    // Ambiguous on their own (US state, first names, a bird…): count, but weakly.
+    const GEO_WEAK = new Set(['Georgia', 'Jordan', 'Chad', 'Turkey', 'Washington', 'Congo', 'Korean', 'CAR', 'RSF', 'US', 'PNG',
+      'Santiago', 'Valencia', 'Perth', 'Kingston', 'Tripoli', 'Sofia', 'Victoria', 'Lima', 'Java', 'Alexandria', 'Lyon', 'Kiwi',
+      'Holland', 'Bali', 'Lao', 'Thai', 'Dutch', 'Swiss', 'Greek', 'German', 'French', 'Spanish', 'Polish', 'Danish', 'Irish', 'San José']);
+    // Big-power demonyms usually name the ACTOR, not the place: "Israeli strikes
+    // on Gaza" happens in Gaza, "Russian drones hit Kharkiv" in Ukraine.
+    const GEO_ACTOR = new Set(['American', 'Americans', 'U.S.', 'USA', 'British', 'Russian', 'Russians', 'Chinese', 'Israeli',
+      'Israelis', 'Iranian', 'Turkish', 'Saudi', 'Indian', 'Pakistani', 'Ukrainian', 'Emirati', 'Qatari', 'Egyptian', 'Japanese',
+      'Kremlin', 'Pentagon', 'White House', 'IDF', 'IRGC', 'Hezbollah', 'Hamas', 'Houthi', 'Houthis']);
+    // Context overrides for weak terms: "Georgia Senate race" is the US state,
+    // "turkey prices before Thanksgiving" is a bird. `to: null` drops the hit.
+    const GEO_CONTEXT = {
+      'Georgia': { to: 'United States', when: /\b(Atlanta|Savannah|Senate|senator|governor|Governor|midterms?|Republicans?|Democrats?|GOP|county|County|Bulldogs|U\.?S\.?|American)\b/ },
+      'Turkey':  { to: null, when: /\b(Thanksgiving|recipe|roast|feast|dinner|gobble)\b/i },
+      'Jordan':  { to: null, when: /\b(NBA|Nike|sneakers?|Air Jordan|Bulls)\b/ },
+      'Chad':    { to: null, when: /\b(Chad (?!Republic)[A-Z][a-z]+)\b/ },
+    };
+
+    // Country names as other datasets spell them (ReliefWeb, GDACS, ACLED, UN).
+    Object.assign(ALIASES, {
+      'Türkiye': 'Turkey', 'Turkiye': 'Turkey', 'Viet Nam': 'Vietnam', 'Republic of Moldova': 'Moldova',
+      'Democratic Republic of Congo': 'Democratic Republic of the Congo', 'DR Congo': 'Democratic Republic of the Congo',
+      'Congo, The Democratic Republic of the': 'Democratic Republic of the Congo', 'Congo': 'Republic of the Congo',
+      'occupied Palestinian territory': 'Palestine', 'State of Palestine': 'Palestine', 'Palestinian Territory': 'Palestine',
+      'Iran (Islamic Republic of)': 'Iran', "Lao People's Democratic Republic": 'Laos', 'Lao PDR': 'Laos',
+      'United Republic of Tanzania': 'Tanzania', 'Bolivia (Plurinational State of)': 'Bolivia',
+      'Venezuela (Bolivarian Republic of)': 'Venezuela', 'Korea, Republic of': 'South Korea', 'Republic of Korea': 'South Korea',
+      "Democratic People's Republic of Korea": 'North Korea', 'Russian Federation': 'Russia', 'Syrian Arab Republic': 'Syria',
+      'United States of America': 'United States', 'United Kingdom of Great Britain and Northern Ireland': 'United Kingdom',
+      'China, Hong Kong Special Administrative Region': 'Hong Kong', 'Myanmar (Burma)': 'Myanmar', 'Cabo Verde': 'Cape Verde',
+    });
+
+    const deaccent = (s) => String(s || '').normalize('NFD').replace(/\p{M}/gu, '');
+    let _geo = null;   // { re, termMap: term → { country, city, weak } }
+    function buildGazetteer() {
+      const termMap = new Map();
+      const add = (term, country, city = null) => {
+        const k = deaccent(term);
+        if (!k || termMap.has(k)) return;          // first definition wins
+        termMap.set(k, { country, city, w: GEO_WEAK.has(term) ? 0.35 : GEO_ACTOR.has(term) ? 0.6 : 1 });
+      };
+      for (const s of GEO_SINKS) termMap.set(deaccent(s), { country: null });
+      // Country names first ("Hong Kong" is its own entry, not a Chinese city),
+      // then cities so they record the city as well as the country.
+      for (const country of Object.keys(CENTROIDS)) add(country, country);
+      for (const [country, list] of Object.entries(MAJOR_CITIES)) for (const [city] of list) add(city, country, city);
+      for (const [country, [city]] of Object.entries(CAPITALS)) if (city !== country) add(city, country, city);
+      for (const [country, terms] of Object.entries(GEO_TERMS)) for (const t of terms.split('|')) add(t, country);
+      for (const [alias, country] of Object.entries(ALIASES)) if (CENTROIDS[country]) add(alias, country);
+      const esc = (t) => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const alts = [...termMap.keys()].sort((a, b) => b.length - a.length).map(esc);
+      const re = new RegExp(`(?<![\\p{L}\\p{N}])(?:${alts.join('|')})(?![\\p{L}\\p{N}])`, 'gu');
+      return { re, termMap };
+    }
+
+    // → { country, city, via: 'text'|'hint'|'source', all: [country…] }
+    function locateArticle(a) {
+      _geo ||= buildGazetteer();
+      const score = new Map(), cities = new Map();
+      const bump = (c, w) => score.set(c, (score.get(c) || 0) + w);
+      const scan = (text, weight) => {
+        if (!text) return;
+        let first = true;
+        for (const m of deaccent(text).matchAll(_geo.re)) {
+          const hit = _geo.termMap.get(m[0]);
+          if (!hit || !hit.country) continue;
+          let country = hit.country;
+          const ctx = GEO_CONTEXT[m[0]];
+          if (ctx && (ctx.when.test(a.title || '') || ctx.when.test(a.desc || ''))) { if (!ctx.to) continue; country = ctx.to; }
+          bump(country, weight * hit.w + (first && hit.w === 1 ? weight * 0.34 : 0));
+          if (hit.city && country === hit.country) cities.set(country, hit.city);
+          first = false;
+        }
+      };
+      scan(a.title, 3);
+      scan(a.desc, 1);
+      // Structured sources (ReliefWeb, GDACS, ACLED, Guardian tags) know the place.
+      const hinted = a.countryHint && lookup(a.countryHint)?.name;
+      if (hinted) bump(hinted, 10);
+
+      let best = null, bestScore = 0;
+      for (const [c, s] of score) if (s > bestScore) { best = c; bestScore = s; }
+      if (best && bestScore >= 1) {
+        const all = [...score.entries()].sort((x, y) => y[1] - x[1]).map(([c]) => c);
+        return { country: best, city: cities.get(best) || null, via: best === hinted ? 'hint' : 'text', all };
+      }
+      const src = lookup(a.sourcecountry)?.name || null;
+      return { country: src, city: null, via: 'source', all: src ? [src] : [] };
+    }
+
+    // The country an article is ABOUT (falls back to the outlet's country).
+    function articleCountry(a) {
+      return a?._geo?.country || lookup(a?.sourcecountry)?.name || null;
+    }
+
+    // ════════════════════════════════════════════════════════════════
+    //  STORY CLUSTERING — many outlets, one event. Group near-identical
+    //  headlines so the globe and feeds show STORIES ranked by how many
+    //  independent outlets carry them, instead of 30 copies of one wire.
+    // ════════════════════════════════════════════════════════════════
+    const STORY_STOP = new Set(('the a an and or but of in on at to for from by with as is are was were be been has have had will would ' +
+      'could should may might can its it this that these those after before over under amid into about against says said say new ' +
+      'more most than not no yes his her their they them he she we you who what when where why how live latest update updates ' +
+      'news report reports video watch photos first last year years day days week weeks two three one also just now still').split(' '));
+    function storyTokens(title) {
+      const out = new Set();
+      for (let w of deaccent(title).toLowerCase().split(/[^\p{L}\p{N}]+/u)) {
+        if (w.length < 3 || STORY_STOP.has(w)) continue;
+        if (w.length > 4 && w.endsWith('s')) w = w.slice(0, -1);   // crude plural fold
+        out.add(w);
+      }
+      return out;
+    }
+    function clusterStories(articles) {
+      const stories = [];
+      const index = new Map();                       // token → story indices
+      const byTitle = new Map();                     // exact (normalised) headline → story
+      for (const a of articles) {
+        const tn = normalizeTitle(a.title);
+        if (tn && byTitle.has(tn)) { stories[byTitle.get(tn)].members.push(a); continue; }
+        const toks = storyTokens(a.title);
+        let best = -1, bestSim = 0;
+        if (a.kind === 'news' || !a.kind) {
+          const shared = new Map();
+          for (const t of toks) for (const si of index.get(t) || []) shared.set(si, (shared.get(si) || 0) + 1);
+          for (const [si, n] of shared) {
+            const st = stories[si];
+            if (st.kind !== 'news') continue;
+            const sim = n / Math.min(toks.size, st.toks.size);   // overlap coefficient
+            if (n >= 3 && sim >= 0.6 && sim > bestSim) { best = si; bestSim = sim; }
+          }
+        }
+        if (best >= 0) { stories[best].members.push(a); if (tn) byTitle.set(tn, best); continue; }
+        const si = stories.length;
+        if (tn) byTitle.set(tn, si);
+        stories.push({ toks, members: [a], kind: a.kind || 'news' });
+        for (const t of toks) { if (!index.has(t)) index.set(t, []); index.get(t).push(si); }
+      }
+      // Lead = richest member (image + summary + curated outlet); story country =
+      // majority of members located from their own text.
+      const richness = (a) => (cssImageUrl(a.socialimage) ? 2 : 0) + (a.desc ? 1 : 0) + (a.src && a.src !== 'gdelt' ? 1 : 0);
+      return stories.map((st, i) => {
+        const m = st.members;
+        const lead = m.reduce((b, a) => richness(a) > richness(b) ? a : b, m[0]);
+        const votes = new Map();
+        for (const a of m) if (a._geo?.via !== 'source' && a._geo?.country) votes.set(a._geo.country, (votes.get(a._geo.country) || 0) + 1);
+        let country = lead._geo?.country, top = 0;
+        for (const [c, n] of votes) if (n > top) { country = c; top = n; }
+        const domains = new Set(m.map(a => a.domain).filter(Boolean));
+        const times = m.map(a => parseGdeltDate(a.seendate)?.getTime()).filter(Boolean);
+        return { id: 's' + i, lead, members: m, size: m.length, sources: domains.size, country,
+                 first: times.length ? Math.min(...times) : null, last: times.length ? Math.max(...times) : null };
+      });
+    }
 
     function normalizeTitle(t) {
       return (t || '').toLowerCase()
@@ -9333,35 +9847,55 @@ PELICAN-9
         .trim();
     }
 
-    function ingestArticles(all, cached) {
-      // Title-level dedup: GDELT often returns the same headline across many
-      // outlets / source countries. Keep the first occurrence only.
-      const seenTitles = new Set();
-      const unique = [];
-      for (const a of all) {
-        const tn = normalizeTitle(a.title);
-        if (tn && seenTitles.has(tn)) continue;
-        if (tn) seenTitles.add(tn);
-        unique.push(a);
-      }
+    function ingestArticles(all, cached, { dedupe = true } = {}) {
+      // Same headline from several outlets is no longer dropped: clustering
+      // folds it into one story whose size = how many outlets carry it. The
+      // demo set skips clustering — its generic headlines are deliberately
+      // reused across countries.
+      const unique = all.filter(a => a && a.title);
 
+      // 1. Where is each article about?  2. Which articles are the same story?
+      for (const a of unique) a._geo = locateArticle(a);
+      const stories = dedupe ? clusterStories(unique)
+        : unique.map((a, i) => ({ id: 'd' + i, lead: a, members: [a], size: 1, sources: 1, country: a._geo.country }));
+
+      // One entry per story (its lead), carrying the story's reach. Coverage
+      // volume per country (`count`) still counts every member article.
+      const leads = [];
       const groups = new Map();
-      for (const a of unique) {
-        const hit = lookup(a.sourcecountry);
+      for (const st of stories) {
+        const lead = st.lead;
+        lead._story = { id: st.id, size: st.size, sources: st.sources, first: st.first, last: st.last,
+          also: st.members.filter(m => m !== lead).slice(0, 12).map(m => ({ title: m.title, url: m.url, domain: m.domain })) };
+        if (st.country && lead._geo.country !== st.country) lead._geo = { ...lead._geo, country: st.country, city: null };
+        leads.push(lead);
+        if ((lead.tags || []).includes('markets')) continue;
+        const hit = lookup(st.country);
         if (!hit) continue;
-        if ((a.tags || []).includes('markets')) continue;
         if (!groups.has(hit.name)) groups.set(hit.name, { ...hit, count: 0, articles: [] });
         const g = groups.get(hit.name);
-        g.count++;
-        if (g.articles.length < 40) g.articles.push(a);
+        g.count += st.size;
+        g.articles.push(lead);
+      }
+      // Biggest stories first inside each country (stable for equal sizes).
+      for (const g of groups.values()) {
+        g.articles.sort((x, y) => y._story.size - x._story.size);
+        if (g.articles.length > 40) g.articles.length = 40;
       }
       for (const g of groups.values()) {
         addCountrySignal({ country: g.name, lat: g.lat, lon: g.lon, count: g.count, articles: g.articles });
         state.countries.set(g.name, g);
       }
-      state.articles = unique;
+      state.articles = leads;
+      state.newsStats = {
+        articles: unique.length, stories: stories.length,
+        located: unique.filter(a => a._geo.via !== 'source').length,
+        outlets: new Set(unique.map(a => a.domain).filter(Boolean)).size,
+      };
       try { updateSeverityCounts(); } catch {}
-      return { articles: unique.length, countries: groups.size, ok: true, cached };
+      // An open briefing keeps its place + topic but picks up the fresh feed.
+      if (state.brief) { try { renderPlaceBrief(); } catch {} }
+      return { articles: unique.length, stories: stories.length, countries: groups.size, ok: true, cached };
     }
 
     function readNewsCache() {
@@ -9375,13 +9909,15 @@ PELICAN-9
     }
 
     function useDemoNews(reason) {
+      state.newsSourceLabel = 'DEMO';
       const demo = EMERGENCY_NEWS.map(a => tagArticle({ ...a }));
       setStatus(`demo · ${reason}`, 'err', 'news');
-      ingestArticles(demo, true);
+      ingestArticles(demo, true, { dedupe: false });
       return { articles: demo.length, countries: state.countries.size, ok: false, demo: true };
     }
 
     function useCachedNews(obj, label, level) {
+      state.newsSourceLabel = obj.label || 'GDELT';
       const retagged = obj.articles.map(a => tagArticle(a));
       const ageMin = Math.round((Date.now() - obj.time) / 60000);
       const ageStr = ageMin < 60 ? `${ageMin}m` : `${(ageMin/60).toFixed(1)}h`;
@@ -9414,6 +9950,27 @@ PELICAN-9
         return useDemoNews(`gdelt cool-down ${remaining}m`);
       }
 
+      // Preferred path: the Worker's merged multi-source feed (RSS + GDELT +
+      // ReliefWeb + GDACS [+ Guardian, ACLED]). Falls through to direct GDELT.
+      if (API_PROXY) {
+        setStatus('linking wire…', null, 'news');
+        try {
+          const r = await fetch(`${API_PROXY}/news`, { cache: 'no-store' });
+          if (!r.ok) throw new Error('http ' + r.status);
+          const j = await r.json();
+          const all = (j.articles || []).filter(a => a && a.title && a.url).map(a => tagArticle(a));
+          if (!all.length) throw new Error('empty feed');
+          state.newsSourceLabel = 'MULTI-SOURCE';
+          try { localStorage.setItem(NEWS_CACHE_KEY, JSON.stringify({ time: Date.now(), articles: all, label: 'MULTI-SOURCE' })); } catch {}
+          const out = ingestArticles(all, false);
+          const okSrc = Object.values(j.sources || {}).filter(x => x.ok).length;
+          setStatus(`live · ${out.stories} stories · ${okSrc} sources`, null, 'news');
+          return out;
+        } catch (err) {
+          console.warn('worker /news failed, falling back to GDELT', err);
+        }
+      }
+
       setStatus('linking gdelt…', null, 'news');
       try {
         const a1 = await gdeltQuery('world OR politics OR economy OR conflict OR treaty OR summit', 250);
@@ -9426,9 +9983,10 @@ PELICAN-9
         }
         if (!all.length) throw new Error('empty feed');
         clearGdeltThrottle();
-        try { localStorage.setItem(NEWS_CACHE_KEY, JSON.stringify({ time: Date.now(), articles: all })); } catch {}
+        state.newsSourceLabel = 'GDELT';
+        try { localStorage.setItem(NEWS_CACHE_KEY, JSON.stringify({ time: Date.now(), articles: all, label: 'GDELT' })); } catch {}
         const out = ingestArticles(all, false);
-        setStatus(`live · ${all.length} signals · 24h`, null, 'news');
+        setStatus(`live · ${out.stories} stories · GDELT 24h`, null, 'news');
         return out;
       } catch (err) {
         console.error('GDELT failed', err);
@@ -9475,7 +10033,7 @@ PELICAN-9
     // initial boot load. Honors the GDELT throttle (won't fire network if cooling
     // down) and rebuilds the globe signals to avoid duplicate markers.
     async function refreshNewsTick() {
-      if (isGdeltThrottled()) return;            // respect cool-down; try again next tick
+      if (!API_PROXY && isGdeltThrottled()) return;   // respect GDELT cool-down; the Worker has none
       try {
         for (const sig of signalEntries.splice(0)) {
           sig.sprite?.parent?.remove(sig.sprite);
@@ -10045,7 +10603,7 @@ PELICAN-9
       }).slice(0, 12);
       const newsHtml = matchedNews.length
         ? matchedNews.map(a => {
-            const layerKey = classify(state.countries.get(lookup(a.sourcecountry)?.name)?.count || 1);
+            const layerKey = classify(state.countries.get(articleCountry(a))?.count || 1);
             return renderFeedItem({ ...a }, layerKey);
           }).join('')
         : '<div class="empty">No live GDELT articles mention either side yet.</div>';
@@ -10191,23 +10749,33 @@ PELICAN-9
     function renderFeedItem(a, layerKey) {
       const col = '#' + LAYERS[layerKey].color.toString(16).padStart(6, '0');
       const tagsHtml = (a.tags || []).map(t => `<span class="tag ${t}">${t.toUpperCase()}</span>`).join('');
+      // Place = what the story is about; the outlet's country only as a hint.
+      const place = a._geo?.city && a._geo.country === (a._country || a._geo.country)
+        ? `${a._geo.city} · ${a._geo.country}` : (a._country || articleCountry(a) || a.sourcecountry);
+      const st = a._story;
+      const storyHtml = st && st.sources > 1
+        ? `<span class="tag story${st.sources >= 4 ? ' big' : ''}" title="${st.size} articles from ${st.sources} outlets">${st.sources} SOURCES</span>` : '';
+      const kindHtml = a.kind === 'alert' ? '<span class="tag alert">ALERT</span>'
+        : a.kind === 'event' ? '<span class="tag alert">ACLED</span>' : '';
+      const outlet = lookup(a.sourcecountry)?.name;
+      const via = outlet && outlet !== (a._country || articleCountry(a)) ? ` <span class="via">· via ${escapeHtml(outlet)}</span>` : '';
       return `
         <div class="feed-item" data-url="${escapeHtml(a.url || '')}">
           <div class="meta">
             <span class="swatch" style="background:${col};color:${col}"></span>
-            <span>${escapeHtml(a.sourcecountry || lookup(a.sourcecountry)?.name || '—')}</span>
+            <span>${escapeHtml(place || '—')}</span>
             <span style="opacity:0.6">·</span>
             <span>${layerKey}</span>
-            ${tagsHtml}
+            ${kindHtml}${storyHtml}${tagsHtml}
           </div>
           <div class="title" data-original="${escapeHtml(a.title || '')}">${escapeHtml(a.title || '')}</div>
-          <div class="src">${escapeHtml(a.domain || '')}</div>
+          <div class="src">${escapeHtml(a.domain || '')}${via}</div>
         </div>`;
     }
 
     function renderFeedWire(filterCountry) {
       rightTitle.innerHTML = filterCountry ? `${escapeHtml(filterCountry)} <b>// FEED</b>` : 'THE WIRE <b>// LIVE</b>';
-      rightSub.textContent = 'GDELT · 24h';
+      rightSub.textContent = `${state.newsSourceLabel || 'GDELT'} · 24h`;
 
       let items;
       if (filterCountry && state.countries.has(filterCountry)) {
@@ -10231,7 +10799,7 @@ PELICAN-9
       }
       feedListEl.innerHTML = items.map(a => {
         const layer = classify(a._count || 1);
-        return renderFeedItem({ ...a, sourcecountry: a._country }, layer);
+        return renderFeedItem(a, layer);
       }).join('');
       bindFeedItemClicks(items);
       if (state.lang === 'fr') translateVisibleFeed();
@@ -10241,6 +10809,7 @@ PELICAN-9
     const CRITICAL_KW = /\b(war|invasion|attack|missile|killed|kills|strike|airstrike|explosion|earthquake|nuclear|hostage|massacre|coup|emergency|deadly)\b/i;
     const ELEVATED_KW = /\b(treaty|summit|sanctions?|sanction|ceasefire|election|protest|tariff|impeach|recession|crisis)\b/i;
     function classifySeverity(a) {
+      if (a.severity) return a.severity;            // structured sources (GDACS, ACLED) know
       const t = a.title || '';
       if (CRITICAL_KW.test(t)) return 'critical';
       if ((a.tags || []).includes('diplo') || ELEVATED_KW.test(t)) return 'elevated';
@@ -10305,7 +10874,7 @@ PELICAN-9
     function articlePassesLineFilters(a) {
       const f = state.lineFilters;
       if (f.continent !== 'ALL') {
-        const country = lookup(a.sourcecountry)?.name;
+        const country = articleCountry(a);
         if (CONTINENTS[country] !== f.continent) return false;
       }
       if (f.severity !== 'ALL') {
@@ -10358,7 +10927,7 @@ PELICAN-9
 
       lineTrack.innerHTML = items.map(({ a, date }, i) => {
         const sev = classifySeverity(a);
-        const country = lookup(a.sourcecountry)?.name || a.sourcecountry || '—';
+        const country = articleCountry(a) || a.sourcecountry || '—';
         const sevLabel = sev === 'critical' ? 'CRITICAL' : sev === 'elevated' ? 'ELEVATED' : 'MODERATE';
         const tagsHtml = (a.tags || []).map(t => `<span class="chip ${t}">${t.toUpperCase()}</span>`).join('');
         return `
@@ -10382,21 +10951,21 @@ PELICAN-9
         el.addEventListener('click', () => {
           const i = Number(el.dataset.i);
           const article = items[i]?.a;
-          if (article) openArticle({ ...article, _country: lookup(article.sourcecountry)?.name || article.sourcecountry });
+          if (article) openArticle({ ...article, _country: articleCountry(article) || article.sourcecountry });
         });
       }
     }
 
     function renderFeedDiplo() {
       rightTitle.innerHTML = 'DIPLOMATIC <b>// WIRE</b>';
-      rightSub.textContent = 'GDELT · diplo keywords';
+      rightSub.textContent = `${state.newsSourceLabel || 'GDELT'} · diplo keywords`;
       const items = state.articles.filter(a => (a.tags || []).includes('diplo'));
       if (!items.length) {
         feedListEl.innerHTML = '<div class="feed-item"><span class="title">no diplomatic signals matched</span></div>';
         return;
       }
       feedListEl.innerHTML = items.slice(0, 80).map(a => {
-        const c = lookup(a.sourcecountry);
+        const c = lookup(articleCountry(a));
         const layer = c ? classify(state.countries.get(c.name)?.count || 1) : 'local';
         return renderFeedItem(a, layer);
       }).join('');
@@ -10599,7 +11168,7 @@ PELICAN-9
         html += '<div class="feed-item"><span class="title" style="opacity:0.55">no market-tagged signals yet…</span></div>';
       } else {
         html += marketNews.slice(0, 8).map(a => {
-          const c = lookup(a.sourcecountry);
+          const c = lookup(articleCountry(a));
           const layer = c ? classify(state.countries.get(c.name)?.count || 1) : 'local';
           return renderFeedItem(a, layer);
         }).join('');
@@ -10713,7 +11282,7 @@ PELICAN-9
         html += `<div class="feed-item"><span class="title" style="opacity:0.55">no live GDELT articles match yet</span></div>`;
       } else {
         html += newsItems.slice(0, 8).map(a => {
-          const c = lookup(a.sourcecountry);
+          const c = lookup(articleCountry(a));
           const layer = c ? classify(state.countries.get(c.name)?.count || 1) : 'local';
           return renderFeedItem(a, layer);
         }).join('');
@@ -10744,7 +11313,7 @@ PELICAN-9
       const SECTION = (lbl) => `<div style="padding:14px 12px 4px;font-size:9px;letter-spacing:0.14em;color:var(--dim);">${lbl}</div>`;
 
       const newsItems = state.articles.filter(a =>
-        lookup(a.sourcecountry)?.name === country && (a.tags || []).includes('markets')
+        articleCountry(a) === country && (a.tags || []).includes('markets')
       );
 
       let html = '';
@@ -11287,28 +11856,24 @@ PELICAN-9
       const hits = raycaster.intersectObjects(currentInteractive(), false);
       const o = hits[0]?.object; if (!o) return;
       const d = o.userData;
-      if (d.kind === 'article') {
-        if (d.article && d.article.url) {
-          openArticle({ ...d.article, sourcecountry: d.country, _country: d.country, _count: d.count });
-        } else {
-          state.selectedCountry = d.country;
-          focusCountry(d.country);
-          renderCountryList();
-          if (state.tab !== 'wire') setTab('wire');
-          renderFeedWire(d.country);
-          if (MAJOR_CITIES[d.country]) enterDrillDown(d.country);
-          highlightSelectedCountryBorders(d.country);
-          applyFilters();
-        }
-      } else if (d.kind === 'country') {
-        state.selectedCountry = d.country;
-        focusCountry(d.country);
-        renderCountryList();
+      if (d.kind === 'article' || d.kind === 'country') {
+        // Clicking a signal on the globe opens the full PLACE BRIEFING — a
+        // country/city overview with a lead story + all coverage — instead of
+        // jumping straight into a single article. Keep the globe context in
+        // sync (camera, drill-down, borders, sidebar) so it's ready underneath.
+        const country = d.country;
+        // Scope to a city only when already drilled into that country's cities;
+        // otherwise the anchor is just the capital standing in for the country.
+        const city = (state.drillDownCountry === country) ? d.city : null;
+        state.selectedCountry = country;
+        focusCountry(country);
         if (state.tab !== 'wire') setTab('wire');
-        renderFeedWire(d.country);
-        if (MAJOR_CITIES[d.country]) enterDrillDown(d.country);
-        highlightSelectedCountryBorders(d.country);
+        renderCountryList();
+        renderFeedWire(country);
+        if (MAJOR_CITIES[country] && state.drillDownCountry !== country) enterDrillDown(country);
+        highlightSelectedCountryBorders(country);
         applyFilters();
+        openPlaceBrief(country, city);
       } else if (d.kind === 'quake') {
         const target = latLonToVec3(d.q.lat, d.q.lon, 3.0);
         tweenCamera(target, 1.0);
@@ -11603,7 +12168,270 @@ PELICAN-9
       else renderReader();
     }
     readerBackdrop.addEventListener('click', closeReader);
-    addEventListener('keydown', (e) => { if (e.key === 'Escape') closeReader(); });
+    // Escape peels one layer at a time: reader → briefing → conflict inspection.
+    // Each layer's handler stops propagation so a single keypress never closes
+    // two overlays (listeners on `window` fire in registration order).
+    addEventListener('keydown', (e) => {
+      if (e.key !== 'Escape' || !readerEl.classList.contains('on')) return;
+      closeReader();
+      e.stopImmediatePropagation();
+    });
+
+    // ════════════════════════════════════════════════════════════════
+    //  PLACE BRIEFING — full-screen overview for a clicked country / city
+    // ════════════════════════════════════════════════════════════════
+    const briefEl = document.getElementById('brief');
+    const briefBackdrop = document.getElementById('briefBackdrop');
+    const briefHead = document.getElementById('briefHead');
+    const briefBody = document.getElementById('briefBody');
+    const SEV_LABEL = { critical: 'CRITICAL', elevated: 'ELEVATED', moderate: 'MODERATE' };
+
+    // Whole-word, case-insensitive place match ("Nice" must not hit "nice
+    // weather"-style substrings inside other words, "Rome" must not hit "Romeo").
+    // \p{L} boundaries instead of \b so accented names (São Paulo, Zürich) work.
+    const _placeRe = new Map();
+    function mentionsPlace(text, place) {
+      let re = _placeRe.get(place);
+      if (!re) {
+        const esc = place.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        re = new RegExp(`(?<![\\p{L}\\p{N}])${esc}(?![\\p{L}\\p{N}])`, 'iu');
+        _placeRe.set(place, re);
+      }
+      return re.test(text || '');
+    }
+
+    // Image URL safe to drop inside style="background-image:url('…')": only
+    // http(s), and percent-encode every char that could close the quote / url()
+    // (HTML-escaping alone is undone by the attribute parser before CSS sees it).
+    function cssImageUrl(u) {
+      if (!u || !/^https?:\/\//i.test(u)) return '';
+      return u.replace(/["'()\\\s<>]/g, c => '%' + c.charCodeAt(0).toString(16).toUpperCase().padStart(2, '0'));
+    }
+    let briefReturnFocus = null;
+
+    // Resolve the article set for a place. When a specific city is passed and
+    // enough headlines actually mention it, narrow to those; otherwise fall back
+    // to the whole country's feed (GDELT is country-granular).
+    function briefPlaceArticles(country, city) {
+      const c = state.countries.get(country);
+      const all = c ? c.articles.slice() : [];
+      let arts = all, cityFiltered = false;
+      if (city && city !== country) {
+        const hits = all.filter(a => a._geo?.city === city || mentionsPlace(a.title, city) || mentionsPlace(a.desc, city));
+        if (hits.length >= 2) { arts = hits; cityFiltered = true; }
+      }
+      return { c, arts, cityLabel: (city && city !== country) ? city : null, cityFiltered };
+    }
+
+    function openPlaceBrief(country, city) {
+      if (!country) return;
+      if (!state.brief) briefReturnFocus = document.activeElement;
+      state.brief = { country, city: city || null, topic: 'ALL' };
+      briefEl.classList.add('on');
+      briefBackdrop.classList.add('on');
+      renderPlaceBrief();
+      briefBody.scrollTop = 0;
+      briefEl.focus({ preventScroll: true });
+    }
+    function closePlaceBrief() {
+      briefEl.classList.remove('on');
+      briefBackdrop.classList.remove('on');
+      state.brief = null;
+      if (briefReturnFocus && document.contains(briefReturnFocus)) briefReturnFocus.focus?.({ preventScroll: true });
+      briefReturnFocus = null;
+    }
+    // Keep Tab inside the briefing while it's open (and the reader isn't on top).
+    briefEl.addEventListener('keydown', (e) => {
+      if (e.key !== 'Tab' || readerEl.classList.contains('on')) return;
+      const f = [...briefEl.querySelectorAll('button, [tabindex="0"]')].filter(el => el.offsetParent !== null);
+      if (!f.length) return;
+      const first = f[0], last = f[f.length - 1];
+      if (e.shiftKey && (document.activeElement === first || document.activeElement === briefEl)) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    });
+    // Enter / Space activates focusable cards like a button.
+    briefEl.addEventListener('keydown', (e) => {
+      if ((e.key === 'Enter' || e.key === ' ') && e.target.matches?.('[role="button"]')) { e.preventDefault(); e.target.click(); }
+    });
+    briefBackdrop.addEventListener('click', closePlaceBrief);
+    addEventListener('keydown', (e) => {
+      if (e.key !== 'Escape' || !state.brief) return;
+      closePlaceBrief();
+      e.stopImmediatePropagation();
+    });
+
+    function briefActionsHtml() {
+      return `<div class="brief-actions">
+        <button class="brief-btn" id="briefFocusBtn">◎ Focus on globe</button>
+        <button class="brief-btn" id="briefFeedBtn">☰ Open full feed</button>
+      </div>`;
+    }
+    function wireBriefStatic() {
+      const b = state.brief;
+      document.getElementById('briefCloseBtn')?.addEventListener('click', closePlaceBrief);
+      document.getElementById('briefFocusBtn')?.addEventListener('click', () => {
+        if (!b) return;
+        focusCountry(b.country);
+        highlightSelectedCountryBorders(b.country);
+        closePlaceBrief();
+      });
+      document.getElementById('briefFeedBtn')?.addEventListener('click', () => {
+        if (!b) return;
+        state.selectedCountry = b.country;
+        if (state.tab !== 'wire') setTab('wire');
+        renderCountryList();
+        renderFeedWire(b.country);
+        closePlaceBrief();
+      });
+    }
+
+    function renderPlaceBrief() {
+      const b = state.brief; if (!b) return;
+      const { c, arts, cityLabel, cityFiltered } = briefPlaceArticles(b.country, b.city);
+      const layerKey = classify(c?.count || arts.length || 1);
+      const topics = Object.keys(TOPIC_KW);
+
+      // Severity + source tallies over the resolved set
+      let nc = 0, ne = 0, nm = 0;
+      for (const a of arts) { const s = classifySeverity(a); if (s === 'critical') nc++; else if (s === 'elevated') ne++; else nm++; }
+      const domains = new Set();
+      for (const a of arts) { if (a.domain) domains.add(a.domain); for (const m of a._story?.also || []) if (m.domain) domains.add(m.domain); }
+      const coverage = arts.reduce((n, a) => n + (a._story?.size || 1), 0);
+      const topicCounts = {};
+      for (const t of topics) topicCounts[t] = arts.filter(a => matchesTopic(a, t)).length;
+
+      // ── HEADER
+      const continent = CONTINENTS[b.country] ? ' · ' + CONTINENTS[b.country] : '';
+      const titleHtml = cityLabel
+        ? `<span class="city">${escapeHtml(cityLabel)}</span> <span style="color:var(--dim);font-weight:400;font-size:18px;">· ${escapeHtml(b.country)}</span>`
+        : escapeHtml(b.country);
+      briefHead.innerHTML = `
+        <button class="brief-close" id="briefCloseBtn">CLOSE ✕</button>
+        <div class="kick">REGIONAL BRIEFING${continent}</div>
+        <h1 id="briefTitle">${titleHtml}</h1>
+        <div class="sub">${escapeHtml(state.newsSourceLabel || 'GDELT')} · rolling 24h · ${escapeHtml(layerKey.toUpperCase())} scope${cityFiltered ? ' · narrowed to city mentions' : ''}</div>
+        <div class="brief-stats">
+          <div class="brief-stat"><div class="v">${arts.length}</div><div class="k">Stories</div></div>
+          <div class="brief-stat"><div class="v">${coverage}</div><div class="k">Articles</div></div>
+          <div class="brief-stat"><div class="v crit">${nc}</div><div class="k">Critical</div></div>
+          <div class="brief-stat"><div class="v elev">${ne}</div><div class="k">Elevated</div></div>
+          <div class="brief-stat"><div class="v mod">${nm}</div><div class="k">Moderate</div></div>
+          <div class="brief-stat"><div class="v">${domains.size}</div><div class="k">Outlets</div></div>
+        </div>`;
+
+      if (!arts.length) {
+        briefBody.innerHTML =
+          `<div class="brief-empty">No live signals for ${escapeHtml(b.country)} in the last 24h. The feed may still be linking — try the WIRE tab's refresh.</div>`
+          + briefActionsHtml();
+        wireBriefStatic();
+        return;
+      }
+
+      // ── TOPIC FILTER
+      const activeTopic = b.topic || 'ALL';
+      const filtered = activeTopic === 'ALL' ? arts : arts.filter(a => matchesTopic(a, activeTopic));
+      const topicChips = [`<button class="brief-topic${activeTopic === 'ALL' ? ' on' : ''}" data-topic="ALL">ALL<span class="n">${arts.length}</span></button>`]
+        .concat(topics.filter(t => topicCounts[t] > 0).map(t =>
+          `<button class="brief-topic${activeTopic === t ? ' on' : ''}" data-topic="${t}">${t}<span class="n">${topicCounts[t]}</span></button>`
+        )).join('');
+
+      // ── LEAD STORY — the most widely carried story wins; severity and having
+      // a picture break ties (a 6-outlet story beats a 1-outlet "critical" one).
+      const leadScore = (a) => (a._story?.sources || 1) * 3
+        + ({ critical: 4, elevated: 2, moderate: 0 }[classifySeverity(a)])
+        + (cssImageUrl(a.socialimage) ? 1.5 : 0) + (a.desc ? 0.5 : 0);
+      const lead = filtered.reduce((b, a) => (!b || leadScore(a) > leadScore(b)) ? a : b, null);
+      const rest = filtered.filter(a => a !== lead)
+        .sort((x, y) => (y._story?.sources || 1) - (x._story?.sources || 1));
+      const reachBadge = (a) => (a._story?.sources > 1)
+        ? `<span class="brief-badge reach">${a._story.sources} SOURCES</span>` : '';
+
+      const badgeHtml = (a, extra) => {
+        const sev = classifySeverity(a);
+        const topicBadge = topics.find(t => matchesTopic(a, t));
+        return `<span class="brief-badge ${sev}">${SEV_LABEL[sev]}</span>`
+          + reachBadge(a)
+          + (a.kind === 'alert' ? '<span class="brief-badge critical">GDACS ALERT</span>' : a.kind === 'event' ? '<span class="brief-badge critical">ACLED</span>' : '')
+          + (topicBadge ? `<span class="brief-badge topic">${topicBadge}</span>` : '')
+          + (a._geo?.city ? `<span class="brief-badge">${escapeHtml(a._geo.city)}</span>` : '')
+          + (extra || '');
+      };
+
+      let leadHtml = '';
+      if (lead) {
+        const img = cssImageUrl(lead.socialimage);
+        const hasImg = !!img;
+        leadHtml = `
+          <div class="brief-lead${hasImg ? '' : ' no-img'}" data-aidx="${arts.indexOf(lead)}" role="button" tabindex="0">
+            ${hasImg ? `<div class="img" style="background-image:url('${escapeHtml(img)}')"></div>` : ''}
+            <div class="txt">
+              <div class="badges">${badgeHtml(lead, '<span class="brief-badge">LEAD</span>')}</div>
+              <h2>${escapeHtml(lead.title || '')}</h2>
+              ${lead.desc ? `<p class="desc">${escapeHtml(lead.desc)}</p>` : ''}
+              <div class="src">${escapeHtml(lead.domain || '—')} · click to read →</div>
+              ${lead._story?.also?.length ? `<div class="also">Also covered by ${
+                [...new Set(lead._story.also.map(m => m.domain).filter(Boolean))].slice(0, 8).map(escapeHtml).join(' · ')}</div>` : ''}
+            </div>
+          </div>`;
+      }
+
+      const cardHtml = (a) => {
+        const img = cssImageUrl(a.socialimage);
+        return `
+        <div class="brief-card" data-aidx="${arts.indexOf(a)}" role="button" tabindex="0">
+          ${img ? `<div class="img" style="background-image:url('${escapeHtml(img)}')"></div>` : ''}
+          <div class="body">
+            <div class="badges">${badgeHtml(a)}</div>
+            <div class="t">${escapeHtml(a.title || '')}</div>
+            <div class="s">${escapeHtml(a.domain || '—')}</div>
+          </div>
+        </div>`;
+      };
+
+      // ── BY CITY (curated major cities, if any)
+      let citiesHtml = '';
+      const cities = MAJOR_CITIES[b.country];
+      if (cities && cities.length) {
+        citiesHtml = `<div class="brief-section-h">Coverage by city</div><div class="brief-cities">`
+          + cities.map(([name, lat, lon]) => {
+              const cnt = arts.filter(a => a._geo?.city === name || mentionsPlace(a.title, name)).length;
+              return `<div class="brief-city" role="button" tabindex="0" data-city="${escapeHtml(name)}" data-lat="${lat}" data-lon="${lon}">
+                <div class="cn">${escapeHtml(name)}</div>
+                <div class="cc">${cnt} direct mention${cnt === 1 ? '' : 's'}</div>
+              </div>`;
+            }).join('')
+          + `</div>`;
+      }
+
+      briefBody.innerHTML = `
+        <div class="brief-topics">${topicChips}</div>
+        ${leadHtml}
+        <div class="brief-section-h">All coverage · ${rest.length}</div>
+        ${rest.length ? `<div class="brief-grid">${rest.map(cardHtml).join('')}</div>` : '<div class="brief-empty">No other articles under this filter.</div>'}
+        ${citiesHtml}
+        ${briefActionsHtml()}`;
+
+      // Card / lead → open the article reader (layers above the briefing)
+      briefBody.querySelectorAll('[data-aidx]').forEach(el => {
+        el.addEventListener('click', () => {
+          const a = arts[Number(el.dataset.aidx)];
+          if (a) openArticle({ ...a, _country: b.country, sourcecountry: b.country });
+        });
+      });
+      // Topic chips → re-filter in place
+      briefBody.querySelectorAll('.brief-topic').forEach(el => {
+        el.addEventListener('click', () => { state.brief.topic = el.dataset.topic; renderPlaceBrief(); });
+      });
+      // City chips → fly camera and re-scope the briefing to that city
+      briefBody.querySelectorAll('.brief-city').forEach(el => {
+        el.addEventListener('click', () => {
+          const lat = parseFloat(el.dataset.lat), lon = parseFloat(el.dataset.lon);
+          if (!Number.isNaN(lat) && !Number.isNaN(lon)) tweenCamera(latLonToVec3(lat, lon, 2.2), 1.0);
+          openPlaceBrief(b.country, el.dataset.city);
+        });
+      });
+      wireBriefStatic();
+    }
 
     async function renderReader() {
       const articles = state.openArticles;
@@ -11758,9 +12586,32 @@ PELICAN-9
     controls.addEventListener('start', () => { controls.autoRotate = false; clearTimeout(resumeT); });
     controls.addEventListener('end', () => {
       clearTimeout(resumeT);
+      if (!state.rotationEnabled) return;                            // user switched off
       if (state.selectedConflict || state.selectedCountry) return;   // pinned
       resumeT = setTimeout(() => { controls.autoRotate = true; }, 5000);
     });
+
+    // Master rotation switch — small toggle in the right rail.
+    const rotToggleEl = document.getElementById('rotToggle');
+    function applyRotationToggle() {
+      const on = state.rotationEnabled;
+      rotToggleEl.classList.toggle('on', on);
+      rotToggleEl.classList.toggle('off', !on);
+      rotToggleEl.setAttribute('aria-pressed', String(on));
+      rotToggleEl.querySelector('.rot-state').textContent = on ? 'ON' : 'OFF';
+      if (!on) {
+        controls.autoRotate = false;
+        clearTimeout(resumeT);
+      } else if (!state.selectedConflict && !state.selectedCountry) {
+        controls.autoRotate = true;
+      }
+    }
+    rotToggleEl.addEventListener('click', () => {
+      state.rotationEnabled = !state.rotationEnabled;
+      try { localStorage.setItem('wrldmon_rotation', state.rotationEnabled ? 'on' : 'off'); } catch {}
+      applyRotationToggle();
+    });
+    applyRotationToggle();   // reflect the persisted choice on load
 
     // ════════════════════════════════════════════════════════════════
     //  RESIZE + ANIMATE
@@ -12204,6 +13055,19 @@ PELICAN-9
       console.error('[wrldmon] unhandled rejection', e.reason);
     });
 
+    // setInterval that skips ticks while the tab is hidden (no point burning
+    // battery + third-party API quota on an invisible dashboard). `catchUp`
+    // pollers also fire once immediately when the tab becomes visible again.
+    const _catchUp = [];
+    function everyVisible(fn, ms, { catchUp = false } = {}) {
+      if (catchUp) _catchUp.push(fn);
+      return setInterval(() => { if (!document.hidden) fn(); }, ms);
+    }
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) return;
+      for (const fn of _catchUp) { try { fn(); } catch (e) { console.warn('[wrldmon] catch-up', e); } }
+    });
+
     (async function boot() {
       try {
         loadBorders().then(() => drawMap());
@@ -12213,9 +13077,14 @@ PELICAN-9
         if (state.tab === 'line') renderLine();
         drawMap();
         // Keep "Xm ago" fresh while on LINE tab
-        setInterval(() => { if (state.tab === 'line') renderLine(); }, 30000);
+        everyVisible(() => { if (state.tab === 'line') renderLine(); }, 30000);
         // Auto-refresh the WIRE so it doesn't go stale after boot
-        setInterval(() => refreshNewsTick(), 20 * 60 * 1000);
+        // Hidden tabs skip the tick; on return, refresh at once if the feed is stale.
+        let lastNewsRefresh = Date.now();
+        const NEWS_EVERY = (API_PROXY ? 10 : 20) * 60 * 1000;
+        const newsTick = () => { lastNewsRefresh = Date.now(); refreshNewsTick(); };
+        everyVisible(newsTick, NEWS_EVERY);
+        _catchUp.push(() => { if (Date.now() - lastNewsRefresh > NEWS_EVERY) newsTick(); });
 
         renderCountryList();
         renderAllianceList();
@@ -12235,7 +13104,7 @@ PELICAN-9
         });
 
         pollISS().catch(err => console.warn('iss:', err));
-        setInterval(() => pollISS().catch(()=>{}), 3500);
+        everyVisible(() => pollISS().catch(()=>{}), 3500, { catchUp: true });
 
         // Hydrate markets from last session so the UI isn't empty pre-fetch.
         const cCrypto = loadLS('wrldmon_crypto', 6 * 60 * 60 * 1000);
@@ -12249,16 +13118,16 @@ PELICAN-9
         if (cPoly?.length) state.polymarket = cPoly;
 
         loadCrypto().catch(err => console.warn('crypto:', err));
-        setInterval(() => loadCrypto().catch(()=>{}), 45000);
+        everyVisible(() => loadCrypto().catch(()=>{}), 45000, { catchUp: true });
 
         loadForex().catch(err => console.warn('forex:', err));
         setInterval(() => loadForex().catch(()=>{}), 12 * 60 * 60 * 1000);  // forex refreshes daily
 
         loadPolymarket().catch(err => console.warn('polymarket:', err));
-        setInterval(() => loadPolymarket().catch(()=>{}), 120000);
+        everyVisible(() => loadPolymarket().catch(()=>{}), 120000);
 
         renderDefcon();
-        setInterval(renderDefcon, 8000);
+        everyVisible(renderDefcon, 8000);
       } catch (err) {
         console.error('[wrldmon] boot failed', err);
         setStatus('boot failed · ' + (err.message || 'unknown'), 'err');
