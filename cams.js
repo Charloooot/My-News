@@ -50,3 +50,57 @@ export async function nzCameras() {
   }
   return out;
 }
+
+// ── Spain · DGT (DATEX II device publication, ~2,000 cameras) ──────────────
+// 3.7 MB of XML; split per device and pull a few fields with precompiled
+// regexes (~4 ms) — no XML parser needed in the Worker.
+const RX = {
+  type: /<ns2:typeOfDevice>camera</, id: /id="(\d+)"/, url: /<fse:deviceUrl>([^<]+)</,
+  lat: /<loc:latitude>([-\d.]+)</, lon: /<loc:longitude>([-\d.]+)</, road: /<loc:roadName>([^<]*)</,
+  km: /<lse:kilometerPoint>([^<]*)</, dest: /<loc:roadDestination>([^<]*)</, prov: /<lse:province>([^<]*)</,
+};
+export async function spainCameras() {
+  const r = await fetch('https://nap.dgt.es/datex2/v3/dgt/DevicePublication/camaras_datex2_v36.xml', { headers: { 'User-Agent': UA } });
+  if (!r.ok) throw new Error('dgt ' + r.status);
+  const xml = await r.text();
+  const g = (b, re) => (b.match(re) || [])[1] || '';
+  const out = [];
+  for (const b of xml.split('<ns2:device ').slice(1)) {
+    if (!RX.type.test(b)) continue;
+    const url = g(b, RX.url), lat = +g(b, RX.lat), lon = +g(b, RX.lon);
+    if (!url || !lat || !lon) continue;
+    const road = g(b, RX.road), km = g(b, RX.km), dest = g(b, RX.dest);
+    out.push([`es-${g(b, RX.id)}`, [road, km && `km ${km}`, dest && `→ ${dest}`].filter(Boolean).join(' ') || 'DGT camera',
+      lat, lon, url, '', g(b, RX.prov)]);
+  }
+  return out;
+}
+
+// ── Iceland · Vegagerðin (road administration) ─────────────────────────────
+export async function icelandCameras() {
+  const r = await fetch('https://gagnaveita.vegagerdin.is/api/vefmyndavelar2014_1', { headers: { 'User-Agent': UA } });
+  if (!r.ok) throw new Error('vegagerdin ' + r.status);
+  const out = [];
+  for (const c of await r.json()) {
+    if (!c.Slod || !Number.isFinite(c.Breidd) || !Number.isFinite(c.Lengd)) continue;
+    out.push([`is-${c.Slod.split('/').pop().replace(/\.\w+$/, '')}`, `${c.Myndavel} — ${c.Skyring || c.Vegheiti || ''}`.replace(/ — $/, ''),
+      c.Breidd, c.Lengd, c.Slod, '', c.Vegheiti || '']);
+  }
+  return out;
+}
+
+// ── US National Park Service webcams (public landmarks) ────────────────────
+// Many NPS webcams are viewed on nps.gov pages rather than as a raw image, so
+// rows carry the page URL (index 7); image (index 4) may be a still preview.
+export async function npsWebcams(apiKey = 'DEMO_KEY') {
+  const r = await fetch(`https://developer.nps.gov/api/v1/webcams?limit=600&api_key=${encodeURIComponent(apiKey)}`, { headers: { 'User-Agent': UA } });
+  if (!r.ok) throw new Error('nps ' + r.status);
+  const out = [];
+  for (const w of (await r.json()).data || []) {
+    const lat = +w.latitude, lon = +w.longitude;
+    if (w.status !== 'Active' || !lat || !lon || !w.url) continue;
+    out.push([`nps-${w.id}`, w.title, +lat.toFixed(5), +lon.toFixed(5), w.images?.[0]?.url || '', '',
+      (w.relatedParks || []).map(p => p.fullName).join(', '), w.url, w.isStreaming ? 1 : 0]);
+  }
+  return out;
+}

@@ -661,6 +661,53 @@
   .tip .meta { margin-top: 5px; opacity: 0.65; font-size: 10px; letter-spacing: 0.06em; }
 
   /* ============== CAMERAS ============== */
+  .cam-stage { position: fixed; inset: var(--top-h, 64px) 0 0 0; z-index: 6; display: none; background: #0c0c0c; }
+  .cam-stage.on { display: block; }
+  body.cam-mode .left-rail, body.cam-mode .right-rail, body.cam-mode .legend, body.cam-mode .hint, body.cam-mode .readout,
+  body.cam-mode #app, body.cam-mode #mapCanvas, body.cam-mode .overlay, body.cam-mode #mapLeaflet, body.cam-mode .view-toggle,
+  body.cam-mode .rail-toggle { display: none !important; }
+  #camMap { position: absolute; inset: 0; }
+  .cam-side, .cam-viewer { position: absolute; top: 14px; z-index: 2; background: rgba(5,11,24,0.92); border: 1px solid var(--line); backdrop-filter: blur(8px); max-height: calc(100% - 28px); overflow-y: auto; }
+  .cam-side { left: 14px; width: 300px; padding: 12px; }
+  .cam-viewer { right: 14px; width: 380px; }
+  .cam-side-h { font-size: 11px; letter-spacing: 0.18em; color: var(--paper); font-weight: 700; display: flex; margin-bottom: 10px; }
+  .cam-side-h b { color: var(--cyan); margin-left: 6px; } .cam-side-h span { margin-left: auto; color: var(--cyan); font-weight: 400; letter-spacing: 0.04em; }
+  .cam-side .desk-search { width: 100%; }
+  .cam-results { margin-top: 6px; max-height: 260px; overflow-y: auto; border: 1px solid var(--line); }
+  .cam-res { display: block; width: 100%; text-align: left; padding: 6px 8px; font-size: 11px; color: var(--paper); border-bottom: 1px solid rgba(0,240,255,0.06); }
+  .cam-res:hover { background: rgba(0,240,255,0.08); }
+  .cam-res i, .cam-src i { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 7px; }
+  .cam-res small { display: block; color: var(--dim); font-size: 10px; margin-left: 15px; }
+  .cam-side-sub { font-size: 9px; letter-spacing: 0.16em; color: var(--dim); margin: 14px 0 6px; }
+  .cam-src { display: flex; align-items: stretch; border-bottom: 1px solid rgba(0,240,255,0.06); }
+  .cam-src .tg { flex: 1; text-align: left; padding: 7px 4px; font-size: 11px; color: var(--paper); display: grid; grid-template-columns: auto 1fr auto; align-items: center; column-gap: 0; }
+  .cam-src .tg small { grid-column: 2; grid-row: 2; font-size: 9px; color: var(--dim); }
+  .cam-src .tg span { grid-column: 3; grid-row: 1 / 3; font-size: 10px; color: var(--dim); font-variant-numeric: tabular-nums; }
+  .cam-src .tg span.err { color: var(--orange); }
+  .cam-src .go { padding: 0 8px; color: var(--cyan); font-size: 14px; }
+  .cam-src .go:hover, .cam-src .tg:hover { background: rgba(0,240,255,0.06); }
+  .cam-src.off .tg { opacity: 0.35; }
+  .cam-note { font-size: 10px; color: var(--dim); line-height: 1.5; margin-top: 10px; }
+  .cam-empty { padding: 16px; font-size: 11px; color: var(--dim); line-height: 1.5; } .cam-empty b { display: block; color: var(--paper); font-size: 12px; margin-bottom: 4px; letter-spacing: 0.08em; }
+  .cam-view-h { display: flex; align-items: center; gap: 6px; font-size: 10px; letter-spacing: 0.18em; color: var(--dim); margin-bottom: 6px; }
+  .cam-x { margin-left: auto; color: var(--dim); font-size: 13px; padding: 2px 6px; } .cam-x:hover { color: var(--red); }
+  .cam-frame.link { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; padding: 20px; text-align: center; }
+  .cam-frame.link small { color: var(--dim); font-size: 10px; }
+  .cam-wallview { position: absolute; top: 14px; left: 50%; transform: translateX(-50%); z-index: 2; padding: 7px 14px; font-size: 10px; letter-spacing: 0.14em;
+    color: var(--cyan); border: 1px solid var(--line2); background: rgba(5,11,24,0.92); }
+  .cam-wallview:hover { background: rgba(0,240,255,0.15); color: var(--paper); }
+  .maplibregl-popup.cam-pop .maplibregl-popup-content { background: rgba(5,11,24,0.95); color: var(--paper); border: 1px solid var(--line2); font: 11px ui-monospace, Menlo, monospace; padding: 6px 9px; border-radius: 0; }
+  .maplibregl-popup.cam-pop .maplibregl-popup-tip { display: none; }
+  .maplibregl-ctrl-attrib { background: rgba(5,11,24,0.7) !important; } .maplibregl-ctrl-attrib a { color: var(--dim) !important; }
+  @media (max-width: 760px) {
+    .cam-stage { inset: calc(var(--top-h, 120px) + 2px) 0 0 0; }
+    .cam-side { left: 8px; right: 8px; width: auto; top: 8px; max-height: 40%; padding: 10px; }
+    body.cam-open .cam-side { display: none; }
+    .cam-viewer { left: 8px; right: 8px; width: auto; top: auto; bottom: 8px; max-height: 58%; }
+    body:not(.cam-open) .cam-viewer { display: none; }
+    .cam-wallview { top: auto; bottom: 14px; }
+    body.cam-open .cam-wallview { display: none; }
+  }
   .cam-intro { padding: 12px; font-size: 11px; line-height: 1.55; color: var(--dim); }
   .cam-region { display: flex; align-items: center; gap: 10px; width: 100%; padding: 10px 12px; border-bottom: 1px solid rgba(0,240,255,0.06); text-align: left; }
   .cam-region:hover { background: rgba(0,240,255,0.06); }
@@ -1432,10 +1479,6 @@
       <div class="scroll-list" id="conflictTypeList"></div>
     </div>
 
-    <div class="panel" id="camPanel" style="display:none;">
-      <div class="panel-h"><span>CAMERAS <b>// SOURCES</b></span><span id="camCount">—</span></div>
-      <div class="scroll-list" id="camSourceList"></div>
-    </div>
     <div class="panel" id="constellationPanel" style="display:none;">
       <div class="panel-h"><span>CONSTELLATIONS <b>// FILTER</b></span></div>
       <div class="scroll-list" id="constellationList" style="max-height: 240px;"></div>
@@ -1465,6 +1508,14 @@
     </div>
     <div class="line-filters" id="lineFilters"></div>
     <div class="line-track" id="lineTrack"></div>
+  </div>
+
+  <!-- ============ CAMERAS STAGE (2D vector map) ============ -->
+  <div class="cam-stage" id="camStage">
+    <div id="camMap"></div>
+    <aside class="cam-side" id="camSide"></aside>
+    <aside class="cam-viewer" id="camViewer"></aside>
+    <button class="cam-wallview" id="camWallView">▦ VIDEO WALL · THIS VIEW</button>
   </div>
 
   <!-- ============ CAMERA VIDEO WALL ============ -->
@@ -11939,9 +11990,9 @@ PELICAN-9
       quakeGroup.visible     = (name === 'quakes' || name === 'defcon');
       issGroup.visible       = (name === 'orbit' || name === 'defcon');
       satGroup.visible       = (name === 'orbit');
-      camsGroup.visible      = (name === 'cams');
-      document.getElementById('camPanel').style.display = (name === 'cams') ? '' : 'none';
-      if (name === 'cams') { loadCams(); renderCamSourceList(); }
+      document.body.classList.toggle('cam-mode', name === 'cams');
+      document.getElementById('camStage').classList.toggle('on', name === 'cams');
+      if (name === 'cams') enterCams();
       else { stopCamTimers(); closeCamWall(); }
       if (name === 'markets' && !marketsEntries.length) buildMarketsLayer();
       if (name === 'outbreaks' && !outbreakMarkers.length) buildOutbreaksLayer();
@@ -11974,7 +12025,6 @@ PELICAN-9
         case 'defcon': renderFeedDefcon(); break;
         case 'france': renderFranceDesk(); break;
         case 'impact': renderImpactDesk(); break;
-        case 'cams': renderCamsPanel(); break;
       }
       updateCount();
       // Snap back to Europe on every tab change (unless entering inspection)
@@ -12115,7 +12165,6 @@ PELICAN-9
         }
       }
       if (state.tab === 'orbit' && satPoints) arr.push(satPoints);
-      if (state.tab === 'cams' && camPoints) arr.push(camPoints);
       if (state.tab === 'markets') {
         for (const s of marketsGroup.children) if (s.isSprite) arr.push(s);
       }
@@ -12138,18 +12187,10 @@ PELICAN-9
           break;
         }
       }
-      const camHit = state.tab === 'cams' ? camFromHits(hits) : null;
-      const o = camHit ? null : (hits[0]?.object === camPoints ? null : hits[0]?.object || null);
-      const hoverKey = camHit ? ('cam:' + camHit.id) : satHit ? ('sat:' + satHit.noradId) : (o ? o.uuid : null);
+      const o = hits[0]?.object || null;
+      const hoverKey = satHit ? ('sat:' + satHit.noradId) : (o ? o.uuid : null);
       if (hoverKey !== hovered) {
         hovered = hoverKey;
-        if (camHit) {
-          tipKicker.textContent = 'CAMERA · ' + CAM_SOURCES[camHit.src].label.toUpperCase();
-          tipName.textContent = camHit.name;
-          tipMeta.innerHTML = `${escapeHtml(CAM_SOURCES[camHit.src].org)}${camHit.video || camHit.hls ? ' · <b style="color:var(--paper)">live video</b>' : ''}<br/><span style="opacity:.7">click to view</span>`;
-          tipEl.classList.add('on');
-          return;
-        }
         if (satHit) {
           tipKicker.textContent = 'SATELLITE';
           tipName.textContent = satHit.name;
@@ -12232,7 +12273,6 @@ PELICAN-9
       raycaster.setFromCamera(mouse, camera);
       raycaster.params.Points = { threshold: 0.025 };
       const hits = raycaster.intersectObjects(currentInteractive(), false);
-      if (state.tab === 'cams') { const c = camFromHits(hits); if (c) selectCam(c); return; }
       const o = hits[0]?.object; if (!o) return;
       const d = o.userData;
       if (d.kind === 'article' || d.kind === 'country') {
@@ -13011,27 +13051,35 @@ PELICAN-9
     });
 
     // ════════════════════════════════════════════════════════════════
-    //  CAMERAS — official open-data public cameras (traffic / road weather)
-    //  Only agencies that publish their cameras on purpose. No private feeds.
+    //  CAMERAS — official open-data public cameras on a 2D vector map
+    //  (MapLibre GL + OpenFreeMap tiles, both keyless). Only agencies that
+    //  publish their cameras on purpose; never private / unsecured feeds.
     // ════════════════════════════════════════════════════════════════
     const CAM_SOURCES = {
-      tfl:      { label: 'London',      org: 'Transport for London · JamCams',     color: 0x4ad6ff, center: [51.51, -0.12],  refreshS: 60 },
-      caltrans: { label: 'California',  org: 'Caltrans CCTV (live video)',          color: 0xffd84a, center: [36.5, -119.5],  refreshS: 60 },
-      fi:       { label: 'Finland',     org: 'Fintraffic · road weather cameras',   color: 0x3fff8e, center: [62.5, 25.5],    refreshS: 300 },
-      hk:       { label: 'Hong Kong',   org: 'Transport Department',                color: 0xff70ff, center: [22.33, 114.17], refreshS: 60 },
-      nz:       { label: 'New Zealand', org: 'NZ Transport Agency',                 color: 0xff8a2a, center: [-41.0, 174.0],  refreshS: 60 },
-      sg:       { label: 'Singapore',   org: 'Land Transport Authority',            color: 0xff305c, center: [1.35, 103.82],  refreshS: 60 },
+      caltrans: { label: 'California',     org: 'Caltrans CCTV · live video',          color: '#ffd84a', center: [-119.5, 36.5],  zoom: 5.2, refreshS: 60 },
+      es:       { label: 'Spain',          org: 'DGT · Dirección General de Tráfico',  color: '#ff8a2a', center: [-3.7, 40.2],    zoom: 5.2, refreshS: 120 },
+      hk:       { label: 'Hong Kong',      org: 'Transport Department',                color: '#ff70ff', center: [114.17, 22.33], zoom: 10,  refreshS: 60 },
+      fi:       { label: 'Finland',        org: 'Fintraffic · road weather cameras',   color: '#3fff8e', center: [25.5, 63.5],    zoom: 4.6, refreshS: 300 },
+      tfl:      { label: 'London',         org: 'Transport for London · JamCams',      color: '#4ad6ff', center: [-0.12, 51.51],  zoom: 10,  refreshS: 60 },
+      is:       { label: 'Iceland',        org: 'Vegagerðin · road cameras',           color: '#9fd8ff', center: [-19.0, 64.9],   zoom: 5.4, refreshS: 300 },
+      nz:       { label: 'New Zealand',    org: 'NZ Transport Agency',                 color: '#ff9f7a', center: [173.5, -41.0],  zoom: 4.6, refreshS: 60 },
+      nps:      { label: 'US National Parks', org: 'National Park Service webcams',    color: '#b47bff', center: [-104, 41],      zoom: 3.2, refreshS: 300 },
+      sg:       { label: 'Singapore',      org: 'Land Transport Authority',            color: '#ff305c', center: [103.82, 1.35],  zoom: 10.5, refreshS: 60 },
     };
     const camState = {
-      status: 'idle', cams: [], errors: {}, active: new Set(Object.keys(CAM_SOURCES)),
-      drawn: [], selected: null, video: false, timelapse: null, preset: 0, timer: null, wallTimer: null,
+      status: 'idle', cams: [], byId: new Map(), errors: {}, active: new Set(Object.keys(CAM_SOURCES)),
+      selected: null, video: false, timelapse: null, preset: 0, timer: null, wallTimer: null, q: '',
     };
-    const camsGroup = new THREE.Group();
-    camsGroup.visible = false;
-    globe.add(camsGroup);
-    let camPoints = null;
+    let camMap = null, camMapReady = null;
 
-    // ── loaders: each returns [{ id, src, name, lat, lon, img, hls, video, dir, presets }]
+    // ── loaders: each returns [{ id, src, name, lat, lon, img, hls, video, dir, presets, page, streaming }]
+    const rowCams = (src) => (rows) => rows.map(([id, name, lat, lon, img, hls, dir, page, streaming]) =>
+      ({ id, src, name, lat, lon, img, hls, dir, page, streaming: !!streaming }));
+    const workerIndex = (path, src) => async () => {
+      if (!API_PROXY) throw new Error('needs Worker');
+      const r = await fetch(`${API_PROXY}/cams/${path}`); if (!r.ok) throw new Error('http ' + r.status);
+      return rowCams(src)(await r.json());
+    };
     const camLoaders = {
       async tfl() {
         const j = await (await fetch('https://api.tfl.gov.uk/Place/Type/JamCam')).json();
@@ -13045,7 +13093,7 @@ PELICAN-9
         if (!API_PROXY) throw new Error('needs Worker');
         const ds = await Promise.all(Array.from({ length: 12 }, (_, i) =>
           fetch(`${API_PROXY}/cams/caltrans?d=${i + 1}`).then(r => r.ok ? r.json() : []).catch(() => [])));
-        return ds.flat().map(([id, name, lat, lon, img, hls, dir]) => ({ id, src: 'caltrans', name, lat, lon, img, hls, dir }));
+        return rowCams('caltrans')(ds.flat());
       },
       async fi() {
         const j = await (await fetch('https://tie.digitraffic.fi/api/weathercam/v1/stations')).json();
@@ -13065,96 +13113,166 @@ PELICAN-9
           return { id: 'hk-' + g('key'), src: 'hk', name: (g('description') || '').replace(/\s*\[[^\]]+\]$/, ''), lat: +g('latitude'), lon: +g('longitude'), img: url, dir: g('district') || '' };
         });
       },
-      async nz() {
-        if (!API_PROXY) throw new Error('needs Worker');
-        const rows = await (await fetch(`${API_PROXY}/cams/nz`)).json();
-        return rows.map(([id, name, lat, lon, img, hls, dir]) => ({ id, src: 'nz', name, lat, lon, img, dir }));
-      },
+      nz: workerIndex('nz', 'nz'),
+      es: workerIndex('es', 'es'),
+      is: workerIndex('is', 'is'),
+      nps: workerIndex('nps', 'nps'),
       async sg() {
         const j = await (await fetch('https://api.data.gov.sg/v1/transport/traffic-images')).json();
         return (j.items?.[0]?.cameras || []).map(c => ({ id: 'sg-' + c.camera_id, src: 'sg', name: 'Camera ' + c.camera_id,
-          lat: c.location.latitude, lon: c.location.longitude, img: c.image, ts: c.timestamp }));
+          lat: c.location.latitude, lon: c.location.longitude, img: c.image }));
       },
     };
 
+    // ── MapLibre (loaded on first visit to the tab) ─────────────────
+    function loadMapLibre() {
+      if (window.maplibregl) return Promise.resolve(window.maplibregl);
+      return new Promise((resolve, reject) => {
+        const css = document.createElement('link');
+        css.rel = 'stylesheet'; css.href = 'https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.css';
+        document.head.appendChild(css);
+        const js = document.createElement('script');
+        js.src = 'https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.js';
+        js.onload = () => resolve(window.maplibregl); js.onerror = () => reject(new Error('maplibre failed to load'));
+        document.head.appendChild(js);
+      });
+    }
+    function camGeoJSON() {
+      return { type: 'FeatureCollection', features: visibleCams().map(c => ({
+        type: 'Feature', geometry: { type: 'Point', coordinates: [c.lon, c.lat] },
+        properties: { id: c.id, src: c.src, live: c.hls || c.video ? 1 : 0 } })) };
+    }
+    function initCamMap() {
+      if (camMapReady) return camMapReady;
+      camMapReady = loadMapLibre().then(ml => new Promise((resolve) => {
+        camMap = new ml.Map({
+          container: 'camMap', style: 'https://tiles.openfreemap.org/styles/dark',
+          center: [0, 35], zoom: 1.6, attributionControl: { compact: true }, dragRotate: false, pitchWithRotate: false,
+        });
+        camMap.addControl(new ml.NavigationControl({ showCompass: false }), 'bottom-right');
+        camMap.on('load', () => {
+          const colorBySrc = ['match', ['get', 'src'], ...Object.entries(CAM_SOURCES).flatMap(([k, s]) => [k, s.color]), '#00f0ff'];
+          camMap.addSource('cams', { type: 'geojson', data: camGeoJSON(), cluster: true, clusterRadius: 46, clusterMaxZoom: 10 });
+          camMap.addLayer({ id: 'cam-clusters', type: 'circle', source: 'cams', filter: ['has', 'point_count'], paint: {
+            'circle-color': 'rgba(0,240,255,0.18)', 'circle-stroke-color': '#00f0ff', 'circle-stroke-width': 1.5,
+            'circle-radius': ['step', ['get', 'point_count'], 14, 25, 18, 100, 23, 400, 29] } });
+          camMap.addLayer({ id: 'cam-count', type: 'symbol', source: 'cams', filter: ['has', 'point_count'],
+            layout: { 'text-field': ['get', 'point_count_abbreviated'], 'text-font': ['Noto Sans Regular'], 'text-size': 12 },
+            paint: { 'text-color': '#cfeaff' } });
+          camMap.addLayer({ id: 'cam-points', type: 'circle', source: 'cams', filter: ['!', ['has', 'point_count']], paint: {
+            'circle-color': colorBySrc, 'circle-radius': ['interpolate', ['linear'], ['zoom'], 4, 3.5, 12, 7],
+            'circle-stroke-color': '#02060e', 'circle-stroke-width': 1.5 } });
+          camMap.addLayer({ id: 'cam-live', type: 'circle', source: 'cams', filter: ['all', ['!', ['has', 'point_count']], ['==', ['get', 'live'], 1]], paint: {
+            'circle-color': 'rgba(0,0,0,0)', 'circle-radius': ['interpolate', ['linear'], ['zoom'], 4, 6, 12, 11],
+            'circle-stroke-color': colorBySrc, 'circle-stroke-width': 1, 'circle-stroke-opacity': 0.6 } });
+          camMap.addSource('cam-sel', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
+          camMap.addLayer({ id: 'cam-sel', type: 'circle', source: 'cam-sel', paint: {
+            'circle-color': 'rgba(0,0,0,0)', 'circle-radius': 14, 'circle-stroke-color': '#ffffff', 'circle-stroke-width': 2 } });
+
+          const popup = new ml.Popup({ closeButton: false, closeOnClick: false, offset: 10, className: 'cam-pop' });
+          camMap.on('mouseenter', 'cam-points', (e) => {
+            camMap.getCanvas().style.cursor = 'pointer';
+            const c = camState.byId.get(e.features[0].properties.id); if (!c) return;
+            popup.setLngLat([c.lon, c.lat]).setHTML(`<b>${escapeHtml(c.name)}</b><br>${escapeHtml(CAM_SOURCES[c.src].label)}${c.hls || c.video ? ' · live video' : ''}`).addTo(camMap);
+          });
+          camMap.on('mouseleave', 'cam-points', () => { camMap.getCanvas().style.cursor = ''; popup.remove(); });
+          camMap.on('mouseenter', 'cam-clusters', () => { camMap.getCanvas().style.cursor = 'pointer'; });
+          camMap.on('mouseleave', 'cam-clusters', () => { camMap.getCanvas().style.cursor = ''; });
+          camMap.on('click', 'cam-points', (e) => { const c = camState.byId.get(e.features[0].properties.id); if (c) selectCam(c, { fly: false }); });
+          camMap.on('click', 'cam-clusters', async (e) => {
+            const f = e.features[0];
+            const z = await camMap.getSource('cams').getClusterExpansionZoom(f.properties.cluster_id);
+            camMap.easeTo({ center: f.geometry.coordinates, zoom: z + 0.3 });
+          });
+          resolve(camMap);
+        });
+      }));
+      return camMapReady;
+    }
+    function refreshCamMapData() {
+      camMap?.getSource('cams')?.setData(camGeoJSON());
+      const c = camState.selected;
+      camMap?.getSource('cam-sel')?.setData({ type: 'FeatureCollection', features: c ? [{ type: 'Feature', geometry: { type: 'Point', coordinates: [c.lon, c.lat] }, properties: {} }] : [] });
+    }
+
+    async function enterCams() {
+      initCamMap().then(() => { refreshCamMapData(); camMap.resize(); }).catch(e => {
+        document.getElementById('camMap').innerHTML = `<div class="desk-empty" style="padding:40px">Map unavailable: ${escapeHtml(e.message)}</div>`;
+      });
+      renderCamSide(); renderCamViewer();
+      await loadCams();
+    }
     async function loadCams() {
       if (camState.status !== 'idle') return;
       camState.status = 'loading';
-      renderCamsPanel(); renderCamSourceList();
-      const results = await Promise.all(Object.keys(CAM_SOURCES).map(async (k) => {
+      renderCamSide();
+      await Promise.all(Object.keys(CAM_SOURCES).map(async (k) => {
         try {
           const list = (await camLoaders[k]()).filter(c => c && Number.isFinite(c.lat) && Number.isFinite(c.lon));
           if (!list.length) throw new Error('empty');
-          return list;
-        } catch (e) { camState.errors[k] = String(e.message || e); console.warn('cams', k, e); return []; }
+          for (const c of list) { camState.cams.push(c); camState.byId.set(c.id, c); }
+        } catch (e) { camState.errors[k] = String(e.message || e); console.warn('cams', k, e); }
+        // Paint each source as soon as it arrives instead of waiting for all.
+        renderCamSide(); if (camMap) refreshCamMapData();
       }));
-      camState.cams = results.flat();
       camState.status = 'ready';
-      buildCamPoints();
-      renderCamSourceList();
-      if (state.tab === 'cams') { renderCamsPanel(); updateCount(); drawMap(); }
+      renderCamSide(); renderCamViewer(); updateCount();
+      if (camMap) refreshCamMapData();
     }
 
     function visibleCams() { return camState.cams.filter(c => camState.active.has(c.src)); }
-
-    function buildCamPoints() {
-      if (camPoints) { camsGroup.remove(camPoints); camPoints.geometry.dispose(); }
-      const list = visibleCams();
-      camState.drawn = list;
-      const pos = new Float32Array(list.length * 3), col = new Float32Array(list.length * 3);
-      const c3 = new THREE.Color();
-      list.forEach((c, i) => {
-        const v = latLonToVec3(c.lat, c.lon, 1.006);
-        pos[i * 3] = v.x; pos[i * 3 + 1] = v.y; pos[i * 3 + 2] = v.z;
-        c3.setHex(CAM_SOURCES[c.src].color);
-        col[i * 3] = c3.r; col[i * 3 + 1] = c3.g; col[i * 3 + 2] = c3.b;
-      });
-      const g = new THREE.BufferGeometry();
-      g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-      g.setAttribute('color', new THREE.BufferAttribute(col, 3));
-      // Fixed pixel size: dense networks stay legible as dots when zoomed in.
-      camPoints = new THREE.Points(g, new THREE.PointsMaterial({ size: 3.5 * Math.min(2, devicePixelRatio || 1), sizeAttenuation: false, vertexColors: true, transparent: true, opacity: 0.95, depthWrite: false }));
-      camsGroup.add(camPoints);
-    }
-
-    // Front-facing point under the cursor (points behind the globe don't count).
-    function camFromHits(hits) {
-      const camDir = camera.position.clone().normalize();
-      for (const h of hits) {
-        if (h.object !== camPoints || !Number.isInteger(h.index)) continue;
-        const c = camState.drawn[h.index];
-        if (c && latLonToVec3(c.lat, c.lon, 1).dot(camDir) > 0.1) return c;
-      }
-      return null;
-    }
-
     const kmBetween = (a, b) => {
       const R = 6371, dLat = (b.lat - a.lat) * Math.PI / 180, dLon = (b.lon - a.lon) * Math.PI / 180;
       const x = Math.sin(dLat / 2) ** 2 + Math.cos(a.lat * Math.PI / 180) * Math.cos(b.lat * Math.PI / 180) * Math.sin(dLon / 2) ** 2;
       return 2 * R * Math.asin(Math.sqrt(x));
     };
-    const nearestCams = (from, n, exclude) => visibleCams().filter(c => c !== exclude)
-      .map(c => [c, kmBetween(from, c)]).sort((a, b) => a[1] - b[1]).slice(0, n);
+    const nearestCams = (from, n, exclude, maxKm = Infinity) => visibleCams().filter(c => c !== exclude && c.img)
+      .map(c => [c, kmBetween(from, c)]).filter(([, km]) => km <= maxKm).sort((a, b) => a[1] - b[1]).slice(0, n);
     // Cache-buster bucketed to the source's refresh interval (same URL → browser cache).
     const camImgUrl = (c, url = c.img) => url + (url.includes('?') ? '&' : '?') + 't=' + Math.floor(Date.now() / (CAM_SOURCES[c.src].refreshS * 1000));
-    const camHex = (src) => '#' + CAM_SOURCES[src].color.toString(16).padStart(6, '0');
 
-    function renderCamSourceList() {
-      const el = document.getElementById('camSourceList'); if (!el) return;
+    // ── Left panel: search + sources ─────────────────────────────────
+    function renderCamSide() {
+      const el = document.getElementById('camSide'); if (!el) return;
       const counts = {}; for (const c of camState.cams) counts[c.src] = (counts[c.src] || 0) + 1;
-      el.innerHTML = Object.entries(CAM_SOURCES).map(([k, s]) => {
-        const on = camState.active.has(k), n = counts[k] || 0, err = camState.errors[k];
-        return `<div class="alliance-row${on ? '' : ' off'}" data-src="${k}" style="padding:8px 12px" title="${escapeHtml(s.org)}">
-          <div class="nm"><span class="sw" style="color:${camHex(k)};background:${camHex(k)}"></span>${s.label.toUpperCase()}
-          <span style="margin-left:auto;color:${err ? 'var(--orange)' : 'var(--dim)'};font-weight:400">${camState.status === 'loading' ? '…' : err ? 'offline' : n}</span></div></div>`;
-      }).join('');
-      document.getElementById('camCount').textContent = camState.status === 'ready' ? `${visibleCams().length}` : '…';
-      el.querySelectorAll('[data-src]').forEach(row => row.addEventListener('click', () => {
-        const k = row.dataset.src;
-        if (camState.active.has(k)) camState.active.delete(k); else camState.active.add(k);
-        buildCamPoints(); renderCamSourceList(); updateCount(); drawMap();
-        if (!camState.selected) renderCamsPanel();
+      const total = visibleCams().length;
+      const q = deaccent(camState.q.trim().toLowerCase());
+      // Rank: name starts with the query > a word in it starts with it > anywhere.
+      const wordStart = new RegExp('(^|[^\\p{L}\\p{N}])' + q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'u');
+      const results = q.length >= 2 ? visibleCams().map(c => {
+          const hay = deaccent(`${c.name} ${c.dir || ''} ${CAM_SOURCES[c.src].label}`.toLowerCase());
+          const name = deaccent(c.name.toLowerCase());
+          const score = name.startsWith(q) ? 0 : wordStart.test(hay) ? 1 : hay.includes(q) ? 2 : -1;
+          return [c, score];
+        }).filter(([, sc]) => sc >= 0).sort((a, b) => a[1] - b[1]).slice(0, 40).map(([c]) => c) : [];
+      el.innerHTML = `
+        <div class="cam-side-h">CAMERAS <b>// OPEN DATA</b><span>${camState.status === 'ready' ? total.toLocaleString() : 'loading…'}</span></div>
+        <input class="desk-search" id="camSearch" placeholder="Search a place or road (e.g. Oxford, A-6, Reykjavík)…" value="${escapeHtml(camState.q)}" />
+        ${q.length >= 2 ? `<div class="cam-results">${results.length ? results.map(c => `
+            <button class="cam-res" data-id="${escapeHtml(c.id)}"><i style="background:${CAM_SOURCES[c.src].color}"></i>${escapeHtml(c.name)}<small>${escapeHtml(CAM_SOURCES[c.src].label)}</small></button>`).join('')
+          : '<div class="desk-empty" style="padding:8px 2px">No camera matches.</div>'}</div>` : ''}
+        <div class="cam-side-sub">SOURCES · click to show / hide · ⌖ to fly there</div>
+        <div class="cam-sources">${Object.entries(CAM_SOURCES).map(([k, s]) => {
+          const on = camState.active.has(k), err = camState.errors[k];
+          const n = camState.status === 'idle' ? '' : err ? 'offline' : counts[k] != null ? counts[k].toLocaleString() : '…';
+          return `<div class="cam-src${on ? '' : ' off'}">
+            <button class="tg" data-src="${k}" title="${escapeHtml(s.org)}"><i style="background:${s.color}"></i>${escapeHtml(s.label)}<small>${escapeHtml(s.org)}</small><span class="${err ? 'err' : ''}">${n}</span></button>
+            <button class="go" data-go="${k}" title="Fly to ${escapeHtml(s.label)}">⌖</button></div>`; }).join('')}</div>
+        <div class="cam-note">Only cameras that public agencies publish on purpose (roads, road-weather, national parks). ${'○'} ring = live video.</div>`;
+      const search = document.getElementById('camSearch');
+      let t; search.addEventListener('input', () => { clearTimeout(t); t = setTimeout(() => {
+        camState.q = search.value; renderCamSide();
+        const s2 = document.getElementById('camSearch'); s2.focus(); s2.setSelectionRange(s2.value.length, s2.value.length);
+      }, 200); });
+      el.querySelectorAll('[data-src]').forEach(b => b.addEventListener('click', () => {
+        const k = b.dataset.src; if (camState.active.has(k)) camState.active.delete(k); else camState.active.add(k);
+        renderCamSide(); refreshCamMapData(); updateCount();
       }));
+      el.querySelectorAll('[data-go]').forEach(b => b.addEventListener('click', () => {
+        const s = CAM_SOURCES[b.dataset.go]; camState.active.add(b.dataset.go);
+        camMap?.flyTo({ center: s.center, zoom: s.zoom, duration: 1200 }); renderCamSide(); refreshCamMapData();
+      }));
+      el.querySelectorAll('[data-id]').forEach(b => b.addEventListener('click', () => { const c = camState.byId.get(b.dataset.id); if (c) selectCam(c); }));
     }
 
     function stopCamTimers() {
@@ -13163,91 +13281,73 @@ PELICAN-9
       const v = document.getElementById('camVideo');
       if (v) { v._hls?.destroy?.(); v.pause?.(); }
     }
-
     function selectCam(c, { fly = true } = {}) {
       stopCamTimers();
       camState.selected = c; camState.video = false; camState.preset = 0;
-      if (fly) tweenCamera(latLonToVec3(c.lat, c.lon, 1.55), 1.0);
-      controls.autoRotate = false;
-      renderCamsPanel();
+      document.body.classList.add('cam-open');
+      if (fly && camMap) camMap.flyTo({ center: [c.lon, c.lat], zoom: Math.max(camMap.getZoom(), 12), duration: 1000 });
+      refreshCamMapData();
+      renderCamViewer();
     }
 
-    function renderCamsPanel() {
-      if (state.tab !== 'cams') return;
+    // ── Right panel: the viewer ──────────────────────────────────────
+    function renderCamViewer() {
+      const el = document.getElementById('camViewer'); if (!el) return;
       const c = camState.selected;
       if (!c) {
-        rightTitle.innerHTML = 'CAMERAS <b>// OPEN DATA</b>';
-        rightSub.textContent = camState.status === 'ready' ? `${visibleCams().length} live` : 'loading…';
-        const counts = {}; for (const x of camState.cams) counts[x.src] = (counts[x.src] || 0) + 1;
-        feedListEl.innerHTML = `
-          <div class="cam-intro">Public traffic & road-weather cameras published as open data by transport agencies. Click a dot on the globe, or pick a region.</div>
-          ${Object.entries(CAM_SOURCES).filter(([k]) => camState.active.has(k)).map(([k, s]) => `
-            <button class="cam-region" data-region="${k}">
-              <span class="sw" style="background:${camHex(k)};color:${camHex(k)}"></span>
-              <span class="nm">${escapeHtml(s.label)}<small>${escapeHtml(s.org)}</small></span>
-              <span class="n">${camState.status === 'ready' ? (camState.errors[k] ? 'offline' : counts[k] || 0) : '…'}</span>
-            </button>`).join('')}
-          <div class="cam-intro" style="opacity:.75">Images refresh automatically. Live video: London (short clips) and California (streams).</div>`;
-        feedListEl.querySelectorAll('[data-region]').forEach(b => b.addEventListener('click', () => {
-          const k = b.dataset.region, [lat, lon] = CAM_SOURCES[k].center;
-          tweenCamera(latLonToVec3(lat, lon, k === 'caltrans' || k === 'fi' || k === 'nz' ? 2.1 : 1.6), 1.0);
-          openCamWall(k);
-        }));
+        document.body.classList.remove('cam-open');
+        el.innerHTML = `<div class="cam-empty"><b>Pick a camera</b>Click a dot on the map, open a cluster to zoom in, or search on the left.</div>`;
         return;
       }
       const s = CAM_SOURCES[c.src];
-      rightTitle.innerHTML = `${escapeHtml(s.label.toUpperCase())} <b>// CAM</b>`;
-      rightSub.textContent = 'open data';
       const hasVideo = !!(c.video || c.hls);
-      const isCaltrans = c.src === 'caltrans';
-      const near = nearestCams(c, 6, c);
-      feedListEl.innerHTML = `
+      const linkOnly = !c.img;             // some park webcams only exist as a web page
+      const near = nearestCams(c, 6, c, 150);   // "nearby" means nearby — not 600 km away
+      const imgSrc = c.presets ? `https://weathercam.digitraffic.fi/${c.presets[camState.preset]}.jpg` : c.img;
+      el.innerHTML = `
         <div class="cam-view">
-          <button class="cam-back" id="camBack">← ALL REGIONS</button>
+          <div class="cam-view-h"><span style="color:${s.color}">●</span> ${escapeHtml(s.label.toUpperCase())}<button class="cam-x" id="camClose" aria-label="Close viewer">✕</button></div>
           <div class="cam-name">${escapeHtml(c.name)}</div>
-          <div class="cam-meta">${escapeHtml(s.org)} · ${c.dir ? escapeHtml(c.dir) + ' · ' : ''}${c.lat.toFixed(4)}, ${c.lon.toFixed(4)}</div>
-          <div class="cam-frame" id="camFrame">
+          <div class="cam-meta">${escapeHtml(s.org)}${c.dir ? ' · ' + escapeHtml(c.dir) : ''}</div>
+          ${linkOnly ? `<div class="cam-frame link"><a class="cam-btn" href="${escapeHtml(c.page)}" target="_blank" rel="noopener">${c.streaming ? '▶ WATCH LIVE ON NPS.GOV ↗' : 'OPEN WEBCAM ON NPS.GOV ↗'}</a><small>This park publishes the view on its own page.</small></div>` : `
+          <div class="cam-frame">
             ${camState.video && hasVideo
               ? `<video id="camVideo" autoplay muted playsinline loop controls></video>`
-              : `<img id="camImg" src="${escapeHtml(camImgUrl(c, c.presets ? `https://weathercam.digitraffic.fi/${c.presets[camState.preset]}.jpg` : c.img))}" alt="${escapeHtml(c.name)}" />`}
-            <div class="cam-badge" id="camBadge">${camState.video ? '● LIVE' : 'SNAPSHOT'}</div>
-          </div>
-          <div class="cam-stamp" id="camStamp">—</div>
+              : `<img id="camImg" src="${escapeHtml(camImgUrl(c, imgSrc))}" alt="${escapeHtml(c.name)}" />`}
+            <div class="cam-badge">${camState.video ? '● LIVE' : c.src === 'nps' ? 'PREVIEW' : 'SNAPSHOT'}</div>
+          </div>`}
+          <div class="cam-stamp" id="camStamp">${linkOnly ? '' : '—'}</div>
           <div class="cam-actions">
             ${hasVideo ? `<button class="cam-btn${camState.video ? ' on' : ''}" id="camVideoBtn">${camState.video ? '■ SNAPSHOT' : '▶ LIVE VIDEO'}</button>` : ''}
-            ${isCaltrans && !camState.video ? `<button class="cam-btn" id="camLapseBtn">⟲ LAST 12 FRAMES</button>` : ''}
+            ${c.src === 'caltrans' && !camState.video ? `<button class="cam-btn" id="camLapseBtn">⟲ LAST 12 FRAMES</button>` : ''}
             ${c.presets?.length > 1 ? c.presets.map((p, i) => `<button class="cam-btn${i === camState.preset ? ' on' : ''}" data-preset="${i}">VIEW ${i + 1}</button>`).join('') : ''}
-            <button class="cam-btn" id="camWallBtn">▦ NEARBY WALL</button>
-            <a class="cam-btn" href="${escapeHtml(c.img)}" target="_blank" rel="noopener">SOURCE ↗</a>
+            ${near.length ? `<button class="cam-btn" id="camWallBtn">▦ NEARBY WALL</button>` : ''}
+            ${c.page && c.img ? `<a class="cam-btn" href="${escapeHtml(c.page)}" target="_blank" rel="noopener">NPS PAGE ↗</a>` : c.img ? `<a class="cam-btn" href="${escapeHtml(c.img)}" target="_blank" rel="noopener">SOURCE ↗</a>` : ''}
           </div>
-          <h4 class="cam-h">NEARBY CAMERAS</h4>
+          ${near.length ? `<h4 class="cam-h">NEARBY CAMERAS</h4>
           <div class="cam-near">${near.map(([n, km]) => `
             <button class="cam-thumb" data-id="${escapeHtml(n.id)}">
               <img loading="lazy" src="${escapeHtml(camImgUrl(n))}" alt="" onerror="this.style.visibility='hidden'" />
               <span>${escapeHtml(n.name)}<small>${km < 1 ? Math.round(km * 1000) + ' m' : km.toFixed(1) + ' km'}</small></span>
-            </button>`).join('')}</div>
+            </button>`).join('')}</div>` : ''}
         </div>`;
 
       const img = document.getElementById('camImg');
       const stamp = document.getElementById('camStamp');
-      const markLoaded = () => { stamp.textContent = `refreshed ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })} · every ${s.refreshS >= 120 ? s.refreshS / 60 + ' min' : s.refreshS + ' s'}`; };
       if (img) {
-        img.addEventListener('load', markLoaded);
+        img.addEventListener('load', () => { stamp.textContent = `refreshed ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })} · every ${s.refreshS >= 120 ? s.refreshS / 60 + ' min' : s.refreshS + ' s'}`; });
         img.addEventListener('error', () => { stamp.textContent = 'image unavailable right now (camera offline at source)'; });
         camState.timer = setInterval(async () => {
           if (document.hidden || camState.selected !== c || camState.timelapse) return;
-          if (c.src === 'sg') {           // Singapore issues a new image URL each minute
-            try { const fresh = (await camLoaders.sg()).find(x => x.id === c.id); if (fresh) c.img = fresh.img; } catch {}
-          }
+          if (c.src === 'sg') { try { const fresh = (await camLoaders.sg()).find(x => x.id === c.id); if (fresh) c.img = fresh.img; } catch {} }
           const base = c.presets ? `https://weathercam.digitraffic.fi/${c.presets[camState.preset]}.jpg` : c.img;
           img.src = base + (base.includes('?') ? '&' : '?') + 't=' + Date.now();
         }, Math.min(60, s.refreshS) * 1000);
       }
       if (camState.video && hasVideo) startCamVideo(c);
-
-      document.getElementById('camBack').addEventListener('click', () => { stopCamTimers(); camState.selected = null; renderCamsPanel(); });
-      document.getElementById('camVideoBtn')?.addEventListener('click', () => { stopCamTimers(); camState.video = !camState.video; renderCamsPanel(); });
-      document.getElementById('camWallBtn').addEventListener('click', () => openCamWall(null, c));
+      document.getElementById('camClose').addEventListener('click', () => { stopCamTimers(); camState.selected = null; refreshCamMapData(); renderCamViewer(); });
+      document.getElementById('camVideoBtn')?.addEventListener('click', () => { stopCamTimers(); camState.video = !camState.video; renderCamViewer(); });
+      document.getElementById('camWallBtn')?.addEventListener('click', () => openCamWall(c));
       document.getElementById('camLapseBtn')?.addEventListener('click', (e) => {
         if (camState.timelapse) { clearInterval(camState.timelapse); camState.timelapse = null; e.target.classList.remove('on'); img.src = camImgUrl(c); return; }
         // Caltrans keeps the previous 12 frames next to the current image.
@@ -13256,24 +13356,22 @@ PELICAN-9
         let k = 0; e.target.classList.add('on');
         camState.timelapse = setInterval(() => { img.src = frames[k % frames.length]; stamp.textContent = k % frames.length === 12 ? 'now' : `${12 - (k % frames.length)} updates ago`; k++; }, 450);
       });
-      feedListEl.querySelectorAll('[data-preset]').forEach(b => b.addEventListener('click', () => { camState.preset = +b.dataset.preset; stopCamTimers(); renderCamsPanel(); }));
-      feedListEl.querySelectorAll('.cam-thumb').forEach(b => b.addEventListener('click', () => {
-        const n = camState.cams.find(x => x.id === b.dataset.id); if (n) selectCam(n);
-      }));
+      el.querySelectorAll('[data-preset]').forEach(b => b.addEventListener('click', () => { camState.preset = +b.dataset.preset; stopCamTimers(); renderCamViewer(); }));
+      el.querySelectorAll('.cam-thumb').forEach(b => b.addEventListener('click', () => { const n = camState.byId.get(b.dataset.id); if (n) selectCam(n); }));
     }
 
     // Live video: TfL ships short MP4 loops; Caltrans HLS (native in Safari, hls.js elsewhere).
     async function startCamVideo(c) {
       const v = document.getElementById('camVideo'); if (!v) return;
       const stamp = document.getElementById('camStamp');
-      const fail = () => { stamp.textContent = 'live video unavailable — showing snapshot'; camState.video = false; setTimeout(() => { if (camState.selected === c) renderCamsPanel(); }, 1200); };
+      const fail = () => { stamp.textContent = 'live video unavailable — showing snapshot'; camState.video = false; setTimeout(() => { if (camState.selected === c) renderCamViewer(); }, 1200); };
       v.addEventListener('error', fail, { once: true });
-      if (c.video) { v.src = c.video; stamp.textContent = 'TfL short live clip (loops) · refreshed by TfL every few minutes'; return; }
+      if (c.video) { v.src = c.video; stamp.textContent = 'TfL short live clip (loops)'; return; }
       if (v.canPlayType('application/vnd.apple.mpegurl')) { v.src = c.hls; stamp.textContent = 'live stream'; return; }
       try {
         const { default: Hls } = await import('https://cdn.jsdelivr.net/npm/hls.js@1.5.17/dist/hls.mjs');
         if (!Hls.isSupported()) return fail();
-        const hls = new Hls({ lowLatencyMode: false });
+        const hls = new Hls();
         v._hls = hls;
         hls.on(Hls.Events.ERROR, (_, d) => { if (d.fatal) { hls.destroy(); fail(); } });
         hls.loadSource(c.hls); hls.attachMedia(v);
@@ -13281,19 +13379,17 @@ PELICAN-9
       } catch { fail(); }
     }
 
-    // ── Video wall: up to 12 cameras of a region (or around a camera) ──
-    function openCamWall(srcKey, around) {
+    // ── Video wall: 12 cameras around one, or everything in the map view ──
+    function openCamWall(around) {
       const wall = document.getElementById('camWall');
       let list, title;
-      if (around) { list = [around, ...nearestCams(around, 11, around).map(x => x[0])]; title = `Around ${around.name}`; }
+      if (around) { list = [around, ...nearestCams(around, 11, around, 150).map(x => x[0])].filter(c => c.img); title = `Around ${around.name}`; }
       else {
-        const s = CAM_SOURCES[srcKey];
-        const center = { lat: s.center[0], lon: s.center[1] };
-        list = nearestCams(center, 400).map(x => x[0]).filter(c => c.src === srcKey);
-        // Spread across the region instead of 12 cameras on the same junction.
+        const b = camMap.getBounds();
+        list = visibleCams().filter(c => c.img && b.contains([c.lon, c.lat]));
         const step = Math.max(1, Math.floor(list.length / 12));
         list = list.filter((_, i) => i % step === 0).slice(0, 12);
-        title = `${s.label} — ${s.org}`;
+        title = 'Cameras in the current map view';
       }
       if (!list.length) return;
       wall.innerHTML = `
@@ -13301,40 +13397,32 @@ PELICAN-9
         <div class="cam-wall-grid">${list.map(c => `
           <button class="cam-tile" data-id="${escapeHtml(c.id)}">
             <img src="${escapeHtml(camImgUrl(c))}" alt="" onerror="this.closest('.cam-tile').classList.add('dead')" />
-            <span class="lbl"><i style="background:${camHex(c.src)}"></i>${escapeHtml(c.name)}</span>
+            <span class="lbl"><i style="background:${CAM_SOURCES[c.src].color}"></i>${escapeHtml(c.name)}</span>
           </button>`).join('')}</div>`;
       wall.classList.add('on');
       clearInterval(camState.wallTimer);
       camState.wallTimer = setInterval(() => {
         if (document.hidden || !wall.classList.contains('on')) return;
         wall.querySelectorAll('.cam-tile').forEach(t => {
-          const c = camState.cams.find(x => x.id === t.dataset.id); const im = t.querySelector('img');
+          const c = camState.byId.get(t.dataset.id); const im = t.querySelector('img');
           if (c && im && c.src !== 'sg') im.src = c.img + (c.img.includes('?') ? '&' : '?') + 't=' + Date.now();
         });
       }, 60000);
       document.getElementById('camWallClose').addEventListener('click', closeCamWall);
       wall.querySelectorAll('.cam-tile').forEach(t => t.addEventListener('click', () => {
-        const c = camState.cams.find(x => x.id === t.dataset.id); closeCamWall(); if (c) selectCam(c);
+        const c = camState.byId.get(t.dataset.id); closeCamWall(); if (c) selectCam(c);
       }));
     }
     function closeCamWall() {
       const wall = document.getElementById('camWall');
       wall.classList.remove('on'); clearInterval(camState.wallTimer); wall.innerHTML = '';
     }
+    document.getElementById('camWallView').addEventListener('click', () => { if (camMap) openCamWall(null); });
     addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && document.getElementById('camWall')?.classList.contains('on')) { closeCamWall(); e.stopImmediatePropagation(); }
+      if (e.key !== 'Escape' || state.tab !== 'cams') return;
+      if (document.getElementById('camWall')?.classList.contains('on')) { closeCamWall(); e.stopImmediatePropagation(); return; }
+      if (camState.selected && !readerEl.classList.contains('on')) { stopCamTimers(); camState.selected = null; refreshCamMapData(); renderCamViewer(); e.stopImmediatePropagation(); }
     });
-
-    function buildLayerCams() {
-      if (camState.status !== 'ready') return;
-      const renderer2d = (buildLayerCams._r ||= L.canvas({ padding: 0.3 }));
-      for (const c of visibleCams()) {
-        L.circleMarker([c.lat, c.lon], { renderer: renderer2d, radius: c === camState.selected ? 7 : 3.5, color: camHex(c.src), weight: 1, fillOpacity: 0.85 })
-          .bindTooltip(escapeHtml(c.name), { direction: 'top' })
-          .on('click', () => selectCam(c, { fly: false }))
-          .addTo(mapOverlay);
-      }
-    }
 
     // ── Label decluttering ───────────────────────────────────────────
     // Country/city labels used to pile up (Europe was unreadable). Every
@@ -13747,7 +13835,6 @@ PELICAN-9
       if (state.tab === 'markets')   buildLayerMarkets();
       if (state.tab === 'outbreaks') buildLayerOutbreaks();
       if (state.tab === 'quakes'    || state.tab === 'defcon')   buildLayerQuakes();
-      if (state.tab === 'cams')      buildLayerCams();
 
       // Auto-fit camera for inspection mode
       if (state.tab === 'conflicts' && state.selectedConflict) {

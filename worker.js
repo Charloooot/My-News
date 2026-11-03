@@ -18,7 +18,8 @@
  *   GET /quotes?symbols=DIS,MC.PA&range=5d → compact price series (Yahoo),
  *                                           edge-cached 5 min per symbol
  *   GET /cams/caltrans?d=1..12            → compact Caltrans camera index (1 h)
- *   GET /cams/nz                          → compact NZTA camera index (1 h)
+ *   GET /cams/nz | /cams/es | /cams/is    → NZTA, Spain DGT, Iceland indexes (1 h)
+ *   GET /cams/nps                         → US National Park webcams (24 h)
  *   GET /gdelt?query=...&maxrecords=250   → GDELT ArtList JSON, edge-cached 10 min
  *   GET /extract?url=https://...          → readable article text, edge-cached 6 h
  *   GET /tle?group=active                 → CelesTrak GP TLE, edge-cached 2 h
@@ -46,7 +47,7 @@
  */
 
 import { collectNews, collectFrance, collectBusiness, fetchQuote } from './news-collector.js';
-import { caltransDistrict, nzCameras } from './cams.js';
+import { caltransDistrict, nzCameras, spainCameras, icelandCameras, npsWebcams } from './cams.js';
 
 const CORS = {
   'Access-Control-Allow-Origin': '*',
@@ -64,7 +65,7 @@ export default {
       if (url.pathname === '/fr')      return await handleFeed(FEEDS.fr, env, ctx);
       if (url.pathname === '/biz')     return await handleFeed(FEEDS.biz, env, ctx);
       if (url.pathname === '/quotes')  return await handleQuotes(url, ctx);
-      if (url.pathname === '/cams/caltrans' || url.pathname === '/cams/nz') return await handleCams(url, ctx);
+      if (url.pathname.startsWith('/cams/')) return await handleCams(url, env, ctx);
       if (url.pathname === '/gdelt')   return await handleGdelt(url);
       if (url.pathname === '/extract') return await handleExtract(url);
       if (url.pathname === '/tle')     return await handleTle(url);
@@ -143,16 +144,28 @@ async function handleFeed(feed, env, ctx) {
 }
 
 // ── /cams ──────────────────────────────────────────────────────────────────
-async function handleCams(reqUrl, ctx) {
-  const isNz = reqUrl.pathname === '/cams/nz';
-  const d = Number(reqUrl.searchParams.get('d'));
-  if (!isNz && !(Number.isInteger(d) && d >= 1 && d <= 12)) return json({ error: 'd must be 1..12' }, 400);
-  const key = new Request(isNz ? 'https://cache/cams/nz' : `https://cache/cams/caltrans/${d}`);
+const CAM_INDEXES = {
+  nz:  { ttl: 3600,  load: () => nzCameras() },
+  es:  { ttl: 3600,  load: () => spainCameras() },
+  is:  { ttl: 3600,  load: () => icelandCameras() },
+  nps: { ttl: 86400, load: (env) => npsWebcams(env.NPS_KEY || 'DEMO_KEY') },   // DEMO_KEY is rate-limited → cache a day
+};
+async function handleCams(reqUrl, env, ctx) {
+  const name = reqUrl.pathname.slice('/cams/'.length);
+  let load, ttl, keyStr;
+  if (name === 'caltrans') {
+    const d = Number(reqUrl.searchParams.get('d'));
+    if (!(Number.isInteger(d) && d >= 1 && d <= 12)) return json({ error: 'd must be 1..12' }, 400);
+    load = () => caltransDistrict(d); ttl = 3600; keyStr = `caltrans/${d}`;
+  } else if (CAM_INDEXES[name]) {
+    ({ load, ttl } = CAM_INDEXES[name]); keyStr = name;
+  } else return json({ error: 'unknown camera index' }, 404);
+  const key = new Request('https://cache/cams/' + keyStr);
   const hit = await caches.default.match(key);
   if (hit) return withCors(hit);
-  const rows = isNz ? await nzCameras() : await caltransDistrict(d);
+  const rows = await load(env);
   const resp = new Response(JSON.stringify(rows), {
-    headers: { 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=3600', ...CORS },
+    headers: { 'Content-Type': 'application/json', 'Cache-Control': `public, max-age=${ttl}`, ...CORS },
   });
   ctx.waitUntil(caches.default.put(key, resp.clone()));
   return resp;
