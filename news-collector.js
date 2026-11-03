@@ -66,8 +66,9 @@ const MAX_ARTICLES = 1800;
 // from the previous run are carried over instead of vanishing for 15 min.
 const CARRY_MAX_AGE_MS = 6 * 3600e3;
 
-export async function collectNews(env = {}, previous = null) {
-  const started = Date.now();
+// Runs one named source, records ok/error in `report`, and on failure hands
+// back that source's items from the previous run (if recent enough).
+function makeTracker(previous) {
   const report = {};
   const prevAge = previous?.generated ? Date.now() - Date.parse(previous.generated) : Infinity;
   const prevByFeed = new Map();
@@ -91,6 +92,12 @@ export async function collectNews(env = {}, previous = null) {
       return carried;
     }
   };
+  return { track, report };
+}
+
+export async function collectNews(env = {}, previous = null) {
+  const started = Date.now();
+  const { track, report } = makeTracker(previous);
 
   // Everything except GDELT in parallel; GDELT runs its own paced sequence.
   const feeds = RSS_FEEDS.filter(f => !(f.skipIf && env[f.skipIf]));
@@ -121,9 +128,79 @@ export async function collectNews(env = {}, previous = null) {
   };
 }
 
+// ── French politics desk ───────────────────────────────────────────────────
+// Separate feed for the FRANCE tab: national outlets' politics sections.
+export const FR_FEEDS = [
+  { id: 'lemonde',     url: 'https://www.lemonde.fr/politique/rss_full.xml' },
+  { id: 'franceinfo',  url: 'https://www.francetvinfo.fr/politique.rss' },
+  { id: 'liberation',  url: 'https://www.liberation.fr/arc/outboundfeeds/rss-all/category/politique/?outputType=xml' },
+  { id: 'figaro',      url: 'https://www.lefigaro.fr/rss/figaro_politique.xml' },
+  { id: '20minutes',   url: 'https://www.20minutes.fr/feeds/rss-politique.xml' },
+  { id: 'bfmtv',       url: 'https://www.bfmtv.com/rss/politique/' },
+  { id: 'huffpost-fr', url: 'https://www.huffingtonpost.fr/politique/rss_headline.xml' },
+  { id: 'lexpress',    url: 'https://www.lexpress.fr/arc/outboundfeeds/rss/politique.xml' },
+  { id: 'lcp',         url: 'https://lcp.fr/rss.xml' },
+  { id: 'france24-fr', url: 'https://www.france24.com/fr/france/rss' },
+];
+
+export async function collectFrance(env = {}, previous = null) {
+  const started = Date.now();
+  const { track, report } = makeTracker(previous);
+  const lists = await Promise.all(FR_FEEDS.map(f =>
+    track('fr:' + f.id, () => fetchRss({ ...f, country: 'France', language: 'French' }))));
+  const articles = mergeArticles(lists.flat(), 48);
+  return { generated: new Date().toISOString(), tookMs: Date.now() - started, sources: report, count: articles.length, articles };
+}
+
+// ── Business desk (feeds the IMPACT tab) ────────────────────────────────────
+// World/politics feeds almost never name companies; these do — markets,
+// tech, and entertainment trade press (box office → Disney, Netflix…).
+export const BIZ_FEEDS = [
+  { id: 'bbc-business',    url: 'https://feeds.bbci.co.uk/news/business/rss.xml',               country: 'United Kingdom' },
+  { id: 'guardian-biz',    url: 'https://www.theguardian.com/uk/business/rss',                  country: 'United Kingdom' },
+  { id: 'cnbc',            url: 'https://www.cnbc.com/id/10001147/device/rss/rss.html',         country: 'United States' },
+  { id: 'cnbc-tech',       url: 'https://www.cnbc.com/id/19854910/device/rss/rss.html',         country: 'United States' },
+  { id: 'marketwatch',     url: 'https://feeds.content.dowjones.io/public/rss/mw_topstories',   country: 'United States' },
+  { id: 'ft-companies',    url: 'https://www.ft.com/companies?format=rss',                      country: 'United Kingdom' },
+  { id: 'investing',       url: 'https://www.investing.com/rss/news_25.rss',                    country: 'United States' },
+  { id: 'nikkei-asia',     url: 'https://asia.nikkei.com/rss/feed/nar',                         country: 'Japan' },
+  { id: 'lemonde-eco',     url: 'https://www.lemonde.fr/economie/rss_full.xml',                 country: 'France', language: 'French' },
+  { id: 'bfm-eco',         url: 'https://www.bfmtv.com/rss/economie/',                          country: 'France', language: 'French' },
+  { id: 'variety',         url: 'https://variety.com/feed/',                                    country: 'United States' },
+  { id: 'hollywood-rep',   url: 'https://www.hollywoodreporter.com/feed/',                      country: 'United States' },
+  { id: 'deadline',        url: 'https://deadline.com/feed/',                                   country: 'United States' },
+  { id: 'techcrunch',      url: 'https://techcrunch.com/feed/',                                 country: 'United States' },
+  { id: 'the-verge',       url: 'https://www.theverge.com/rss/index.xml',                       country: 'United States' },
+];
+
+export async function collectBusiness(env = {}, previous = null) {
+  const started = Date.now();
+  const { track, report } = makeTracker(previous);
+  const lists = await Promise.all(BIZ_FEEDS.map(f => track('biz:' + f.id, () => fetchRss(f))));
+  const articles = mergeArticles(lists.flat(), 72);   // markets react over days
+  return { generated: new Date().toISOString(), tookMs: Date.now() - started, sources: report, count: articles.length, articles };
+}
+
+// ── Stock quotes (Yahoo Finance chart API, no key) ─────────────────────────
+// Compact series for the IMPACT tab: [{ symbol, name, currency, tz, price,
+// prevClose, t: [unix s], c: [close] }]. Nulls (halts, gaps) are dropped.
+export async function fetchQuote(symbol, range = '5d', interval = '15m') {
+  const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?range=${range}&interval=${interval}&includePrePost=false`;
+  const r = await fetch(url, { headers: { 'User-Agent': 'Mozilla/5.0 (wrld-news)', Accept: 'application/json' } });
+  if (!r.ok) throw new Error('yahoo ' + r.status);
+  const res = (await r.json())?.chart?.result?.[0];
+  if (!res) throw new Error('no data');
+  const m = res.meta || {}, ts = res.timestamp || [], cl = res.indicators?.quote?.[0]?.close || [];
+  const t = [], c = [];
+  for (let i = 0; i < ts.length; i++) if (cl[i] != null) { t.push(ts[i]); c.push(+cl[i].toFixed(4)); }
+  return { symbol: m.symbol || symbol, name: m.shortName || m.longName || symbol, currency: m.currency || '',
+           tz: m.exchangeTimezoneName || '', exchange: m.exchangeName || '',
+           price: m.regularMarketPrice ?? c[c.length - 1] ?? null, prevClose: m.chartPreviousClose ?? m.previousClose ?? null, t, c };
+}
+
 // URL-level dedup (titles are clustered client-side), age cut-off, newest first.
-function mergeArticles(all) {
-  const cutoff = Date.now() - MAX_AGE_NEWS_H * 3600e3;
+function mergeArticles(all, maxAgeH = MAX_AGE_NEWS_H) {
+  const cutoff = Date.now() - maxAgeH * 3600e3;
   const seen = new Set();
   const out = [];
   for (const a of all) {
@@ -161,7 +238,7 @@ async function fetchRss(feed) {
       socialimage: rssImage(b, rawDesc),
       seendate: msToGdeltDate(ms),
       sourcecountry: feed.country || '',
-      language: 'English',
+      language: feed.language || 'English',
       desc: clip(stripHtml(decodeEntities(unCdata(rawDesc))), 320),
       src: 'rss:' + feed.id,
       kind: 'news',
@@ -180,6 +257,26 @@ async function fetchRss(feed) {
 }
 
 function rssImage(block, rawDesc) {
+  return upgradeImage(rssImageRaw(block, rawDesc));
+}
+// Feeds often ship tiny thumbnails; ask the CDN for a larger rendition when
+// its URL scheme makes that possible (BBC ichef, Guardian i.guim).
+function upgradeImage(u) {
+  if (!u) return u;
+  return u
+    .replace(/(ichef\.bbci\.co\.uk\/(?:ace|news)\/(?:standard|ws)\/)\d{2,4}\//, '$1976/')
+    .replace(/(i\.guim\.co\.uk\/.*[?&]width=)\d+/, '$1940');
+}
+function rssImageRaw(block, rawDesc) {
+  // Largest declared media:content / media:thumbnail first (Guardian lists 140 + 460 px).
+  let best = '', bestW = -1;
+  for (const m of block.matchAll(/<media:(?:content|thumbnail)\b([^>]*)>/gi)) {
+    const url = (m[1].match(/url="([^"]+)"/i) || [])[1];
+    if (!url || /medium="video"|type="video/i.test(m[1])) continue;
+    const w = +((m[1].match(/width="(\d+)"/i) || [])[1] || 0);
+    if (w > bestW) { best = decodeEntities(url); bestW = w; }
+  }
+  if (best && bestW > 0) return best;
   const pick = (re) => { const m = block.match(re); return m ? decodeEntities(m[1]) : ''; };
   return pick(/<media:content[^>]+url="([^"]+)"[^>]*(?:medium="image"|type="image)/i)
     || pick(/<media:thumbnail[^>]+url="([^"]+)"/i)

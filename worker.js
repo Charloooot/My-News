@@ -11,6 +11,12 @@
  *   GET /news                             → merged multi-source feed (see
  *                                           news-collector.js), rebuilt every
  *                                           15 min by the Cron Trigger
+ *   GET /fr                               → French politics desk (10 national
+ *                                           outlets), same cron
+ *   GET /biz                              → business / tech / entertainment desk
+ *                                           (15 outlets) for the IMPACT tab
+ *   GET /quotes?symbols=DIS,MC.PA&range=5d → compact price series (Yahoo),
+ *                                           edge-cached 5 min per symbol
  *   GET /gdelt?query=...&maxrecords=250   → GDELT ArtList JSON, edge-cached 10 min
  *   GET /extract?url=https://...          → readable article text, edge-cached 6 h
  *   GET /tle?group=active                 → CelesTrak GP TLE, edge-cached 2 h
@@ -37,7 +43,7 @@
  * the same copy; the edge cache is per-colo, so each region rebuilds lazily.
  */
 
-import { collectNews } from './news-collector.js';
+import { collectNews, collectFrance, collectBusiness, fetchQuote } from './news-collector.js';
 
 const CORS = {
   'Access-Control-Allow-Origin': '*',
@@ -51,7 +57,10 @@ export default {
 
     const url = new URL(request.url);
     try {
-      if (url.pathname === '/news')    return await handleNews(env, ctx);
+      if (url.pathname === '/news')    return await handleFeed(FEEDS.world, env, ctx);
+      if (url.pathname === '/fr')      return await handleFeed(FEEDS.fr, env, ctx);
+      if (url.pathname === '/biz')     return await handleFeed(FEEDS.biz, env, ctx);
+      if (url.pathname === '/quotes')  return await handleQuotes(url, ctx);
       if (url.pathname === '/gdelt')   return await handleGdelt(url);
       if (url.pathname === '/extract') return await handleExtract(url);
       if (url.pathname === '/tle')     return await handleTle(url);
@@ -66,21 +75,27 @@ export default {
 
   // Cron Trigger (wrangler.toml → [triggers] crons) — rebuild the merged feed.
   async scheduled(_event, env, ctx) {
-    ctx.waitUntil(refreshNews(env));
+    ctx.waitUntil(Promise.allSettled(Object.values(FEEDS).map(f => refreshFeed(f, env))));
   },
 };
 
-// ── /news ───────────────────────────────────────────────────────────────────
-const NEWS_KEY = 'news:latest';
-const NEWS_FRESH_MS = 20 * 60 * 1000;    // cron runs every 15 min
-const NEWS_MAX_STALE_MS = 6 * 3600e3;    // past this, rebuild before answering
+// ── /news and /fr ───────────────────────────────────────────────────────────
+// Both feeds are built by the cron, stored in KV (or the edge cache when no KV
+// is bound) and served as-is. A missing/very old copy is rebuilt on demand.
+const FEEDS = {
+  world: { key: 'news:latest', collect: collectNews },
+  fr:    { key: 'fr:latest',   collect: collectFrance },
+  biz:   { key: 'biz:latest',  collect: collectBusiness },
+};
+const FEED_FRESH_MS = 20 * 60 * 1000;    // cron runs every 15 min
+const FEED_MAX_STALE_MS = 6 * 3600e3;    // past this, rebuild before answering
 
-async function readStoredNews(env) {
+async function readStoredFeed(feed, env) {
   if (env.NEWS) {
-    const txt = await env.NEWS.get(NEWS_KEY);
+    const txt = await env.NEWS.get(feed.key);
     return txt ? { txt, generated: peekGenerated(txt) } : null;
   }
-  const hit = await caches.default.match(new Request('https://cache/news'));
+  const hit = await caches.default.match(new Request('https://cache/' + feed.key));
   if (!hit) return null;
   const txt = await hit.text();
   return { txt, generated: peekGenerated(txt) };
@@ -91,46 +106,64 @@ function peekGenerated(txt) {
   return m ? Date.parse(m[1]) : 0;
 }
 
-async function refreshNews(env) {
+async function refreshFeed(feed, env) {
   let previous = null;
-  try { const st = await readStoredNews(env); if (st) previous = JSON.parse(st.txt); } catch {}
-  const data = await collectNews(env, previous);
+  try { const st = await readStoredFeed(feed, env); if (st) previous = JSON.parse(st.txt); } catch {}
+  const data = await feed.collect(env, previous);
   // Never replace a good feed with an empty one (all sources down at once).
   if (!data.count) return null;
   const txt = JSON.stringify(data);
   if (env.NEWS) {
-    await env.NEWS.put(NEWS_KEY, txt);
+    await env.NEWS.put(feed.key, txt);
   } else {
-    await caches.default.put(new Request('https://cache/news'), new Response(txt, {
+    await caches.default.put(new Request('https://cache/' + feed.key), new Response(txt, {
       headers: { 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=86400' },
     }));
   }
   return txt;
 }
 
-async function handleNews(env, ctx) {
-  const stored = await readStoredNews(env);
+async function handleFeed(feed, env, ctx) {
+  const stored = await readStoredFeed(feed, env);
   const age = stored ? Date.now() - stored.generated : Infinity;
   let txt = stored?.txt;
-  if (!txt || age > NEWS_MAX_STALE_MS) {
-    txt = (await refreshNews(env)) || txt;              // cold start / cron missing
-  } else if (age > NEWS_FRESH_MS) {
-    ctx.waitUntil(refreshNews(env).catch(() => {}));    // serve stale, rebuild behind
+  if (!txt || age > FEED_MAX_STALE_MS) {
+    txt = (await refreshFeed(feed, env)) || txt;        // cold start / cron missing
+  } else if (age > FEED_FRESH_MS) {
+    ctx.waitUntil(refreshFeed(feed, env).catch(() => {}));  // serve stale, rebuild behind
   }
-  if (!txt) return json({ error: 'all news sources unavailable', articles: [] }, 503);
+  if (!txt) return json({ error: 'all sources unavailable', articles: [] }, 503);
   return new Response(txt, {
-    headers: {
-      'Content-Type': 'application/json',
-      'Cache-Control': 'public, max-age=120',
-      ...CORS,
-    },
+    headers: { 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=120', ...CORS },
   });
 }
 
-function json(obj, status = 200) {
-  return new Response(JSON.stringify(obj), {
-    status,
-    headers: { 'Content-Type': 'application/json', ...CORS },
+// ── /quotes ─────────────────────────────────────────────────────────────────
+// Symbols are allow-listed by shape (letters, digits, . - ^ =) and capped, so
+// this can't be turned into a generic proxy. Each symbol is cached separately.
+async function handleQuotes(reqUrl, ctx) {
+  const range = ['1d', '5d', '1mo'].includes(reqUrl.searchParams.get('range')) ? reqUrl.searchParams.get('range') : '5d';
+  const interval = range === '1mo' ? '1h' : range === '1d' ? '5m' : '15m';
+  const symbols = [...new Set((reqUrl.searchParams.get('symbols') || '').split(',')
+    .map(x => x.trim().toUpperCase()).filter(x => /^[A-Z0-9.^=-]{1,16}$/.test(x)))].slice(0, 30);
+  if (!symbols.length) return json({ error: 'no symbols' }, 400);
+  const cache = caches.default;
+  const out = await Promise.all(symbols.map(async (sym) => {
+    const key = new Request(`https://cache/quote?s=${encodeURIComponent(sym)}&r=${range}`);
+    const hit = await cache.match(key);
+    if (hit) return hit.json();
+    try {
+      const q = await fetchQuote(sym, range, interval);
+      ctx.waitUntil(cache.put(key, new Response(JSON.stringify(q), {
+        headers: { 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=300' },
+      })));
+      return q;
+    } catch (e) {
+      return { symbol: sym, error: String(e.message || e) };
+    }
+  }));
+  return new Response(JSON.stringify({ range, quotes: out }), {
+    headers: { 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=120', ...CORS },
   });
 }
 

@@ -23,7 +23,7 @@
     --ink:    #02060e;
     --ink2:   #050b18;
     --paper:  #cfeaff;
-    --dim:    #6e90a8;
+    --dim:    #88a8bf;   /* lifted for legibility on the dark ground */
     --line:   rgba(0,240,255,0.18);
     --line2:  rgba(0,240,255,0.36);
   }
@@ -77,15 +77,17 @@
   .brand b { color: var(--cyan); }
 
   .tabs {
-    display: flex; gap: 4px;
+    display: flex; gap: 4px; flex-wrap: nowrap;
+    overflow-x: auto; scrollbar-width: none; min-width: 0;
     margin-left: 36px;
     border: 1px solid var(--line);
     padding: 2px;
     background: rgba(5,11,24,0.6);
     backdrop-filter: blur(6px);
   }
+  .tabs::-webkit-scrollbar { display: none; }
   .tab {
-    padding: 7px 14px;
+    padding: 7px 14px; white-space: nowrap; flex-shrink: 0;
     font-size: 11px; letter-spacing: 0.14em;
     color: var(--dim);
     transition: color 0.15s, background 0.15s;
@@ -99,6 +101,10 @@
     box-shadow: inset 0 0 12px rgba(0,240,255,0.18);
   }
   .tab.active .num { opacity: 1; }
+  .tab.new::after { content: 'NEW'; font-size: 7px; letter-spacing: 0.1em; color: var(--ink); background: var(--cyan);
+    padding: 1px 3px; margin-left: 6px; vertical-align: 2px; }
+  @media (max-width: 1750px) { .tab .num { display: none; } .tab { padding: 7px 11px; } }
+  @media (max-width: 1560px) { .tabs { margin-left: 18px; } .tab { padding: 7px 8px; letter-spacing: 0.08em; } .view-toggle { margin-left: 14px; } }
 
   .topbar-right {
     margin-left: auto;
@@ -341,7 +347,7 @@
   .feed-item:hover { background: rgba(0,240,255,0.06); }
   .feed-item .meta {
     display: flex; align-items: center; gap: 8px;
-    font-size: 9px; letter-spacing: 0.14em;
+    font-size: 10px; letter-spacing: 0.12em;
     color: var(--dim);
     margin-bottom: 4px;
     text-transform: uppercase;
@@ -357,6 +363,10 @@
   .feed-item .meta .tag.markets { color: var(--green); border-color: rgba(63,255,142,0.4); background: rgba(63,255,142,0.08); }
   .feed-item .meta .tag.story { color: var(--paper); border-color: rgba(255,255,255,0.35); background: rgba(255,255,255,0.06); }
   .feed-item .meta .tag.story.big { color: var(--yellow); border-color: rgba(255,216,74,0.5); background: rgba(255,216,74,0.1); }
+  .feed-item .meta .sev { font-weight: 700; letter-spacing: 0.12em; }
+  .feed-item .meta .sev.critical { color: var(--red); } .feed-item .meta .sev.elevated { color: var(--orange); } .feed-item .meta .sev.moderate { color: var(--yellow); opacity: 0.8; }
+  .feed-item .meta .ago { margin-left: auto; opacity: 0.8; letter-spacing: 0.06em; text-transform: none; }
+  .feed-item .meta .tag.lang { color: var(--dim); border-color: var(--line); background: none; }
   .feed-item .meta .tag.alert { color: var(--red); border-color: rgba(255,48,92,0.5); background: rgba(255,48,92,0.1); }
   .feed-item .src .via { opacity: 0.6; }
   .feed-item .title { color: var(--paper); }
@@ -609,9 +619,12 @@
   .legend .row { display: flex; align-items: center; gap: 12px; }
   .legend .sw { width: 9px; height: 9px; border-radius: 50%; box-shadow: 0 0 8px currentColor; }
   .legend .label { opacity: 0.85; letter-spacing: 0.1em; }
-  .legend .scope { opacity: 0.45; font-size: 9px; }
+  .legend .scope { opacity: 0.65; font-size: 10px; }
+  .legend .lg-title { font-size: 9px; letter-spacing: 0.2em; color: var(--dim); margin-bottom: 2px; }
+  .legend .cov { display: flex; gap: 10px; align-items: center; font-size: 10px; color: var(--dim); margin-top: 4px; }
+  .legend .cov i { display: inline-block; width: 14px; height: 2px; margin-right: 4px; vertical-align: middle; }
 
-  .hint { font-size: 9px; opacity: 0.4; text-align: center; letter-spacing: 0.14em; line-height: 1.6; }
+  .hint { font-size: 10px; opacity: 0.55; text-align: center; letter-spacing: 0.14em; line-height: 1.6; }
 
   .readout { text-align: right; font-size: 11px; }
   .readout .count {
@@ -646,6 +659,94 @@
   .tip .kicker { color: var(--cyan); font-size: 9px; text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 4px; }
   .tip .name { font-weight: 600; font-size: 12px; }
   .tip .meta { margin-top: 5px; opacity: 0.65; font-size: 10px; letter-spacing: 0.06em; }
+
+  /* ============== DESKS (FRANCE · IMPACT) ============== */
+  .desk-stage {
+    position: fixed; inset: 78px 0 96px 0; z-index: 6; display: none; overflow-y: auto;
+    padding: 0 48px 40px; user-select: text;
+    background: linear-gradient(to bottom, rgba(2,6,14,0.9), rgba(2,6,14,0.97));
+  }
+  .desk-stage.on { display: block; }
+  body.desk-mode .left-rail, body.desk-mode .right-rail, body.desk-mode .legend, body.desk-mode .hint,
+  body.desk-mode #app, body.desk-mode #mapCanvas, body.desk-mode .overlay, body.desk-mode .readout { display: none !important; }
+  .desk-head { position: sticky; top: 0; z-index: 3; display: flex; justify-content: space-between; align-items: flex-end; gap: 20px; flex-wrap: wrap;
+    padding: 14px 0 12px; background: rgba(2,6,14,0.97); border-bottom: 1px solid var(--line); margin-bottom: 18px; }
+  .desk-title { font-size: 14px; letter-spacing: 0.18em; font-weight: 700; color: var(--paper); text-shadow: 0 0 10px rgba(0,240,255,0.5); }
+  .desk-title b { color: var(--cyan); }
+  .desk-sub { display: block; font-size: 11px; letter-spacing: 0.04em; font-weight: 400; color: var(--dim); text-shadow: none; margin-top: 5px; }
+  .desk-meta { font-size: 11px; color: var(--dim); letter-spacing: 0.06em; } .desk-meta b { color: var(--paper); }
+  .desk-empty { color: var(--dim); font-style: italic; padding: 24px 0; font-size: 12px; }
+  .desk-note { font-size: 11px; color: var(--dim); line-height: 1.5; }
+  .desk-grid { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 28px; align-items: start; }
+  .desk-toolbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 12px; }
+  .desk-search { flex: 1 1 260px; min-width: 0; padding: 9px 12px; border: 1px solid var(--line2); background: rgba(0,240,255,0.04); font-size: 12px; color: var(--paper); }
+  .desk-search::placeholder { color: var(--dim); }
+  .desk-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
+  .desk-chip { padding: 5px 11px; font-size: 11px; border: 1px solid var(--line2); color: var(--dim); background: transparent; letter-spacing: 0.03em; }
+  .desk-chip:hover { color: var(--paper); border-color: var(--cyan); }
+  .desk-chip.on { color: var(--paper); border-color: var(--cyan); background: rgba(0,240,255,0.14); }
+  .desk-chip .n { opacity: 0.6; margin-left: 6px; font-variant-numeric: tabular-nums; }
+  .desk-chip:focus-visible, .desk-story:focus-visible, .bar-row:focus-visible, .impact-card .headline:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; }
+  .desk-story { display: grid; grid-template-columns: 1fr; border: 1px solid var(--line); background: rgba(0,240,255,0.02); cursor: pointer; transition: border-color .15s, background .15s; }
+  .desk-story:hover { border-color: var(--cyan); background: rgba(0,240,255,0.05); }
+  .desk-story .img { background: #04121f center/cover no-repeat; }
+  .desk-story .body { padding: 12px 14px; min-width: 0; }
+  .desk-story h3 { font-size: 14px; line-height: 1.4; color: var(--paper); font-weight: 600; margin: 6px 0 0; }
+  .desk-story p { font-size: 13px; line-height: 1.55; color: rgba(255,255,255,0.78); margin-top: 8px; }
+  .desk-story .src { font-size: 11px; color: var(--dim); margin-top: 8px; }
+  .desk-story .meta { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: 10px; color: var(--dim); }
+  .desk-story .meta .ago { margin-left: auto; }
+  .desk-story.lead { grid-template-columns: 320px 1fr; margin-bottom: 14px; }
+  .desk-story.lead .img { min-height: 200px; border-right: 1px solid var(--line); }
+  .desk-story.lead h3 { font-size: 20px; }
+  .desk-story:not(.lead) { grid-template-columns: 112px 1fr; }
+  .desk-story:not(.lead):not(:has(.img)) { grid-template-columns: 1fr; }
+  .desk-story.lead:not(:has(.img)) { grid-template-columns: 1fr; }
+  .desk-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 10px; }
+  .desk-tag { font-size: 9px; letter-spacing: 0.1em; padding: 2px 6px; border: 1px solid var(--line2); color: var(--cyan); }
+  .desk-tag.reach { color: var(--yellow); border-color: rgba(255,216,74,0.5); background: rgba(255,216,74,0.08); }
+  .desk-tag.theme { color: var(--paper); }
+  .desk-side { display: flex; flex-direction: column; gap: 16px; position: sticky; top: 92px; }
+  .desk-panel { border: 1px solid var(--line); background: rgba(5,11,24,0.7); padding: 12px 14px; }
+  .desk-panel h4 { font-size: 11px; letter-spacing: 0.16em; color: var(--cyan); text-transform: uppercase; margin-bottom: 10px; font-weight: 600; }
+  .desk-panel h4 span { display: block; color: var(--dim); letter-spacing: 0.04em; text-transform: none; font-weight: 400; margin-top: 3px; }
+  .bar-row { display: grid; grid-template-columns: 156px 1fr 28px; gap: 8px; align-items: center; width: 100%; padding: 4px 2px; font-size: 11px; color: var(--paper); text-align: left; }
+  .bar-row:hover, .bar-row.on { background: rgba(0,240,255,0.08); }
+  .bar-row .lbl { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .bar-row .track { height: 8px; background: rgba(0,240,255,0.08); border-radius: 4px; overflow: hidden; }
+  .bar-row .fill { display: block; height: 100%; background: var(--cyan); border-radius: 0 4px 4px 0; opacity: 0.85; }
+  .bar-row.on .fill { opacity: 1; box-shadow: 0 0 8px var(--cyan); }
+  .bar-row .val { text-align: right; color: var(--dim); font-variant-numeric: tabular-nums; }
+  .desk-sources { display: flex; flex-wrap: wrap; gap: 6px 12px; font-size: 10px; color: var(--dim); }
+  .desk-sources span:not(.bad)::first-letter { color: var(--green); } .desk-sources .bad { color: var(--orange); }
+
+  .impact-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 12px; }
+  .impact-card { border: 1px solid var(--line); background: rgba(5,11,24,0.75); padding: 14px; display: flex; flex-direction: column; gap: 8px; }
+  .impact-card.strong { border-color: rgba(0,240,255,0.55); box-shadow: 0 0 18px rgba(0,240,255,0.12); }
+  .impact-card header { display: flex; justify-content: space-between; gap: 10px; align-items: flex-start; }
+  .impact-card .co { font-size: 15px; font-weight: 700; color: var(--paper); }
+  .impact-card .tk { font-size: 10px; color: var(--dim); letter-spacing: 0.08em; margin-top: 2px; }
+  .impact-card .px { font-size: 15px; color: var(--paper); font-variant-numeric: tabular-nums; }
+  .impact-card .headline { text-align: left; font-size: 12px; line-height: 1.45; color: var(--paper); opacity: 0.9; }
+  .impact-card .headline:hover { color: var(--cyan); text-decoration: underline; }
+  .impact-card .hmeta { font-size: 10px; color: var(--dim); }
+  .spark-wrap { position: relative; }
+  .spark { display: block; overflow: visible; }
+  .spark .pre  { fill: none; stroke: var(--dim); stroke-width: 1.5; opacity: 0.7; vector-effect: non-scaling-stroke; }
+  .spark .post { fill: none; stroke: var(--cyan); stroke-width: 2; vector-effect: non-scaling-stroke; }
+  .spark .after { fill: rgba(0,240,255,0.06); }
+  .spark .news { stroke: var(--paper); stroke-dasharray: 3 3; stroke-width: 1; opacity: 0.7; vector-effect: non-scaling-stroke; }
+  .spark .base { stroke: var(--line2); stroke-width: 1; stroke-dasharray: 2 4; vector-effect: non-scaling-stroke; }
+  .spark .dot { fill: var(--cyan); }
+  .spark .cross { stroke: var(--paper); stroke-width: 1; opacity: 0.5; vector-effect: non-scaling-stroke; }
+  .spark-tip { position: absolute; top: -26px; width: 150px; font-size: 10px; color: var(--paper); background: rgba(2,6,14,0.95); border: 1px solid var(--line2); padding: 3px 6px; pointer-events: none; white-space: nowrap; }
+  .impact-card .nums { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+  .impact-card .nums .k { display: block; font-size: 9px; letter-spacing: 0.1em; color: var(--dim); text-transform: uppercase; }
+  .impact-card .nums .v { font-size: 13px; color: var(--paper); font-variant-numeric: tabular-nums; }
+  .impact-card .nums .ex .v { font-weight: 700; }
+  .impact-card .verdict { font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--dim); }
+  .impact-card .verdict.strong { color: var(--cyan); } .impact-card .verdict.notable { color: var(--paper); }
+  @media (max-width: 1100px) { .desk-grid { grid-template-columns: 1fr; } .desk-side { position: static; } }
 
   /* ============== THE LINE ============== */
   .line-stage {
@@ -893,10 +994,13 @@
   .reader-content .by { font-size: 11px; color: var(--dim); letter-spacing: 0.1em; margin-bottom: 22px; }
   .reader-content .by b { color: var(--cyan); }
   .reader-content .hero {
-    width: 100%; max-height: 280px; object-fit: cover;
+    width: 100%; max-height: 320px; object-fit: cover;
     border: 1px solid var(--line);
     margin-bottom: 22px;
   }
+  /* Small source images (RSS thumbnails) stay small instead of blowing up blurry. */
+  .reader-content .hero.thumb { width: auto; max-width: 260px; max-height: 180px; float: right; margin: 0 0 14px 20px; }
+  .reader-content .summary { overflow: hidden; }
   .reader-content .summary {
     font-size: 13px; line-height: 1.65; color: var(--paper); opacity: 0.85;
     padding: 14px 18px;
@@ -1145,6 +1249,56 @@
   .alert .move.down { color: var(--red); }
   .alert .why { color: var(--paper); margin-top: 4px; opacity: 0.75; }
   .alert .close { position: absolute; top: 6px; right: 8px; color: var(--dim); }
+
+  /* ============== MOBILE (≤ 760px) ==============
+     Globe stays full-screen; the wire becomes a bottom sheet; the country
+     panel opens from a ☰ button; tabs scroll sideways. Nothing is removed. */
+  .rail-toggle { display: none; }
+  @media (max-width: 760px) {
+    .topbar { flex-wrap: wrap; row-gap: 8px; padding: 10px 12px; }
+    .brand { font-size: 11px; letter-spacing: 0.12em; }
+    .brand br { display: none; }
+    .view-toggle { margin-left: 10px; }
+    .topbar-right { gap: 8px; }
+    .defcon-pill { padding: 4px 8px; font-size: 10px; }
+    .tabs { order: 3; width: 100%; margin-left: 0; }
+    .tab { padding: 8px 10px; font-size: 11px; }
+    .rail-toggle { display: inline-flex; order: 2; margin-left: 8px; padding: 6px 10px; border: 1px solid var(--line2); color: var(--cyan); font-size: 12px; }
+    body.show-left .rail-toggle { background: rgba(0,240,255,0.14); }
+
+    .left-rail { top: calc(var(--top-h, 120px) + 6px); left: 8px; right: 8px; width: auto; max-height: 52vh; display: none; z-index: 12; }
+    body.show-left .left-rail { display: flex; }
+    body.show-left .right-rail { display: none; }
+    body.has-ticker .left-rail { top: calc(var(--top-h, 120px) + 34px); }
+    .right-rail { top: auto; bottom: 64px; left: 8px; right: 8px; width: auto; max-height: 40vh; }
+    body.has-ticker .right-rail { top: auto; max-height: 36vh; }
+    .right-rail .feed-list { max-height: calc(40vh - 80px); }
+    .rot-toggle { position: fixed; top: calc(var(--top-h, 120px) + 6px); right: 8px; padding: 5px 8px; }
+    .rot-toggle .rot-lbl { display: none; }
+
+    .bottom { padding: 8px 12px 10px; }
+    .legend, .hint { display: none; }
+    .readout .count { font-size: 22px; }
+    .readout .label { font-size: 9px; letter-spacing: 0.08em; }
+
+    .line-stage, .desk-stage { inset: calc(var(--top-h, 120px) + 4px) 0 56px 0; padding: 0 12px 30px; }
+    .desk-story.lead, .desk-story:not(.lead) { grid-template-columns: 1fr; }
+    .desk-story .img { min-height: 160px; border-right: 0; border-bottom: 1px solid var(--line); }
+    .desk-story:not(.lead) .img { min-height: 120px; }
+    .desk-list, .impact-grid { grid-template-columns: 1fr; }
+    .desk-head { padding-top: 8px; }
+
+    .brief { top: 8px; bottom: 8px; width: calc(100vw - 16px); }
+    .brief-head { padding: 14px 16px 12px; }
+    .brief-head h1 { font-size: 22px; }
+    .brief-body { padding: 14px 16px 22px; }
+    .brief-lead { grid-template-columns: 1fr; }
+    .brief-lead .img { min-height: 160px; border-right: 0; }
+    .brief-stats { flex-wrap: nowrap; overflow-x: auto; }
+    .reader { top: 8px; bottom: 8px; width: calc(100vw - 16px); }
+    .reader-content .hero.thumb { float: none; margin: 0 0 14px; }
+    .alerts { right: 8px; left: 8px; top: auto; bottom: 120px; }
+  }
 </style>
 </head>
 <body>
@@ -1155,6 +1309,7 @@
   <!-- ============ TOP BAR ============ -->
   <header class="topbar">
     <div class="brand">WRLD <b>//</b> MONITOR</div>
+    <button class="rail-toggle" id="railToggle" aria-label="Show countries panel" aria-expanded="false">☰ COUNTRIES</button>
     <div class="view-toggle" id="viewToggle">
       <button data-view="globe" class="on">GLOBE</button>
       <button data-view="map">MAP</button>
@@ -1162,13 +1317,15 @@
     <nav class="tabs" id="tabs">
       <button class="tab active" data-tab="wire"><span class="num">01</span>WIRE</button>
       <button class="tab" data-tab="line"><span class="num">02</span>THE LINE</button>
-      <button class="tab" data-tab="alliances"><span class="num">03</span>ALLIANCES</button>
-      <button class="tab" data-tab="conflicts"><span class="num">04</span>CONFLICTS</button>
-      <button class="tab" data-tab="markets"><span class="num">05</span>MARKETS</button>
-      <button class="tab" data-tab="outbreaks"><span class="num">06</span>OUTBREAKS</button>
-      <button class="tab" data-tab="quakes"><span class="num">07</span>DISASTERS</button>
-      <button class="tab" data-tab="orbit"><span class="num">08</span>ORBIT</button>
-      <button class="tab" data-tab="defcon"><span class="num">09</span>DEFCON</button>
+      <button class="tab new" data-tab="france"><span class="num">03</span>FRANCE</button>
+      <button class="tab" data-tab="alliances"><span class="num">04</span>ALLIANCES</button>
+      <button class="tab" data-tab="conflicts"><span class="num">05</span>CONFLICTS</button>
+      <button class="tab" data-tab="markets"><span class="num">06</span>MARKETS</button>
+      <button class="tab new" data-tab="impact"><span class="num">07</span>IMPACT</button>
+      <button class="tab" data-tab="outbreaks"><span class="num">08</span>OUTBREAKS</button>
+      <button class="tab" data-tab="quakes"><span class="num">09</span>DISASTERS</button>
+      <button class="tab" data-tab="orbit"><span class="num">10</span>ORBIT</button>
+      <button class="tab" data-tab="defcon"><span class="num">11</span>DEFCON</button>
     </nav>
     <div class="topbar-right">
       <div class="defcon-pill lvl-5" id="defconPill">
@@ -1259,6 +1416,22 @@
     <div class="line-track" id="lineTrack"></div>
   </div>
 
+  <!-- ============ DESK STAGES (FRANCE · IMPACT) ============ -->
+  <div class="desk-stage" id="franceStage">
+    <div class="desk-head">
+      <div class="desk-title">POLITIQUE <b>// FRANCE</b><span class="desk-sub">10 rédactions nationales · 48 h · regroupées par sujet</span></div>
+      <div class="desk-meta" id="franceMeta">—</div>
+    </div>
+    <div id="franceBody"></div>
+  </div>
+  <div class="desk-stage" id="impactStage">
+    <div class="desk-head">
+      <div class="desk-title">IMPACT <b>// NEWS × MARKETS</b><span class="desk-sub">Listed companies named in the news (world, business, tech, entertainment, France) and how their stock moved since</span></div>
+      <div class="desk-meta" id="impactMeta">—</div>
+    </div>
+    <div id="impactBody"></div>
+  </div>
+
   <!-- ============ DEFCON STAGE ============ -->
   <div class="defcon-stage" id="defconStage">
     <div class="card" id="defconCard">
@@ -1277,9 +1450,12 @@
   <!-- ============ BOTTOM BAR ============ -->
   <footer class="bottom">
     <div class="legend" id="legend">
+      <div class="lg-title">DOTS · SEVERITY</div>
       <div class="row"><span class="sw" style="color:var(--red);background:var(--red)"></span><span class="label">CRITICAL</span><span class="scope">war · disaster · nuclear</span></div>
       <div class="row"><span class="sw" style="color:var(--orange);background:var(--orange)"></span><span class="label">ELEVATED</span><span class="scope">diplo · sanctions · crisis</span></div>
       <div class="row"><span class="sw" style="color:var(--yellow);background:var(--yellow)"></span><span class="label">MODERATE</span><span class="scope">general world signal</span></div>
+      <div class="cov" title="Country label and beam colour = how many articles cover that country">LABELS · COVERAGE
+        <span><i style="background:var(--red)"></i>30+</span><span><i style="background:var(--orange)"></i>10+</span><span><i style="background:var(--yellow)"></i>3+</span><span><i style="background:var(--cyan)"></i>1+</span></div>
     </div>
     <div class="legend" id="hazardLegend" style="display:none"></div>
     <div class="hint">
@@ -9839,6 +10015,31 @@ PELICAN-9
       });
     }
 
+    // ── small display helpers ─────────────────────────────────────────
+    // "12m" / "3h" / "2d" since an article's seendate (GDELT format).
+    function articleAge(a) {
+      const d = parseGdeltDate(a?.seendate);
+      if (!d) return '';
+      const min = Math.max(0, Math.round((Date.now() - d.getTime()) / 60000));
+      if (min < 60) return (min || 1) + 'm';
+      if (min < 48 * 60) return Math.round(min / 60) + 'h';
+      return Math.round(min / 1440) + 'd';
+    }
+    const LANG_CODE = { English: '', French: 'FR', German: 'DE', Spanish: 'ES', Italian: 'IT', Portuguese: 'PT', Russian: 'RU',
+      Ukrainian: 'UK', Chinese: 'ZH', Japanese: 'JA', Korean: 'KO', Arabic: 'AR', Turkish: 'TR', Polish: 'PL', Dutch: 'NL',
+      Hebrew: 'HE', Persian: 'FA', Hindi: 'HI', Indonesian: 'ID', Vietnamese: 'VI', Thai: 'TH', Greek: 'EL', Romanian: 'RO' };
+    function langCode(a) {
+      if (a?.language in LANG_CODE) return LANG_CODE[a.language];
+      return a?.language ? String(a.language).slice(0, 2).toUpperCase() : '';
+    }
+    // Obvious non-news that slips through GDELT: download portals, app/game
+    // listings, casinos, adult sites. Dropped before anything is shown.
+    const JUNK_DOMAIN = /(3dmgame|xiazai|downcc|pc6|onlinedown|crsky|apk|crack|casino|betting|bet365|porn|xxx|hentai|torrent|warez)/i;
+    const JUNK_TITLE = /(下载|安装|破解|手游|官网|免费版|最新版|apk\b|mod apk|free download|download free|casino|slot gacor|togel)/i;
+    function isJunkArticle(a) {
+      return JUNK_DOMAIN.test(a.domain || '') || JUNK_TITLE.test(a.title || '');
+    }
+
     function normalizeTitle(t) {
       return (t || '').toLowerCase()
         .replace(/&[a-z#0-9]+;/g, ' ')   // strip HTML entities
@@ -9852,7 +10053,7 @@ PELICAN-9
       // folds it into one story whose size = how many outlets carry it. The
       // demo set skips clustering — its generic headlines are deliberately
       // reused across countries.
-      const unique = all.filter(a => a && a.title);
+      const unique = all.filter(a => a && a.title && !isJunkArticle(a));
 
       // 1. Where is each article about?  2. Which articles are the same story?
       for (const a of unique) a._geo = locateArticle(a);
@@ -9877,9 +10078,12 @@ PELICAN-9
         g.count += st.size;
         g.articles.push(lead);
       }
-      // Biggest stories first inside each country (stable for equal sizes).
+      // Inside each country: widest-carried stories first, then stories in the
+      // UI's languages (EN/FR) ahead of untranslated ones, then newest.
+      const uiLang = (a) => (!a.language || a.language === 'English' || a.language === 'French') ? 0 : 1;
+      const ts = (a) => parseGdeltDate(a.seendate)?.getTime() || 0;
       for (const g of groups.values()) {
-        g.articles.sort((x, y) => y._story.size - x._story.size);
+        g.articles.sort((x, y) => (y._story.sources - x._story.sources) || (uiLang(x) - uiLang(y)) || (ts(y) - ts(x)));
         if (g.articles.length > 40) g.articles.length = 40;
       }
       for (const g of groups.values()) {
@@ -10747,7 +10951,6 @@ PELICAN-9
     }
 
     function renderFeedItem(a, layerKey) {
-      const col = '#' + LAYERS[layerKey].color.toString(16).padStart(6, '0');
       const tagsHtml = (a.tags || []).map(t => `<span class="tag ${t}">${t.toUpperCase()}</span>`).join('');
       // Place = what the story is about; the outlet's country only as a hint.
       const place = a._geo?.city && a._geo.country === (a._country || a._geo.country)
@@ -10759,14 +10962,20 @@ PELICAN-9
         : a.kind === 'event' ? '<span class="tag alert">ACLED</span>' : '';
       const outlet = lookup(a.sourcecountry)?.name;
       const via = outlet && outlet !== (a._country || articleCountry(a)) ? ` <span class="via">· via ${escapeHtml(outlet)}</span>` : '';
+      // Dot + label = SEVERITY (same colours as the globe dots and legend);
+      // coverage scope is kept as a tooltip instead of a word on every line.
+      const sev = classifySeverity(a);
+      const sevCol = sev === 'critical' ? 'var(--red)' : sev === 'elevated' ? 'var(--orange)' : 'var(--yellow)';
+      const lc = langCode(a);
+      const ago = articleAge(a);
       return `
-        <div class="feed-item" data-url="${escapeHtml(a.url || '')}">
+        <div class="feed-item" data-url="${escapeHtml(a.url || '')}" title="${escapeHtml(layerKey)} coverage">
           <div class="meta">
-            <span class="swatch" style="background:${col};color:${col}"></span>
+            <span class="swatch" style="background:${sevCol};color:${sevCol}"></span>
             <span>${escapeHtml(place || '—')}</span>
-            <span style="opacity:0.6">·</span>
-            <span>${layerKey}</span>
-            ${kindHtml}${storyHtml}${tagsHtml}
+            ${sev !== 'moderate' ? `<span class="sev ${sev}">${sev.toUpperCase()}</span>` : ''}
+            ${kindHtml}${storyHtml}${tagsHtml}${lc ? `<span class="tag lang">${lc}</span>` : ''}
+            ${ago ? `<span class="ago">${ago}</span>` : ''}
           </div>
           <div class="title" data-original="${escapeHtml(a.title || '')}">${escapeHtml(a.title || '')}</div>
           <div class="src">${escapeHtml(a.domain || '')}${via}</div>
@@ -11555,6 +11764,10 @@ PELICAN-9
       document.body.classList.toggle('has-ticker', name === 'markets');
       document.body.classList.toggle('line-mode',  name === 'line');
       document.getElementById('lineStage').classList.toggle('on', name === 'line');
+      const isDesk = name === 'france' || name === 'impact';
+      document.body.classList.toggle('desk-mode', isDesk);
+      document.getElementById('franceStage').classList.toggle('on', name === 'france');
+      document.getElementById('impactStage').classList.toggle('on', name === 'impact');
       for (const t of document.querySelectorAll('.tab')) {
         t.classList.toggle('active', t.dataset.tab === name);
       }
@@ -11598,6 +11811,8 @@ PELICAN-9
         case 'markets': renderFeedMarkets(); break;
         case 'outbreaks': renderFeedOutbreaks(); break;
         case 'defcon': renderFeedDefcon(); break;
+        case 'france': renderFranceDesk(); break;
+        case 'impact': renderImpactDesk(); break;
       }
       updateCount();
       // Snap back to Europe on every tab change (unless entering inspection)
@@ -11644,7 +11859,7 @@ PELICAN-9
           if (s === 'critical') nC++; else if (s === 'elevated') nE++; else nM++;
         }
         countEl.textContent = String(total).padStart(3, '0');
-        countLabel.innerHTML = `<b style="color:var(--red)">${nC}</b>·<b style="color:var(--orange)">${nE}</b>·<b style="color:var(--yellow)">${nM}</b> · <span>${ncountries}</span> COUNTRIES`;
+        countLabel.innerHTML = `ARTICLES · <b style="color:var(--red)">${nC}</b> CRITICAL · <b style="color:var(--orange)">${nE}</b> ELEVATED · <span>${ncountries}</span> COUNTRIES`;
       } else if (state.tab === 'quakes') {
         const total = state.quakes.length + state.disasters.length;
         countEl.textContent = String(total).padStart(3, '0');
@@ -12368,7 +12583,7 @@ PELICAN-9
               <div class="badges">${badgeHtml(lead, '<span class="brief-badge">LEAD</span>')}</div>
               <h2>${escapeHtml(lead.title || '')}</h2>
               ${lead.desc ? `<p class="desc">${escapeHtml(lead.desc)}</p>` : ''}
-              <div class="src">${escapeHtml(lead.domain || '—')} · click to read →</div>
+              <div class="src">${escapeHtml(lead.domain || '—')}${articleAge(lead) ? ' · ' + articleAge(lead) + ' ago' : ''} · click to read →</div>
               ${lead._story?.also?.length ? `<div class="also">Also covered by ${
                 [...new Set(lead._story.also.map(m => m.domain).filter(Boolean))].slice(0, 8).map(escapeHtml).join(' · ')}</div>` : ''}
             </div>
@@ -12383,7 +12598,7 @@ PELICAN-9
           <div class="body">
             <div class="badges">${badgeHtml(a)}</div>
             <div class="t">${escapeHtml(a.title || '')}</div>
-            <div class="s">${escapeHtml(a.domain || '—')}</div>
+            <div class="s">${escapeHtml(a.domain || '—')}${articleAge(a) ? ' · ' + articleAge(a) + ' ago' : ''}${langCode(a) ? ' · ' + langCode(a) : ''}</div>
           </div>
         </div>`;
       };
@@ -12450,7 +12665,7 @@ PELICAN-9
       }).join('') + `<button class="reader-close-big" id="readerCloseBig">CLOSE ×</button>`;
 
       const tagsHtml =
-        `<span class="chip">${escapeHtml(active.sourcecountry || active._country || '—')}</span>` +
+        `<span class="chip">${escapeHtml(active._country || articleCountry(active) || active.sourcecountry || '—')}</span>` +
         (active.tags || []).map(t => `<span class="chip ${t}">${t.toUpperCase()}</span>`).join('');
 
       let titleHtml = `<h1>${escapeHtml(active.title || '')}</h1>`;
@@ -12461,8 +12676,9 @@ PELICAN-9
         }
       }
 
-      const heroHtml = active.socialimage
-        ? `<img class="hero" src="${escapeHtml(active.socialimage)}" alt="" onerror="this.style.display='none'" />` : '';
+      const heroImg = cssImageUrl(active.socialimage);
+      const heroHtml = heroImg
+        ? `<img class="hero" src="${escapeHtml(heroImg)}" alt="" onload="if(this.naturalWidth<640)this.classList.add('thumb')" onerror="this.style.display='none'" />` : '';
 
       const when = active.seendate ? new Date(
         active.seendate.replace(/^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})Z$/, '$1-$2-$3T$4:$5:$6Z')
@@ -12509,8 +12725,10 @@ PELICAN-9
         <div class="by">SOURCE · <b>${escapeHtml(active.domain || '—')}</b> · ${escapeHtml(active.language || '')} · ${when}</div>
         ${heroHtml}
         <div class="summary">
-          <span class="sk">GDELT SIGNAL DETAIL</span>
-          ${escapeHtml(active.title || '')}
+          <span class="sk">${active.desc ? 'SUMMARY' : 'SIGNAL'}${active._story?.sources > 1 ? ` · CARRIED BY ${active._story.sources} OUTLETS` : ''}</span>
+          ${escapeHtml(active.desc || active.title || '')}
+          ${active._story?.also?.length ? `<div style="margin-top:10px;font-size:11px;color:var(--dim)">Also: ${
+            active._story.also.slice(0, 6).map(m => `<a href="${escapeHtml(m.url)}" target="_blank" rel="noopener">${escapeHtml(m.domain || 'source')}</a>`).join(' · ')}</div>` : ''}
         </div>
         ${openBtnHtml}
         ${fullTextHtml}
@@ -12613,6 +12831,20 @@ PELICAN-9
     });
     applyRotationToggle();   // reflect the persisted choice on load
 
+    // The top bar wraps to 2–3 rows on phones; publish its real height so the
+    // rails and full-screen stages start just below it.
+    const topbarEl = document.querySelector('.topbar');
+    const syncTopH = () => document.documentElement.style.setProperty('--top-h', topbarEl.offsetHeight + 'px');
+    syncTopH();
+    addEventListener('resize', syncTopH);
+
+    // Mobile: the left rail (country search, severity, layers) opens on demand.
+    const railToggleEl = document.getElementById('railToggle');
+    railToggleEl.addEventListener('click', () => {
+      const on = document.body.classList.toggle('show-left');
+      railToggleEl.setAttribute('aria-expanded', String(on));
+    });
+
     // ════════════════════════════════════════════════════════════════
     //  RESIZE + ANIMATE
     // ════════════════════════════════════════════════════════════════
@@ -12621,6 +12853,46 @@ PELICAN-9
       camera.updateProjectionMatrix();
       renderer.setSize(innerWidth, innerHeight);
     });
+
+    // ── Label decluttering ───────────────────────────────────────────
+    // Country/city labels used to pile up (Europe was unreadable). Every
+    // ~120 ms, project labels to screen space, keep the most-covered ones and
+    // fade out any that would overlap one already placed or sit on the far
+    // side of the globe. Filter visibility (`.visible`) is left untouched.
+    let _declutterAt = 0;
+    const _v3 = new THREE.Vector3();
+    function declutterLabels(nowMs) {
+      if (nowMs - _declutterAt < 120) return;
+      _declutterAt = nowMs;
+      const labels = signalsGroup.children.filter(c => c.userData?.kind === 'label' && c.visible);
+      labels.sort((a, b) => (b.userData.count || 0) - (a.userData.count || 0));
+      const camDir = camera.position.clone().normalize();
+      const tanHalf = Math.tan(camera.fov * Math.PI / 360);
+      const placed = [];
+      const PAD = 3;
+      for (const l of labels) {
+        let show = false;
+        if (l.position.clone().normalize().dot(camDir) > 0.12) {
+          _v3.copy(l.position).project(camera);
+          const x = (_v3.x + 1) / 2 * innerWidth, y = (1 - _v3.y) / 2 * innerHeight;
+          const dist = camera.position.distanceTo(l.position);
+          const h = l.scale.y / (2 * dist * tanHalf) * innerHeight;
+          const w = h * (l.scale.x / l.scale.y);
+          const box = [x - w / 2 - PAD, y - h / 2 - PAD, x + w / 2 + PAD, y + h / 2 + PAD];
+          show = !placed.some(b => box[0] < b[2] && box[2] > b[0] && box[1] < b[3] && box[3] > b[1]);
+          if (show) placed.push(box);
+        }
+        l.userData.fadeTo = show ? 1 : 0;
+      }
+    }
+    function fadeLabels() {
+      for (const l of signalsGroup.children) {
+        const u = l.userData;
+        if (u?.kind !== 'label' || u.fadeTo == null) continue;
+        const o = l.material.opacity;
+        if (Math.abs(o - u.fadeTo) > 0.01) l.material.opacity = o + (u.fadeTo - o) * 0.25;
+      }
+    }
 
     const clock = new THREE.Clock();
     function animate() {
@@ -12681,6 +12953,7 @@ PELICAN-9
       };
       if (state.selectedConflict) applyScreenSize(inspectLocGroup);
       applyScreenSize(signalsGroup);
+      if (signalsGroup.visible !== false && wireGroup.visible) { declutterLabels(performance.now()); fadeLabels(); }
       // Pulse the war arcs so active ones stand out
       if (conflictsGroup.visible) {
         for (const id in conflictObjects) {
@@ -13055,6 +13328,419 @@ PELICAN-9
       console.error('[wrldmon] unhandled rejection', e.reason);
     });
 
+    // ════════════════════════════════════════════════════════════════
+    //  DESKS — full-screen reading tabs (FRANCE politics, IMPACT markets)
+    // ════════════════════════════════════════════════════════════════
+    // French stop-words join the English ones so story clustering works on
+    // French headlines too ("le", "des", "après"… would otherwise match).
+    for (const w of ('les des une dans pour par sur avec sans sous cette ces son ses leur leurs qui que quoi dont est sont ete etre ont avait fait faire plus moins pas aux selon face lors depuis comme tout tous toute toutes tres aussi encore deja direct video infos info apres avant contre entre mais elle ils elles nous vous').split(' ')) STORY_STOP.add(w);
+
+    const deskState = {
+      fr: { data: null, loadedAt: 0, loading: null, stories: [], filter: { theme: null, party: null, person: null, q: '' } },
+      biz: { data: null, loadedAt: 0, loading: null, stories: [] },
+      impact: { quotes: new Map(), loadedAt: 0, loading: null, rows: [], filter: { region: 'ALL', strong: false } },
+    };
+
+    // Loads one of the Worker's desk feeds ('fr' → /fr, 'biz' → /biz),
+    // clusters it into stories and keeps it 10 min.
+    async function loadDeskFeed(key, force = false) {
+      const st = deskState[key];
+      if (!API_PROXY) return null;
+      if (!force && st.data && Date.now() - st.loadedAt < 10 * 60e3) return st.data;
+      if (st.loading) return st.loading;
+      st.loading = (async () => {
+        try {
+          const r = await fetch(`${API_PROXY}/${key}`, { cache: 'no-store' });
+          if (!r.ok) throw new Error('http ' + r.status);
+          const j = await r.json();
+          const arts = (j.articles || []).filter(a => a && a.title && a.url && !isJunkArticle(a));
+          for (const a of arts) a._geo = key === 'fr' ? { country: 'France', city: null, via: 'hint', all: ['France'] } : locateArticle(a);
+          st.data = j; st.loadedAt = Date.now();
+          st.stories = clusterStories(arts).map(s => {
+            s.lead._story = { id: s.id, size: s.size, sources: s.sources, first: s.first, last: s.last,
+              also: s.members.filter(m => m !== s.lead).slice(0, 12).map(m => ({ title: m.title, url: m.url, domain: m.domain })) };
+            s.text = s.members.map(m => m.title + ' ' + (m.desc || '')).join(' \n ');
+            return s;
+          });
+          return j;
+        } catch (e) {
+          console.warn(key + ' feed', e);
+          return null;
+        } finally { st.loading = null; }
+      })();
+      return st.loading;
+    }
+    const loadFranceFeed = (force) => loadDeskFeed('fr', force);
+
+    // ── FRANCE: parties, themes, people ─────────────────────────────
+    const FR_PARTIES = [
+      ['RN', 'Rassemblement national', /\b(RN|Rassemblement national|lepeniste?s?)\b/],
+      ['LFI', 'La France insoumise', /\b(LFI|La France insoumise|insoumise?s?)\b/i],
+      ['EPR', 'Renaissance · EPR', /\b(Renaissance|EPR|Ensemble pour la Republique|macronistes?|camp presidentiel|bloc central)\b/],
+      ['LR', 'Les Républicains', /\b(LR|Les Republicains)\b/],
+      ['PS', 'Parti socialiste', /\b(PS|Parti socialiste|socialistes?)\b/],
+      ['ECO', 'Les Écologistes', /\b(Les Ecologistes|ecologistes|EELV)\b/i],
+      ['PCF', 'Parti communiste', /\b(PCF|communistes?)\b/i],
+      ['HOR', 'Horizons', /\bHorizons\b/],
+      ['MDM', 'MoDem', /\bMoDem\b/i],
+      ['UDR', 'UDR', /\bUDR\b/],
+      ['REC', 'Reconquête', /\bReconquete\b/],
+    ];
+    const FR_THEMES = [
+      ['Budget', /\b(budget\w*|PLFS?S?|deficit|dette|impots?|fiscal\w*|taxe\w*|economies|Cour des comptes|Bercy)\b/i],
+      ['Institutions', /\b(49\.3|motion de censure|censure|dissolution|remaniement|gouvernement|Premier ministre|Matignon|Elysee|Conseil constitutionnel|referendum|proportionnelle|Assemblee|Senat)\b/i],
+      ['Élections', /\b(elections?|presidentielle|2027|municipales|legislatives|sondages?|primaire|candidat\w*|scrutin)\b/i],
+      ['Social', /\b(retraites?|pensions?|chomage|greves?|syndicats?|intersyndicale|smic|salaires?|pouvoir d'achat|precarite)\b/i],
+      ['Sécurité · Justice', /\b(immigration|migrants?|OQTF|frontieres?|asile|police|securite|delinquance|narcotrafic|justice|prison|terroris\w*|proces|condamne\w*)\b/i],
+      ['Écologie', /\b(climat\w*|ecologi\w*|nucleaire|energie|carburants?|agricult\w*|ZFE|eau)\b/i],
+      ['Éducation · Santé', /\b(ecoles?|lycee\w*|education|enseignants?|universit\w*|hopita\w*|sante|medecins?|Secu)\b/i],
+      ['Europe · Monde', /\b(Europe\w*|Bruxelles|UE|Ukraine|Gaza|Israel|Etats-Unis|Trump|Chine|OTAN|Mercosur|diplomat\w*)\b/i],
+    ];
+    // Capitalised words that start non-person bigrams ("Assemblée nationale").
+    const FR_CAP_STOP = new Set(('Assemblee Conseil Front Rassemblement Parti Union Gouvernement Premier Ministre President Presidente Senat Paris France ' +
+      'Nouvelle Nouveau Haute Haut Cour Garde Projet Loi Elysee Matignon Europe Etats Moyen Proche Saint Sainte Notre Le La Les Un Une Des Du De En Au Aux ' +
+      'Pour Avec Sans Sur Dans Apres Avant Selon Comment Pourquoi Quand Qui Que Quoi Ce Cette Ces Il Elle Ils Elles On Nous Vous Budget Direct Video Info ' +
+      'Infos Politique Municipales Presidentielle Legislatives Sondage Republique Republicains Ecologistes Socialistes Insoumis Renaissance Horizons ' +
+      'Reconquete Mairie Ville Grand Grande Etat Defense Interieur Justice Sante Education Economie Travail Culture Agriculture Bercy Lycees Colere ' +
+      'Hauts Bouches Seine Val Pays Ile Cote Alpes Corse Outre Nouvelle-Caledonie Mayotte Guadeloupe Martinique Reunion Guyane Nationale Armee ' +
+      'Jeux Coupe Tour Prix Journal Monde Figaro Liberation Express Point Echos Media Mediapart Radio Tele Canal Chaine BFM LCI CNews TF1 France2 ' +
+      'Par By Selon Etats-Unis Royaume-Uni Union Europeenne Commission Banque Caisse Societe Generale Air Total Orange Fete Noel Pacs Black Friday').split(' '));
+    // Accented capitals allowed (Éric, Mélenchon); stop-list checks run on the
+    // de-accented form so the list can be written without accents.
+    const FR_NAME_TOKEN = /^\p{Lu}\p{Ll}+(?:-\p{Lu}\p{Ll}+)?$/u;
+    const isNameWord = (w) => FR_NAME_TOKEN.test(w) && !FR_CAP_STOP.has(deaccent(w));
+    function frPeople(stories) {
+      const counts = new Map();
+      // Journalists' bylines ("Par Anne-Charlotte Dusseaulx") are not news.
+      const bylines = new Set();
+      for (const s of stories) for (const m of s.members)
+        for (const b of (m.title + ' ' + (m.desc || '')).matchAll(/\b(?:Par|par|By)\s+(\p{Lu}[\p{L}-]+\s+\p{Lu}[\p{L}-]+)/gu)) bylines.add(b[1]);
+      for (const s of stories) {
+        const seen = new Set();
+        for (const m of s.members) {
+          const words = (m.title + '. ' + (m.desc || '')).split(/[\s,;:!?«»"()\[\]]+/).map(w => w.replace(/[.'’]+$/, ''));
+          for (let i = 0; i < words.length - 1; i++) {
+            const a = words[i], b = words[i + 1], c = words[i + 2];
+            let name = null;
+            if (isNameWord(a)) {
+              if ((b === 'Le' || b === 'La' || b === 'De') && c && FR_NAME_TOKEN.test(c)) name = `${a} ${b} ${c}`;
+              else if (isNameWord(b)) name = `${a} ${b}`;
+            }
+            if (name && !seen.has(name)) { seen.add(name); counts.set(name, (counts.get(name) || 0) + 1); }
+          }
+        }
+      }
+      return [...counts.entries()].filter(([name, n]) => n >= 2 && !bylines.has(name)).sort((x, y) => y[1] - x[1]).slice(0, 14);
+    }
+    const frMatches = (s, re) => re.test(deaccent(s.text));
+
+    async function renderFranceDesk() {
+      const el = document.getElementById('franceBody');
+      const head = document.getElementById('franceMeta');
+      const st = deskState.fr;
+      if (!API_PROXY) { el.innerHTML = `<div class="desk-empty">The France desk needs the Worker (API_PROXY) — it aggregates 10 French outlets server-side.</div>`; return; }
+      if (!st.data) { el.innerHTML = `<div class="desk-empty">Chargement des rédactions françaises…</div>`; await loadFranceFeed(); }
+      if (!st.data) { el.innerHTML = `<div class="desk-empty">Flux indisponible pour le moment. <button class="desk-chip" id="frRetry">Réessayer</button></div>`;
+        document.getElementById('frRetry')?.addEventListener('click', () => { loadFranceFeed(true).then(renderFranceDesk); }); return; }
+
+      const f = st.filter;
+      const all = st.stories;
+      const okSources = Object.values(st.data.sources || {}).filter(x => x.ok).length;
+      head.innerHTML = `<b>${all.length}</b> sujets · <b>${st.data.count}</b> articles · <b>${okSources}</b> rédactions · màj ${new Date(st.data.generated).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}`;
+
+      const q = deaccent(f.q.trim().toLowerCase());
+      const list = all.filter(s =>
+        (!f.theme || frMatches(s, FR_THEMES.find(t => t[0] === f.theme)[1])) &&
+        (!f.party || frMatches(s, FR_PARTIES.find(p => p[0] === f.party)[2])) &&
+        (!f.person || s.text.includes(f.person)) &&
+        (!q || deaccent(s.text.toLowerCase()).includes(q)));
+      list.sort((x, y) => (y.sources - x.sources) || ((y.last || 0) - (x.last || 0)));
+
+      // Side panels are computed on the unfiltered set (they ARE the filters).
+      const partyCounts = FR_PARTIES.map(([id, label, re]) => ({ id, label, n: all.filter(s => frMatches(s, re)).length })).filter(p => p.n).sort((a, b) => b.n - a.n);
+      const themeCounts = FR_THEMES.map(([id, re]) => ({ id, n: all.filter(s => frMatches(s, re)).length })).filter(t => t.n).sort((a, b) => b.n - a.n);
+      const people = frPeople(all);
+      const maxP = Math.max(1, ...partyCounts.map(p => p.n));
+
+      const chip = (kind, id, label, n, on) => `<button class="desk-chip${on ? ' on' : ''}" data-k="${kind}" data-v="${escapeHtml(id)}">${escapeHtml(label)}${n != null ? `<span class="n">${n}</span>` : ''}</button>`;
+      const activeFilters = [f.theme && ['theme', f.theme], f.party && ['party', FR_PARTIES.find(p => p[0] === f.party)[1]], f.person && ['person', f.person]].filter(Boolean);
+
+      const storyCard = (s, lead = false) => {
+        const a = s.lead;
+        const img = cssImageUrl(a.socialimage);
+        const parties = FR_PARTIES.filter(p => frMatches(s, p[2])).slice(0, 3).map(p => `<span class="desk-tag">${p[0]}</span>`).join('');
+        const theme = FR_THEMES.find(t => frMatches(s, t[1]));
+        return `<article class="desk-story${lead ? ' lead' : ''}" data-sid="${s.id}" role="button" tabindex="0">
+          ${img ? `<div class="img" style="background-image:url('${escapeHtml(img)}')"></div>` : ''}
+          <div class="body">
+            <div class="meta">${s.sources > 1 ? `<span class="desk-tag reach">${s.sources} RÉDACTIONS</span>` : ''}${theme ? `<span class="desk-tag theme">${escapeHtml(theme[0])}</span>` : ''}${parties}<span class="ago">${articleAge(a) ? 'il y a ' + articleAge(a).replace('m', ' min').replace('h', ' h').replace('d', ' j') : ''}</span></div>
+            <h3>${escapeHtml(a.title)}</h3>
+            ${a.desc && lead ? `<p>${escapeHtml(a.desc)}</p>` : ''}
+            <div class="src">${escapeHtml(a.domain || '')}${s.sources > 1 ? ` · aussi : ${[...new Set(s.members.filter(m => m !== a).map(m => m.domain))].slice(0, 4).map(escapeHtml).join(', ')}` : ''}</div>
+          </div>
+        </article>`;
+      };
+
+      el.innerHTML = `
+        <div class="desk-grid">
+          <main class="desk-main">
+            <div class="desk-toolbar">
+              <input class="desk-search" id="frSearch" placeholder="Rechercher (ex : budget, Retailleau, 49.3)…" value="${escapeHtml(f.q)}" />
+              ${activeFilters.length ? activeFilters.map(([k, v]) => `<button class="desk-chip on" data-clear="${k}">${escapeHtml(v)} ✕</button>`).join('') + `<button class="desk-chip" data-clear="all">Tout effacer</button>` : ''}
+            </div>
+            <div class="desk-chips">${chip('theme', '', 'Tous les thèmes', all.length, !f.theme)}${themeCounts.map(t => chip('theme', t.id, t.id, t.n, f.theme === t.id)).join('')}</div>
+            ${list.length ? storyCard(list[0], true) + `<div class="desk-list">${list.slice(1, 80).map(s => storyCard(s)).join('')}</div>`
+              : `<div class="desk-empty">Aucun sujet ne correspond à ces filtres.</div>`}
+          </main>
+          <aside class="desk-side">
+            <section class="desk-panel">
+              <h4>Baromètre des partis <span>sujets qui les citent · 48 h</span></h4>
+              ${partyCounts.map(p => `<button class="bar-row${f.party === p.id ? ' on' : ''}" data-k="party" data-v="${p.id}" title="${p.n} sujets citent ${escapeHtml(p.label)}">
+                <span class="lbl">${escapeHtml(p.label)}</span><span class="track"><span class="fill" style="width:${(p.n / maxP * 100).toFixed(1)}%"></span></span><span class="val">${p.n}</span></button>`).join('') || '<div class="desk-empty">—</div>'}
+            </section>
+            <section class="desk-panel">
+              <h4>Personnalités citées <span>≥ 2 sujets</span></h4>
+              <div class="desk-chips">${people.map(([name, n]) => chip('person', name, name, n, f.person === name)).join('') || '<div class="desk-empty">—</div>'}</div>
+            </section>
+            <section class="desk-panel">
+              <h4>Rédactions</h4>
+              <div class="desk-sources">${Object.entries(st.data.sources || {}).map(([k, v]) => `<span class="${v.ok ? '' : 'bad'}" title="${escapeHtml(v.error || '')}">${v.ok ? '●' : '○'} ${escapeHtml(k.replace('fr:', ''))} ${v.count}</span>`).join('')}</div>
+            </section>
+          </aside>
+        </div>`;
+
+      el.querySelectorAll('[data-k]').forEach(b => b.addEventListener('click', () => {
+        const k = b.dataset.k, v = b.dataset.v || null;
+        f[k] = (f[k] === v) ? null : v;
+        renderFranceDesk();
+      }));
+      el.querySelectorAll('[data-clear]').forEach(b => b.addEventListener('click', () => {
+        const k = b.dataset.clear;
+        if (k === 'all') { f.theme = f.party = f.person = null; f.q = ''; } else f[k] = null;
+        renderFranceDesk();
+      }));
+      const search = document.getElementById('frSearch');
+      let t; search.addEventListener('input', () => { clearTimeout(t); t = setTimeout(() => { f.q = search.value; renderFranceDesk().then(() => { const s = document.getElementById('frSearch'); s.focus(); s.setSelectionRange(s.value.length, s.value.length); }); }, 250); });
+      el.querySelectorAll('.desk-story').forEach(card => {
+        const open = () => { const s = all.find(x => x.id === card.dataset.sid); if (s) openArticle({ ...s.lead, _country: 'France' }); };
+        card.addEventListener('click', open);
+        card.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); } });
+      });
+    }
+
+    // ── IMPACT: news ↔ listed companies ─────────────────────────────
+    // [ticker, display name, title pattern]. Case-sensitive proper nouns; pick
+    // names that are rarely ordinary words (no "Visa", "Orange", "Target").
+    const COMPANIES = [
+      ['AAPL', 'Apple', /\b(Apple|iPhone|iPad|Tim Cook)\b/], ['MSFT', 'Microsoft', /\b(Microsoft|Xbox|Activision|Satya Nadella)\b/],
+      ['GOOGL', 'Alphabet', /\b(Alphabet|Google|YouTube|Waymo|DeepMind)\b/], ['AMZN', 'Amazon', /\bAmazon(?! rainforest| river| basin|ia| region)\b|\bAWS\b/],
+      ['META', 'Meta', /\b(Meta Platforms|Meta|Facebook|Instagram|WhatsApp|Zuckerberg)\b/], ['NVDA', 'Nvidia', /\b(Nvidia|NVIDIA)\b/],
+      ['TSLA', 'Tesla', /\b(Tesla)\b/], ['NFLX', 'Netflix', /\bNetflix\b/], ['DIS', 'Disney', /\b(Disney|Pixar|Marvel Studios|Lucasfilm|ESPN|Disney\+)\b/],
+      ['WBD', 'Warner Bros. Discovery', /\b(Warner Bros|HBO|Discovery Inc)\b/], ['CMCSA', 'Comcast', /\b(Comcast|NBCUniversal|Universal Pictures|Peacock)\b/],
+      ['SONY', 'Sony', /\b(Sony|PlayStation)\b/], ['7974.T', 'Nintendo', /\b(Nintendo|Switch 2)\b/], ['EA', 'Electronic Arts', /\b(Electronic Arts)\b/],
+      ['TTWO', 'Take-Two', /\b(Take-Two|Rockstar Games|GTA 6|GTA VI)\b/], ['SPOT', 'Spotify', /\bSpotify\b/],
+      ['BA', 'Boeing', /\bBoeing\b/], ['LMT', 'Lockheed Martin', /\bLockheed\b/], ['INTC', 'Intel', /\bIntel\b(?! agency| officials)/], ['AMD', 'AMD', /\bAMD\b/],
+      ['AVGO', 'Broadcom', /\bBroadcom\b/], ['ORCL', 'Oracle', /\bOracle\b/], ['CRM', 'Salesforce', /\bSalesforce\b/], ['IBM', 'IBM', /\bIBM\b/],
+      ['PLTR', 'Palantir', /\bPalantir\b/], ['UBER', 'Uber', /\bUber\b/], ['ABNB', 'Airbnb', /\bAirbnb\b/], ['NKE', 'Nike', /\bNike\b/],
+      ['MCD', "McDonald's", /\bMcDonald['’]s\b/], ['SBUX', 'Starbucks', /\bStarbucks\b/], ['KO', 'Coca-Cola', /\bCoca-Cola\b/], ['PEP', 'PepsiCo', /\b(PepsiCo|Pepsi)\b/],
+      ['WMT', 'Walmart', /\bWalmart\b/], ['COST', 'Costco', /\bCostco\b/], ['JPM', 'JPMorgan', /\b(JPMorgan|JP Morgan|Jamie Dimon)\b/],
+      ['GS', 'Goldman Sachs', /\bGoldman Sachs\b/], ['MS', 'Morgan Stanley', /\bMorgan Stanley\b/], ['BAC', 'Bank of America', /\bBank of America\b/],
+      ['BLK', 'BlackRock', /\bBlackRock\b/], ['BRK-B', 'Berkshire Hathaway', /\b(Berkshire Hathaway|Warren Buffett)\b/], ['MA', 'Mastercard', /\bMastercard\b/],
+      ['PYPL', 'PayPal', /\bPayPal\b/], ['XOM', 'ExxonMobil', /\b(ExxonMobil|Exxon)\b/], ['CVX', 'Chevron', /\bChevron\b/],
+      ['PFE', 'Pfizer', /\bPfizer\b/], ['MRNA', 'Moderna', /\bModerna\b/], ['JNJ', 'Johnson & Johnson', /\bJohnson & Johnson\b/], ['LLY', 'Eli Lilly', /\b(Eli Lilly|Lilly)\b/],
+      ['NVO', 'Novo Nordisk', /\b(Novo Nordisk|Ozempic|Wegovy)\b/], ['UNH', 'UnitedHealth', /\bUnitedHealth\b/], ['F', 'Ford', /\bFord Motor|\bFord\b(?= (?:recalls?|cuts?|sales|shares|profit|EV|plant|workers))/],
+      ['GM', 'General Motors', /\b(General Motors)\b/], ['COIN', 'Coinbase', /\bCoinbase\b/], ['RIVN', 'Rivian', /\bRivian\b/], ['T', 'AT&T', /\bAT&T\b/],
+      ['VZ', 'Verizon', /\bVerizon\b/], ['FDX', 'FedEx', /\bFedEx\b/], ['DAL', 'Delta Air Lines', /\bDelta Air Lines\b/], ['UAL', 'United Airlines', /\bUnited Airlines\b/],
+      ['BABA', 'Alibaba', /\bAlibaba\b/], ['0700.HK', 'Tencent', /\bTencent\b/], ['1211.HK', 'BYD', /\bBYD\b/], ['1810.HK', 'Xiaomi', /\bXiaomi\b/], ['BIDU', 'Baidu', /\bBaidu\b/],
+      ['TSM', 'TSMC', /\b(TSMC|Taiwan Semiconductor)\b/], ['005930.KS', 'Samsung Electronics', /\bSamsung\b/], ['005380.KS', 'Hyundai Motor', /\bHyundai\b/],
+      ['7203.T', 'Toyota', /\bToyota\b/], ['7267.T', 'Honda', /\bHonda\b/], ['9984.T', 'SoftBank', /\bSoftBank\b/], ['RELIANCE.NS', 'Reliance', /\bReliance Industries\b/], ['INFY', 'Infosys', /\bInfosys\b/],
+      ['ASML', 'ASML', /\bASML\b/], ['MC.PA', 'LVMH', /\b(LVMH|Louis Vuitton|Dior|Moët Hennessy|Bernard Arnault)\b/], ['RMS.PA', 'Hermès', /\bHerm[eè]s\b/],
+      ['KER.PA', 'Kering', /\b(Kering|Gucci)\b/], ['OR.PA', "L'Oréal", /\bL['’]Or[eé]al\b/], ['SAN.PA', 'Sanofi', /\bSanofi\b/], ['BNP.PA', 'BNP Paribas', /\bBNP Paribas\b/],
+      ['GLE.PA', 'Société Générale', /\bSoci[eé]t[eé] G[eé]n[eé]rale\b/], ['CS.PA', 'AXA', /\bAXA\b/], ['TTE.PA', 'TotalEnergies', /\bTotalEnergies\b/],
+      ['AIR.PA', 'Airbus', /\bAirbus\b/], ['RNO.PA', 'Renault', /\bRenault\b/], ['STLAP.PA', 'Stellantis', /\b(Stellantis|Peugeot|Fiat|Jeep)\b/],
+      ['BN.PA', 'Danone', /\bDanone\b/], ['CA.PA', 'Carrefour', /\bCarrefour\b/], ['ML.PA', 'Michelin', /\bMichelin\b/], ['SAF.PA', 'Safran', /\bSafran\b/],
+      ['HO.PA', 'Thales', /\bThales\b/], ['AM.PA', 'Dassault Aviation', /\b(Dassault Aviation|Rafale)\b/], ['UBI.PA', 'Ubisoft', /\bUbisoft\b/],
+      ['VIV.PA', 'Vivendi', /\b(Vivendi|Canal\+)\b/], ['PUB.PA', 'Publicis', /\bPublicis\b/], ['AF.PA', 'Air France-KLM', /\b(Air France|KLM)\b/],
+      ['CAP.PA', 'Capgemini', /\bCapgemini\b/], ['SU.PA', 'Schneider Electric', /\bSchneider Electric\b/], ['EN.PA', 'Bouygues', /\bBouygues\b/],
+      ['ALO.PA', 'Alstom', /\bAlstom\b/], ['AC.PA', 'Accor', /\bAccor\b/], ['RI.PA', 'Pernod Ricard', /\bPernod Ricard\b/], ['MT.AS', 'ArcelorMittal', /\bArcelorMittal\b/],
+      ['ENGI.PA', 'Engie', /\bEngie\b/], ['VIE.PA', 'Veolia', /\bVeolia\b/], ['DG.PA', 'Vinci', /(?<!da |de )\bVinci\b(?! Code)/],
+      ['VOW3.DE', 'Volkswagen', /\b(Volkswagen|VW|Audi)\b/], ['BMW.DE', 'BMW', /\bBMW\b/], ['MBG.DE', 'Mercedes-Benz', /\bMercedes(-Benz)?\b/], ['SIE.DE', 'Siemens', /\bSiemens\b/],
+      ['SAP.DE', 'SAP', /\bSAP\b/], ['BAYN.DE', 'Bayer', /\bBayer\b/], ['ADS.DE', 'Adidas', /\bAdidas\b/], ['ALV.DE', 'Allianz', /\bAllianz\b/],
+      ['DBK.DE', 'Deutsche Bank', /\bDeutsche Bank\b/], ['LHA.DE', 'Lufthansa', /\bLufthansa\b/], ['RHM.DE', 'Rheinmetall', /\bRheinmetall\b/], ['BAS.DE', 'BASF', /\bBASF\b/],
+      ['BP.L', 'BP', /\bBP\b/], ['SHEL.L', 'Shell', /\bShell\b(?= (?:plc|profit|shares|oil|gas|says|to|will|chief))/], ['HSBA.L', 'HSBC', /\bHSBC\b/], ['BARC.L', 'Barclays', /\bBarclays\b/],
+      ['AZN.L', 'AstraZeneca', /\bAstraZeneca\b/], ['ULVR.L', 'Unilever', /\bUnilever\b/], ['RR.L', 'Rolls-Royce', /\bRolls-Royce\b/], ['BA.L', 'BAE Systems', /\bBAE Systems\b/],
+      ['GSK.L', 'GSK', /\bGSK\b/], ['VOD.L', 'Vodafone', /\bVodafone\b/], ['TSCO.L', 'Tesco', /\bTesco\b/], ['RIO.L', 'Rio Tinto', /\bRio Tinto\b/], ['GLEN.L', 'Glencore', /\bGlencore\b/],
+      ['NESN.SW', 'Nestlé', /\bNestl[eé]\b/], ['NOVN.SW', 'Novartis', /\bNovartis\b/], ['ROG.SW', 'Roche', /(?<!La )\bRoche\b(?![-'’])/], ['UBSG.SW', 'UBS', /\bUBS\b/],
+      ['HEIA.AS', 'Heineken', /\bHeineken\b/], ['PHIA.AS', 'Philips', /\bPhilips\b/], ['RACE', 'Ferrari', /\bFerrari\b/], ['ITX.MC', 'Inditex', /\b(Inditex|Zara)\b/],
+      ['SAN.MC', 'Santander', /\bSantander\b/], ['NOKIA.HE', 'Nokia', /\bNokia\b/], ['ERIC-B.ST', 'Ericsson', /\bEricsson\b/],
+    ];
+    // Benchmark by listing venue (Yahoo suffix) → "did it beat its market?".
+    const BENCH = { '': '^GSPC', PA: '^FCHI', DE: '^GDAXI', L: '^FTSE', AS: '^AEX', SW: '^SSMI', MC: '^IBEX', T: '^N225', KS: '^KS11', HK: '^HSI', NS: '^NSEI', HE: '^OMXH25', ST: '^OMX', MI: 'FTSEMIB.MI' };
+    const BENCH_NAME = { '^GSPC': 'S&P 500', '^FCHI': 'CAC 40', '^GDAXI': 'DAX', '^FTSE': 'FTSE 100', '^AEX': 'AEX', '^SSMI': 'SMI', '^IBEX': 'IBEX 35', '^N225': 'Nikkei 225', '^KS11': 'KOSPI', '^HSI': 'Hang Seng', '^NSEI': 'Nifty 50', '^OMXH25': 'OMXH25', '^OMX': 'OMXS30', 'FTSEMIB.MI': 'FTSE MIB' };
+    const suffixOf = (sym) => (sym.match(/\.([A-Z]+)$/) || [])[1] || '';
+    const REGION = (sym) => { const s = suffixOf(sym); return !s ? 'US' : ['T', 'KS', 'HK', 'NS'].includes(s) ? 'ASIA' : 'EUROPE'; };
+
+    // Every company named in a headline, with its most widely carried story.
+    function companyMentions() {
+      const pool = [...state.articles, ...(deskState.fr.stories || []).map(s => s.lead), ...(deskState.biz.stories || []).map(s => s.lead)];
+      const byTicker = new Map();
+      for (const a of pool) {
+        for (const [sym, name, re] of COMPANIES) {
+          if (!re.test(a.title || '')) continue;
+          const reach = a._story?.sources || 1;
+          const t = a._story?.first || parseGdeltDate(a.seendate)?.getTime() || Date.now();
+          const cur = byTicker.get(sym);
+          if (!cur) byTicker.set(sym, { sym, name, lead: a, reach, t, stories: 1 });
+          else { cur.stories++; if (reach > cur.reach || (reach === cur.reach && t < cur.t)) Object.assign(cur, { lead: a, reach, t }); }
+        }
+      }
+      return [...byTicker.values()];
+    }
+
+    async function fetchQuotes(symbols) {
+      const st = deskState.impact;
+      const need = symbols.filter(s => { const q = st.quotes.get(s); return !q || Date.now() - q._at > 5 * 60e3; });
+      for (let i = 0; i < need.length; i += 25) {
+        const chunk = need.slice(i, i + 25);
+        try {
+          const r = await fetch(`${API_PROXY}/quotes?range=5d&symbols=${chunk.map(encodeURIComponent).join(',')}`);
+          const j = await r.json();
+          for (const q of j.quotes || []) st.quotes.set(q.symbol, { ...q, _at: Date.now() });
+        } catch (e) { console.warn('quotes', e); }
+      }
+    }
+
+    // Price at (or just before) a moment; `null` when the series starts later.
+    function priceAt(q, ms) {
+      const t = ms / 1000;
+      let idx = -1;
+      for (let i = 0; i < q.t.length; i++) { if (q.t[i] <= t) idx = i; else break; }
+      return idx;
+    }
+    function impactRow(m) {
+      const q = deskState.impact.quotes.get(m.sym);
+      if (!q || q.error || !q.t?.length) return null;
+      const bSym = BENCH[suffixOf(m.sym)] || '^GSPC';
+      const b = deskState.impact.quotes.get(bSym);
+      let i0 = priceAt(q, m.t);
+      const before = i0 < 0;                      // news older than the 5-day window
+      if (before) i0 = 0;
+      const last = q.c.length - 1;
+      const pending = i0 === last;                // no trading since the news yet
+      const move = q.c[last] / q.c[i0] - 1;
+      let bMove = null;
+      if (b && !b.error && b.t?.length) {
+        let j0 = priceAt(b, m.t); if (j0 < 0) j0 = 0;
+        bMove = b.c[b.c.length - 1] / b.c[j0] - 1;
+      }
+      const excess = bMove == null ? move : move - bMove;
+      return { ...m, q, bSym, bMove, move, excess, i0, before, pending };
+    }
+
+    const pct = (x, digits = 1) => (x >= 0 ? '+' : '−') + Math.abs(x * 100).toFixed(digits) + '%';
+    const arrow = (x) => x > 0.0005 ? '▲' : x < -0.0005 ? '▼' : '■';
+
+    // Stat-tile sparkline: whole 5-day series in the recessive ink, the part
+    // after the news in the accent, a marker at the news moment. Crosshair +
+    // tooltip on hover (wired after render).
+    function sparkSvg(r, w = 260, h = 64) {
+      const c = r.q.c, n = c.length;
+      const lo = Math.min(...c), hi = Math.max(...c), pad = 4;
+      const X = (i) => pad + (i / Math.max(1, n - 1)) * (w - pad * 2);
+      const Y = (v) => pad + (1 - (v - lo) / Math.max(1e-9, hi - lo)) * (h - pad * 2);
+      const path = (from, to) => c.slice(from, to + 1).map((v, k) => `${k ? 'L' : 'M'}${X(from + k).toFixed(1)},${Y(v).toFixed(1)}`).join('');
+      const xi = X(r.i0);
+      return `<svg class="spark" viewBox="0 0 ${w} ${h}" width="100%" height="${h}" preserveAspectRatio="none" data-sym="${escapeHtml(r.sym)}" role="img"
+          aria-label="${escapeHtml(r.name)} price, 5 days; ${pct(r.move)} since the news">
+        <line class="base" x1="${pad}" x2="${w - pad}" y1="${Y(c[r.i0]).toFixed(1)}" y2="${Y(c[r.i0]).toFixed(1)}"/>
+        <rect class="after" x="${xi.toFixed(1)}" y="0" width="${(w - pad - xi).toFixed(1)}" height="${h}"/>
+        <path class="pre" d="${path(0, r.i0)}"/>
+        <path class="post" d="${path(r.i0, n - 1)}"/>
+        <line class="news" x1="${xi.toFixed(1)}" x2="${xi.toFixed(1)}" y1="0" y2="${h}"/>
+        <circle class="dot" cx="${X(n - 1).toFixed(1)}" cy="${Y(c[n - 1]).toFixed(1)}" r="3"/>
+        <line class="cross" x1="0" x2="0" y1="0" y2="${h}" visibility="hidden"/>
+      </svg>`;
+    }
+
+    async function renderImpactDesk() {
+      const el = document.getElementById('impactBody');
+      const head = document.getElementById('impactMeta');
+      const st = deskState.impact;
+      if (!API_PROXY) { el.innerHTML = `<div class="desk-empty">The IMPACT desk needs the Worker (API_PROXY) for stock prices.</div>`; return; }
+      if (!st.rows.length) el.innerHTML = `<div class="desk-empty">Matching headlines to listed companies and pulling 5-day prices…</div>`;
+      await Promise.all([loadDeskFeed('biz'), loadFranceFeed()]);   // business desk + French news
+      const mentions = companyMentions();
+      const syms = new Set(mentions.map(m => m.sym));
+      for (const m of mentions) syms.add(BENCH[suffixOf(m.sym)] || '^GSPC');
+      await fetchQuotes([...syms]);
+      st.rows = mentions.map(impactRow).filter(Boolean);
+      st.loadedAt = Date.now();
+
+      const f = st.filter;
+      let rows = st.rows.filter(r => (f.region === 'ALL' || REGION(r.sym) === f.region) && (!f.strong || Math.abs(r.excess) >= 0.015));
+      rows.sort((a, b) => Math.abs(b.excess) - Math.abs(a.excess));
+      const missing = mentions.length - st.rows.length;
+      head.innerHTML = `<b>${st.rows.length}</b> companies in the news · prices 5 d · updated ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+
+      const strength = (x) => Math.abs(x) >= 0.03 ? ['strong', 'Strong reaction'] : Math.abs(x) >= 0.015 ? ['notable', 'Notable'] : ['muted', 'In line with market'];
+      const regions = ['ALL', 'US', 'EUROPE', 'ASIA'].map(rg => `<button class="desk-chip${f.region === rg ? ' on' : ''}" data-region="${rg}">${{ ALL: 'All markets', US: 'US', EUROPE: 'Europe', ASIA: 'Asia' }[rg]}<span class="n">${rg === 'ALL' ? st.rows.length : st.rows.filter(r => REGION(r.sym) === rg).length}</span></button>`).join('');
+
+      el.innerHTML = `
+        <div class="desk-toolbar">
+          ${regions}
+          <button class="desk-chip${f.strong ? ' on' : ''}" id="impStrong">Only moves ≥ 1.5% vs market</button>
+          <span class="desk-note">Excess move = stock change since the first report − its home index over the same window. Correlation, not proof of cause.</span>
+        </div>
+        ${rows.length ? `<div class="impact-grid">${rows.map(r => {
+          const [cls, lbl] = r.pending ? ['muted', 'Awaiting next session'] : strength(r.excess);
+          const a = r.lead;
+          return `<article class="impact-card ${cls}">
+            <header>
+              <div><div class="co">${escapeHtml(r.name)}</div><div class="tk">${escapeHtml(r.sym)} · ${escapeHtml(r.q.exchange || '')} · ${escapeHtml(r.q.currency || '')}</div></div>
+              <div class="px">${r.q.price != null ? Number(r.q.price).toLocaleString(undefined, { maximumFractionDigits: 2 }) : '—'}</div>
+            </header>
+            <button class="headline" data-sym="${escapeHtml(r.sym)}">${escapeHtml(a.title)}</button>
+            <div class="hmeta">${escapeHtml(a.domain || '')} · first seen ${articleAge({ seendate: msToGdelt(r.t) })} ago${r.reach > 1 ? ` · ${r.reach} outlets` : ''}${r.stories > 1 ? ` · ${r.stories} stories` : ''}${r.before ? ' · before chart window' : ''}</div>
+            <div class="spark-wrap">${sparkSvg(r)}<div class="spark-tip" hidden></div></div>
+            <div class="nums">
+              <div><span class="k">Since news</span><span class="v">${arrow(r.move)} ${pct(r.move)}</span></div>
+              <div><span class="k">${escapeHtml(BENCH_NAME[r.bSym] || r.bSym)}</span><span class="v">${r.bMove == null ? '—' : arrow(r.bMove) + ' ' + pct(r.bMove)}</span></div>
+              <div class="ex"><span class="k">Excess</span><span class="v">${arrow(r.excess)} ${pct(r.excess)}</span></div>
+            </div>
+            <div class="verdict ${cls}">${lbl}</div>
+          </article>`; }).join('')}</div>`
+          : `<div class="desk-empty">No company in today's headlines matches these filters.</div>`}
+        ${missing > 0 ? `<div class="desk-note" style="margin-top:14px">${missing} mentioned compan${missing > 1 ? 'ies have' : 'y has'} no price data right now.</div>` : ''}`;
+
+      el.querySelectorAll('[data-region]').forEach(b => b.addEventListener('click', () => { f.region = b.dataset.region; renderImpactDesk(); }));
+      document.getElementById('impStrong')?.addEventListener('click', () => { f.strong = !f.strong; renderImpactDesk(); });
+      el.querySelectorAll('.headline').forEach(b => b.addEventListener('click', () => {
+        const r = st.rows.find(x => x.sym === b.dataset.sym); if (r) openArticle({ ...r.lead });
+      }));
+      // Crosshair + tooltip on each sparkline.
+      el.querySelectorAll('.spark-wrap').forEach(wrap => {
+        const svg = wrap.querySelector('svg'), tip = wrap.querySelector('.spark-tip'), cross = svg.querySelector('.cross');
+        const r = st.rows.find(x => x.sym === svg.dataset.sym); if (!r) return;
+        const n = r.q.c.length;
+        svg.addEventListener('pointermove', (e) => {
+          const box = svg.getBoundingClientRect();
+          const fx = Math.min(1, Math.max(0, (e.clientX - box.left) / box.width));
+          const i = Math.round(fx * (n - 1));
+          const vbX = 4 + (i / Math.max(1, n - 1)) * (260 - 8);
+          cross.setAttribute('x1', vbX); cross.setAttribute('x2', vbX); cross.setAttribute('visibility', 'visible');
+          const d = new Date(r.q.t[i] * 1000);
+          tip.hidden = false;
+          tip.innerHTML = `<b>${Number(r.q.c[i]).toLocaleString(undefined, { maximumFractionDigits: 2 })} ${escapeHtml(r.q.currency)}</b> · ${d.toLocaleString([], { weekday: 'short', hour: '2-digit', minute: '2-digit' })}${i === r.i0 ? ' · news' : ''}`;
+          tip.style.left = Math.min(box.width - 150, Math.max(0, fx * box.width - 75)) + 'px';
+        });
+        svg.addEventListener('pointerleave', () => { cross.setAttribute('visibility', 'hidden'); tip.hidden = true; });
+      });
+    }
+    function msToGdelt(ms) {
+      const d = new Date(ms), p = (n) => String(n).padStart(2, '0');
+      return `${d.getUTCFullYear()}${p(d.getUTCMonth() + 1)}${p(d.getUTCDate())}T${p(d.getUTCHours())}${p(d.getUTCMinutes())}${p(d.getUTCSeconds())}Z`;
+    }
+
     // setInterval that skips ticks while the tab is hidden (no point burning
     // battery + third-party API quota on an invisible dashboard). `catchUp`
     // pollers also fire once immediately when the tab becomes visible again.
@@ -13084,6 +13770,12 @@ PELICAN-9
         const NEWS_EVERY = (API_PROXY ? 10 : 20) * 60 * 1000;
         const newsTick = () => { lastNewsRefresh = Date.now(); refreshNewsTick(); };
         everyVisible(newsTick, NEWS_EVERY);
+        // Desks refresh themselves while open: France feed every 10 min,
+        // stock prices every 5 min (the Worker caches quotes for 5 min).
+        everyVisible(() => {
+          if (state.tab === 'france') loadFranceFeed(true).then(renderFranceDesk);
+          if (state.tab === 'impact') loadDeskFeed('biz', true).then(renderImpactDesk);
+        }, 5 * 60 * 1000);
         _catchUp.push(() => { if (Date.now() - lastNewsRefresh > NEWS_EVERY) newsTick(); });
 
         renderCountryList();
