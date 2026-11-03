@@ -515,6 +515,19 @@
     pointer-events: auto;
   }
   body.inspecting-conflict .inspect-banner { display: flex; }
+  /* Country focus: way back to the world view */
+  .country-back { position: fixed; z-index: 11; top: calc(var(--top-h, 64px) + 22px); left: 50%; transform: translateX(-50%);
+    display: none; align-items: center; gap: 10px; padding: 7px 14px; font-size: 11px; letter-spacing: 0.16em; color: var(--cyan);
+    background: rgba(2,6,14,0.92); border: 1px solid var(--cyan); box-shadow: 0 0 24px rgba(0,240,255,0.22); backdrop-filter: blur(6px); }
+  .country-back:hover { background: rgba(0,240,255,0.16); color: var(--paper); }
+  .country-back:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; }
+  .country-back .nm { color: var(--paper); font-weight: 700; }
+  .country-back .k { color: var(--dim); font-size: 9px; letter-spacing: 0.1em; }
+  body.country-focus .country-back { display: flex; }
+  body.desk-mode .country-back, body.cam-mode .country-back, body.line-mode .country-back, body.inspecting-conflict .country-back { display: none; }
+  .feed-back { color: var(--cyan); margin-right: 8px; padding: 0 4px; font-size: 13px; line-height: 1; }
+  .feed-back:hover { color: var(--paper); }
+  @media (max-width: 900px) { .country-back { top: auto; bottom: 110px; } .country-back .k { display: none; } }
   .inspect-banner .back {
     font-size: 11px; letter-spacing: 0.18em;
     color: var(--cyan); padding: 4px 12px;
@@ -1570,6 +1583,9 @@
 
   <!-- ============ TICKER ============ -->
   <div class="ticker"><div class="ticker-track" id="tickerTrack"></div></div>
+
+  <!-- ============ COUNTRY FOCUS: BACK TO WORLD ============ -->
+  <button class="country-back" id="countryBack" aria-label="Retour à la vue monde">← MONDE <span class="nm" id="countryBackName"></span><span class="k">ÉCHAP</span></button>
 
   <!-- ============ CONFLICT INSPECT BANNER ============ -->
   <div class="inspect-banner" id="inspectBanner">
@@ -10869,7 +10885,9 @@ PELICAN-9
     // ════════════════════════════════════════════════════════════════
     const countryListEl = document.getElementById('countryList');
     const searchEl = document.getElementById('countrySearch');
-    document.getElementById('clearSearch').addEventListener('click', () => {
+    // Leaves the country/city view: clears selection + filter, exits the
+    // city drill-down, and (zoomOut) pulls the camera back to world distance.
+    function exitCountryFocus(zoomOut = false) {
       searchEl.value = ''; state.countryFilter = '';
       state.selectedCountry = null;
       exitDrillDown();
@@ -10879,7 +10897,18 @@ PELICAN-9
       if (state.tab === 'outbreaks') renderFeedOutbreaks();
       applyOutbreakVisibility();
       drawMap();
-    });
+      if (zoomOut) tweenCamera(camera.position.clone().setLength(5.8), 0.9);
+    }
+    document.getElementById('clearSearch').addEventListener('click', () => exitCountryFocus());
+    document.getElementById('countryBack').addEventListener('click', () => exitCountryFocus(true));
+    // Capture phase: runs before the reader / briefing Escape handlers, so
+    // Escape closes those first and only leaves the country view after.
+    addEventListener('keydown', (e) => {
+      if (e.key !== 'Escape' || !state.selectedCountry || !document.body.classList.contains('country-focus')) return;
+      if (state.brief || document.getElementById('reader')?.classList.contains('on') || state.selectedConflict) return;
+      if (e.target.closest?.('input, textarea')) return;
+      exitCountryFocus(true);
+    }, true);
     searchEl.addEventListener('input', () => {
       state.countryFilter = searchEl.value.trim().toLowerCase();
       renderCountryList(); applyFilters();
@@ -10921,6 +10950,8 @@ PELICAN-9
     function applyFilters() {
       const f = state.countryFilter;
       const sel = state.selectedCountry;
+      document.body.classList.toggle('country-focus', !!sel);
+      const bn = document.getElementById('countryBackName'); if (bn) bn.textContent = sel ? sel.toUpperCase() : '';
       for (const sig of signalEntries) {
         const sev = sig.sprite.userData?.severity || 'moderate';
         const sevOK = state.activeSeverities.has(sev);
@@ -11357,7 +11388,8 @@ PELICAN-9
     }
 
     function renderFeedWire(filterCountry) {
-      rightTitle.innerHTML = filterCountry ? `${escapeHtml(filterCountry)} <b>// FEED</b>` : 'THE WIRE <b>// LIVE</b>';
+      rightTitle.innerHTML = filterCountry ? `<button class="feed-back" id="feedBack" title="Retour à la vue monde" aria-label="Retour à la vue monde">←</button>${escapeHtml(filterCountry)} <b>// FEED</b>` : 'THE WIRE <b>// LIVE</b>';
+      document.getElementById('feedBack')?.addEventListener('click', () => exitCountryFocus(true));
       rightSub.textContent = `${state.newsSourceLabel || 'GDELT'} · 24h`;
 
       let items;
