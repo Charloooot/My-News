@@ -17,6 +17,7 @@
  *                                           (15 outlets) for the IMPACT tab
  *   GET /quotes?symbols=DIS,MC.PA&range=5d → compact price series (Yahoo),
  *                                           edge-cached 5 min per symbol
+ *   GET /caps?ids=Q312,Q2283              → dated market caps from Wikidata (7 d)
  *   GET /cams/caltrans?d=1..12            → compact Caltrans camera index (1 h)
  *   GET /cams/nz | /cams/es | /cams/is    → NZTA, Spain DGT, Iceland indexes (1 h)
  *   GET /cams/nps                         → US National Park webcams (24 h)
@@ -66,6 +67,7 @@ export default {
       if (url.pathname === '/biz')     return await handleFeed(FEEDS.biz, env, ctx);
       if (url.pathname === '/quotes')  return await handleQuotes(url, ctx);
       if (url.pathname.startsWith('/cams/')) return await handleCams(url, env, ctx);
+      if (url.pathname === '/caps')    return await handleCaps(url, ctx);
       if (url.pathname === '/gdelt')   return await handleGdelt(url);
       if (url.pathname === '/extract') return await handleExtract(url);
       if (url.pathname === '/tle')     return await handleTle(url);
@@ -171,12 +173,43 @@ async function handleCams(reqUrl, env, ctx) {
   return resp;
 }
 
+// ── /caps ───────────────────────────────────────────────────────────────────
+// Dated market-capitalisation statements (Wikidata P2226 + point-in-time
+// P585 + unit) for up to 80 items. The client anchors 10-year price series
+// on these to rebuild an absolute market-cap curve. Cached a week.
+const CAP_UNITS = { Q4917: 'USD', Q4916: 'EUR', Q25344: 'CHF', Q25417: 'DKK', Q1104069: 'CAD', Q8146: 'JPY',
+  Q25224: 'GBP', Q202040: 'KRW', Q31015: 'HKD', Q208526: 'TWD', Q39099: 'CNY', Q122922: 'SEK' };
+async function handleCaps(reqUrl, ctx) {
+  const ids = [...new Set((reqUrl.searchParams.get('ids') || '').split(',').filter(x => /^Q\d{1,10}$/.test(x)))].slice(0, 80).sort();
+  if (!ids.length) return json({ error: 'no ids' }, 400);
+  const key = new Request('https://cache/caps?ids=' + ids.join(','));
+  const hit = await caches.default.match(key);
+  if (hit) return withCors(hit);
+  const q = `SELECT ?co ?cap ?date ?unit WHERE { VALUES ?co { ${ids.map(i => 'wd:' + i).join(' ')} }
+    ?co p:P2226 ?st . ?st psv:P2226 [ wikibase:quantityAmount ?cap ; wikibase:quantityUnit ?unit ] . ?st pq:P585 ?date . }`;
+  const r = await fetch('https://query.wikidata.org/sparql?query=' + encodeURIComponent(q), {
+    headers: { Accept: 'application/sparql-results+json', 'User-Agent': 'wrld-news/1.0 (+https://github.com/Charloooot/My-News)' },
+  });
+  if (!r.ok) return json({ error: 'wikidata ' + r.status }, 502);
+  const out = {};
+  for (const b of (await r.json()).results.bindings) {
+    const id = b.co.value.split('/').pop(), unit = CAP_UNITS[b.unit.value.split('/').pop()];
+    if (!unit) continue;
+    (out[id] ||= []).push({ date: b.date.value.slice(0, 10), cap: +b.cap.value, unit });
+  }
+  for (const v of Object.values(out)) v.sort((a, b) => a.date.localeCompare(b.date));
+  const resp = new Response(JSON.stringify(out), { headers: { 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=604800', ...CORS } });
+  ctx.waitUntil(caches.default.put(key, resp.clone()));
+  return resp;
+}
+
 // ── /quotes ─────────────────────────────────────────────────────────────────
 // Symbols are allow-listed by shape (letters, digits, . - ^ =) and capped, so
 // this can't be turned into a generic proxy. Each symbol is cached separately.
 async function handleQuotes(reqUrl, ctx) {
-  const range = ['1d', '5d', '1mo'].includes(reqUrl.searchParams.get('range')) ? reqUrl.searchParams.get('range') : '5d';
-  const interval = range === '1mo' ? '1h' : range === '1d' ? '5m' : '15m';
+  const range = ['1d', '5d', '1mo', '5y', '10y'].includes(reqUrl.searchParams.get('range')) ? reqUrl.searchParams.get('range') : '5d';
+  const long = range === '5y' || range === '10y';
+  const interval = long ? '1mo' : range === '1mo' ? '1h' : range === '1d' ? '5m' : '15m';
   const symbols = [...new Set((reqUrl.searchParams.get('symbols') || '').split(',')
     .map(x => x.trim().toUpperCase()).filter(x => /^[A-Z0-9.^=-]{1,16}$/.test(x)))].slice(0, 30);
   if (!symbols.length) return json({ error: 'no symbols' }, 400);
@@ -188,7 +221,7 @@ async function handleQuotes(reqUrl, ctx) {
     try {
       const q = await fetchQuote(sym, range, interval);
       ctx.waitUntil(cache.put(key, new Response(JSON.stringify(q), {
-        headers: { 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=300' },
+        headers: { 'Content-Type': 'application/json', 'Cache-Control': `public, max-age=${long ? 43200 : 300}` },
       })));
       return q;
     } catch (e) {

@@ -660,6 +660,73 @@
   .tip .name { font-weight: 600; font-size: 12px; }
   .tip .meta { margin-top: 5px; opacity: 0.65; font-size: 10px; letter-spacing: 0.06em; }
 
+  /* ============== MARKETS sub-navigation + LONG TERM ============== */
+  .mkt-nav { position: fixed; top: calc(var(--top-h, 64px) + 4px); left: 50%; transform: translateX(-50%); z-index: 12; display: none;
+    gap: 2px; padding: 2px; border: 1px solid var(--line2); background: rgba(5,11,24,0.94); backdrop-filter: blur(6px); }
+  body.mkt-tab .mkt-nav { display: flex; }
+  .mkt-nav button { padding: 6px 14px; font-size: 10px; letter-spacing: 0.14em; color: var(--dim); white-space: nowrap; }
+  .mkt-nav button:hover { color: var(--paper); }
+  .mkt-nav button.on { color: var(--paper); background: rgba(0,240,255,0.15); box-shadow: inset 0 0 10px rgba(0,240,255,0.15); }
+  body.mkt-tab .desk-stage { top: calc(var(--top-h, 64px) + 44px); }
+  body.mkt-tab.has-ticker .mkt-nav { top: calc(var(--top-h, 64px) + 34px); }
+  .lt-seg { display: inline-flex; gap: 4px; align-items: center; font-size: 10px; color: var(--dim); margin-right: 10px; }
+  .lt-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 620px); gap: 22px; align-items: start; }
+  .lt-table-wrap { overflow-x: auto; border: 1px solid var(--line); }
+  .lt-table { width: 100%; border-collapse: collapse; font-size: 11px; }
+  .lt-table th { position: sticky; top: 0; background: rgba(5,11,24,0.98); text-align: left; font-size: 9px; letter-spacing: 0.12em; color: var(--dim); font-weight: 400; padding: 7px 8px; border-bottom: 1px solid var(--line2); }
+  .lt-table td { padding: 6px 8px; border-bottom: 1px solid rgba(0,240,255,0.06); color: var(--paper); vertical-align: middle; white-space: nowrap; }
+  .lt-table td small { display: block; color: var(--dim); font-size: 9px; letter-spacing: 0.04em; }
+  .lt-table .num { text-align: right; font-variant-numeric: tabular-nums; }
+  .lt-table .rk { color: var(--dim); width: 24px; }
+  .lt-table tbody tr { cursor: pointer; } .lt-table tbody tr:hover { background: rgba(0,240,255,0.05); }
+  .lt-table tbody tr.on { background: rgba(0,240,255,0.12); box-shadow: inset 3px 0 0 var(--cyan); }
+  .lt-table tbody tr:focus-visible { outline: 2px solid var(--cyan); outline-offset: -2px; }
+  .lt-table .bar { min-width: 150px; position: relative; }
+  .lt-table .bar .b { display: inline-block; height: 8px; border-radius: 0 4px 4px 0; vertical-align: middle; margin-right: 6px; max-width: 70%; }
+  .lt-table .bar .b.pos { background: var(--cyan); } .lt-table .bar .b.neg { background: var(--red); }
+  .lt-table .bar .bv { font-size: 10px; color: var(--paper); font-variant-numeric: tabular-nums; }
+  .lt-table .na { color: var(--dim); font-size: 10px; }
+  .lt-spark path { fill: none; stroke: var(--cyan); stroke-width: 1.5; vector-effect: non-scaling-stroke; opacity: 0.85; }
+  .lt-detail { border: 1px solid var(--line); background: rgba(5,11,24,0.75); padding: 14px 16px; position: sticky; top: 92px; max-height: calc(100vh - 230px); overflow-y: auto; }
+  .lt-dh { display: flex; justify-content: space-between; gap: 10px; align-items: flex-start; }
+  .lt-dh h3 { font-size: 18px; color: var(--paper); } .lt-dh small { font-size: 10px; color: var(--dim); }
+  .lt-tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 12px 0; }
+  .lt-tile { border: 1px solid var(--line); padding: 8px 10px; background: rgba(0,240,255,0.03); }
+  .lt-tile .k { display: block; font-size: 9px; letter-spacing: 0.12em; color: var(--dim); text-transform: uppercase; }
+  .lt-tile .v { display: block; font-size: 16px; color: var(--paper); font-weight: 700; font-variant-numeric: tabular-nums; margin-top: 2px; }
+  .lt-tile .s { display: block; font-size: 9px; color: var(--dim); margin-top: 2px; }
+  .lt-chart-wrap { position: relative; }
+  .lt-chart { width: 100%; height: 260px; display: block; overflow: visible; }
+  .lt-chart .grid { stroke: rgba(0,240,255,0.08); stroke-width: 1; vector-effect: non-scaling-stroke; }
+  .lt-chart .ytk { fill: var(--dim); font-size: 9px; text-anchor: end; }
+  .lt-chart .xtk { fill: var(--dim); font-size: 9px; text-anchor: middle; }
+  .lt-chart .area { fill: rgba(0,240,255,0.08); }
+  .lt-chart .ln { fill: none; stroke: var(--cyan); stroke-width: 2; vector-effect: non-scaling-stroke; }
+  .lt-chart .mo-band.up { fill: rgba(0,240,255,0.06); } .lt-chart .mo-band.down { fill: rgba(255,48,92,0.07); }
+  .lt-chart .mk circle { fill: #02060e; stroke: var(--paper); stroke-width: 1.5; vector-effect: non-scaling-stroke; }
+  .lt-chart .mk text { fill: var(--paper); font-size: 9px; text-anchor: middle; font-weight: 700; }
+  .lt-chart .cross { stroke: var(--paper); stroke-width: 1; opacity: 0.5; vector-effect: non-scaling-stroke; }
+  .lt-tip { position: absolute; top: -4px; width: 230px; font-size: 10px; color: var(--paper); background: rgba(2,6,14,0.95); border: 1px solid var(--line2); padding: 4px 7px; pointer-events: none; }
+  .lt-h { font-size: 10px; letter-spacing: 0.18em; color: var(--cyan); margin: 16px 0 8px; font-weight: 600; }
+  .lt-mo { border-left: 2px solid var(--cyan); padding: 6px 10px; margin-bottom: 10px; background: rgba(0,240,255,0.03); }
+  .lt-mo.down { border-left-color: var(--red); background: rgba(255,48,92,0.04); }
+  .lt-mo .mh { display: flex; gap: 8px; align-items: center; font-size: 11px; color: var(--paper); }
+  .lt-mo .mh .n { width: 16px; height: 16px; border-radius: 50%; border: 1px solid var(--paper); display: grid; place-items: center; font-size: 9px; font-weight: 700; }
+  .lt-mo .mh .r { font-weight: 700; } .lt-mo .mh .d { color: var(--dim); margin-left: auto; }
+  .lt-mo .hl { margin-top: 6px; display: flex; flex-direction: column; gap: 5px; }
+  .lt-hl { font-size: 11px; color: var(--paper); line-height: 1.4; }
+  .lt-hl:hover { color: var(--cyan); text-decoration: underline; }
+  .lt-hl small, .lt-now small { display: block; color: var(--dim); font-size: 9px; }
+  .lt-today { display: flex; flex-direction: column; gap: 6px; }
+  .lt-now { text-align: left; font-size: 11px; color: var(--paper); line-height: 1.4; } .lt-now:hover { color: var(--cyan); }
+  @media (max-width: 1250px) { .lt-grid { grid-template-columns: 1fr; } .lt-detail { position: static; max-height: none; } }
+  @media (max-width: 760px) {
+    .mkt-nav { left: 8px; right: 8px; transform: none; overflow-x: auto; }
+    body.mkt-tab .desk-stage { top: calc(var(--top-h, 120px) + 40px); }
+    .lt-tiles { grid-template-columns: 1fr 1fr; }
+    .lt-table td:nth-child(7), .lt-table th:nth-child(7) { display: none; }
+  }
+
   /* ============== CAMERAS ============== */
   .cam-stage { position: fixed; inset: var(--top-h, 64px) 0 0 0; z-index: 6; display: none; background: #0c0c0c; }
   .cam-stage.on { display: block; }
@@ -1417,13 +1484,12 @@
       <button class="tab" data-tab="line"><span class="num">02</span>THE LINE</button>
       <button class="tab new" data-tab="france"><span class="num">03</span>FRANCE</button>
       <button class="tab" data-tab="conflicts"><span class="num">04</span>CONFLICTS</button>
-      <button class="tab" data-tab="markets"><span class="num">05</span>MARKETS</button>
-      <button class="tab new" data-tab="impact"><span class="num">06</span>IMPACT</button>
-      <button class="tab" data-tab="outbreaks"><span class="num">07</span>OUTBREAKS</button>
-      <button class="tab" data-tab="quakes"><span class="num">08</span>DISASTERS</button>
-      <button class="tab new" data-tab="cams"><span class="num">09</span>CAMERAS</button>
-      <button class="tab" data-tab="orbit"><span class="num">10</span>ORBIT</button>
-      <button class="tab" data-tab="defcon"><span class="num">11</span>DEFCON</button>
+      <button class="tab new" data-tab="markets"><span class="num">05</span>MARKETS</button>
+      <button class="tab" data-tab="outbreaks"><span class="num">06</span>OUTBREAKS</button>
+      <button class="tab" data-tab="quakes"><span class="num">07</span>DISASTERS</button>
+      <button class="tab new" data-tab="cams"><span class="num">08</span>CAMERAS</button>
+      <button class="tab" data-tab="orbit"><span class="num">09</span>ORBIT</button>
+      <button class="tab" data-tab="defcon"><span class="num">10</span>DEFCON</button>
     </nav>
     <div class="topbar-right">
       <div class="defcon-pill lvl-5" id="defconPill">
@@ -1529,9 +1595,21 @@
     </div>
     <div id="franceBody"></div>
   </div>
+  <nav class="mkt-nav" id="mktNav" aria-label="Markets views">
+    <button data-mv="globe">WORLD · LIVE</button>
+    <button data-mv="impact">NEWS IMPACT</button>
+    <button data-mv="long">LONG TERM · 5–10 Y</button>
+  </nav>
+  <div class="desk-stage" id="longStage">
+    <div class="desk-head">
+      <div class="desk-title">MARKETS <b>// LONG TERM</b><span class="desk-sub">How much value the largest listed companies created over 5–10 years — and the news around their biggest moves</span></div>
+      <div class="desk-meta" id="longMeta">—</div>
+    </div>
+    <div id="longBody"></div>
+  </div>
   <div class="desk-stage" id="impactStage">
     <div class="desk-head">
-      <div class="desk-title">IMPACT <b>// NEWS × MARKETS</b><span class="desk-sub">Listed companies named in the news (world, business, tech, entertainment, France) and how their stock moved since</span></div>
+      <div class="desk-title">MARKETS <b>// NEWS IMPACT</b><span class="desk-sub">Listed companies named in the news (world, business, tech, entertainment, France) and how their stock moved since</span></div>
       <div class="desk-meta" id="impactMeta">—</div>
     </div>
     <div id="impactBody"></div>
@@ -11973,13 +12051,19 @@ PELICAN-9
         resetBorderHighlight();
         if (searchEl) searchEl.value = '';
       }
-      document.body.classList.toggle('has-ticker', name === 'markets');
+      document.body.classList.toggle('has-ticker', name === 'markets' && (state.mktView || 'globe') === 'globe');
       document.body.classList.toggle('line-mode',  name === 'line');
       document.getElementById('lineStage').classList.toggle('on', name === 'line');
-      const isDesk = name === 'france' || name === 'impact';
-      document.body.classList.toggle('desk-mode', isDesk);
+      // MARKETS = one tab, three views: the live globe (crypto/forex/polymarket),
+      // NEWS IMPACT and LONG TERM (both full-screen desks).
+      const mv = name === 'markets' ? (state.mktView || 'globe') : null;
+      const isDesk = name === 'france' || (mv && mv !== 'globe');
+      document.body.classList.toggle('desk-mode', !!isDesk);
+      document.body.classList.toggle('mkt-tab', name === 'markets');
       document.getElementById('franceStage').classList.toggle('on', name === 'france');
-      document.getElementById('impactStage').classList.toggle('on', name === 'impact');
+      document.getElementById('impactStage').classList.toggle('on', mv === 'impact');
+      document.getElementById('longStage').classList.toggle('on', mv === 'long');
+      for (const b of document.querySelectorAll('#mktNav [data-mv]')) b.classList.toggle('on', b.dataset.mv === mv);
       for (const t of document.querySelectorAll('.tab')) {
         t.classList.toggle('active', t.dataset.tab === name);
       }
@@ -12020,11 +12104,14 @@ PELICAN-9
         case 'conflicts': renderFeedConflicts(); break;
         case 'quakes': renderFeedQuakes(); break;
         case 'orbit': renderFeedOrbit(); break;
-        case 'markets': renderFeedMarkets(); break;
+        case 'markets':
+          if (mv === 'impact') renderImpactDesk();
+          else if (mv === 'long') renderLongDesk();
+          else renderFeedMarkets();
+          break;
         case 'outbreaks': renderFeedOutbreaks(); break;
         case 'defcon': renderFeedDefcon(); break;
         case 'france': renderFranceDesk(); break;
-        case 'impact': renderImpactDesk(); break;
       }
       updateCount();
       // Snap back to Europe on every tab change (unless entering inspection)
@@ -12035,6 +12122,11 @@ PELICAN-9
       if (tabChanged && state.tab === 'wire') renderCountryList();
       drawMap();
     }
+    document.getElementById('mktNav').addEventListener('click', (e) => {
+      const b = e.target.closest('[data-mv]'); if (!b) return;
+      state.mktView = b.dataset.mv;
+      setTab('markets');
+    });
     document.getElementById('tabs').addEventListener('click', (e) => {
       const t = e.target.closest('.tab'); if (t) setTab(t.dataset.tab);
     });
@@ -14334,6 +14426,296 @@ PELICAN-9
       return `${d.getUTCFullYear()}${p(d.getUTCMonth() + 1)}${p(d.getUTCDate())}T${p(d.getUTCHours())}${p(d.getUTCMinutes())}${p(d.getUTCSeconds())}Z`;
     }
 
+    // ── LONG TERM: market-cap history (5–10 y) + the news behind big moves ──
+    // [Yahoo symbol, display name, Wikidata QID ('' = none), Hacker News search term, region]
+    const LT_UNIVERSE = [
+      ['AAPL', 'Apple', 'Q312', 'Apple', 'US'], ['MSFT', 'Microsoft', 'Q2283', 'Microsoft', 'US'], ['NVDA', 'Nvidia', 'Q182477', 'Nvidia', 'US'],
+      ['GOOGL', 'Alphabet', '', 'Google', 'US'], ['AMZN', 'Amazon', 'Q3884', 'Amazon', 'US'], ['META', 'Meta', 'Q380', 'Facebook', 'US'],
+      ['TSLA', 'Tesla', 'Q478214', 'Tesla', 'US'], ['AVGO', 'Broadcom', '', 'Broadcom', 'US'], ['NFLX', 'Netflix', 'Q116452644', 'Netflix', 'US'],
+      ['DIS', 'Disney', '', 'Disney', 'US'], ['JPM', 'JPMorgan', 'Q192314', 'JPMorgan', 'US'], ['V', 'Visa', 'Q328840', 'Visa', 'US'],
+      ['MA', 'Mastercard', 'Q489921', 'Mastercard', 'US'], ['WMT', 'Walmart', 'Q483551', 'Walmart', 'US'], ['COST', 'Costco', 'Q715583', 'Costco', 'US'],
+      ['LLY', 'Eli Lilly', 'Q632240', 'Eli Lilly', 'US'], ['UNH', 'UnitedHealth', '', 'UnitedHealth', 'US'], ['XOM', 'ExxonMobil', 'Q156238', 'Exxon', 'US'],
+      ['BA', 'Boeing', 'Q66', 'Boeing', 'US'], ['INTC', 'Intel', 'Q248', 'Intel', 'US'], ['AMD', 'AMD', 'Q128896', 'AMD', 'US'],
+      ['ORCL', 'Oracle', 'Q19900', 'Oracle', 'US'], ['CRM', 'Salesforce', '', 'Salesforce', 'US'], ['IBM', 'IBM', 'Q37156', 'IBM', 'US'],
+      ['ADBE', 'Adobe', 'Q11463', 'Adobe', 'US'], ['KO', 'Coca-Cola', '', 'Coca-Cola', 'US'], ['PEP', 'PepsiCo', 'Q334800', 'PepsiCo', 'US'],
+      ['MCD', "McDonald's", 'Q38076', "McDonald's", 'US'], ['NKE', 'Nike', 'Q483915', 'Nike', 'US'], ['SBUX', 'Starbucks', 'Q37158', 'Starbucks', 'US'],
+      // Berkshire and Alibaba: their Wikidata market-cap statements are wrong (off ×10 / ×2) → price-only.
+      ['UBER', 'Uber', 'Q780442', 'Uber', 'US'], ['PLTR', 'Palantir', '', 'Palantir', 'US'], ['BRK-B', 'Berkshire Hathaway', '', 'Berkshire', 'US'],
+      ['NVO', 'Novo Nordisk', 'Q818846', 'Novo Nordisk', 'EUROPE'], ['ASML', 'ASML', '', 'ASML', 'EUROPE'], ['MC.PA', 'LVMH', '', 'LVMH', 'EUROPE'],
+      ['RMS.PA', 'Hermès', 'Q843887', 'Hermes', 'EUROPE'], ['OR.PA', "L'Oréal", '', "L'Oreal", 'EUROPE'], ['TTE.PA', 'TotalEnergies', 'Q154037', 'TotalEnergies', 'EUROPE'],
+      ['AIR.PA', 'Airbus', '', 'Airbus', 'EUROPE'], ['SAN.PA', 'Sanofi', '', 'Sanofi', 'EUROPE'], ['SAP.DE', 'SAP', '', 'SAP', 'EUROPE'],
+      ['SIE.DE', 'Siemens', 'Q81230', 'Siemens', 'EUROPE'], ['NESN.SW', 'Nestlé', 'Q160746', 'Nestle', 'EUROPE'], ['NOVN.SW', 'Novartis', 'Q507154', 'Novartis', 'EUROPE'],
+      ['SHEL.L', 'Shell', '', 'Shell oil', 'EUROPE'], ['AZN.L', 'AstraZeneca', '', 'AstraZeneca', 'EUROPE'], ['RACE', 'Ferrari', '', 'Ferrari', 'EUROPE'],
+      ['TSM', 'TSMC', 'Q713418', 'TSMC', 'ASIA'], ['005930.KS', 'Samsung Electronics', '', 'Samsung', 'ASIA'], ['0700.HK', 'Tencent', '', 'Tencent', 'ASIA'],
+      ['BABA', 'Alibaba', '', 'Alibaba', 'ASIA'], ['7203.T', 'Toyota', 'Q53268', 'Toyota', 'ASIA'], ['SONY', 'Sony', 'Q41187', 'Sony', 'ASIA'],
+    ];
+    const monthKey = (unixS) => { const d = new Date(unixS * 1000); return d.getUTCFullYear() * 12 + d.getUTCMonth(); };
+    const keyFromDate = (iso) => { const [y, m] = iso.split('-').map(Number); return y * 12 + (m - 1); };
+
+    // Rebuild one company's monthly USD series. With a dated Wikidata market cap
+    // we get absolute caps (share count assumed constant from that anchor);
+    // without one, the series is the USD share price (relative moves only).
+    function ltBuildSeries([sym, name, qid, hn, region], q, fxSeries, caps) {
+      if (!q || q.error || !q.t?.length) return null;
+      let ccy = q.currency || 'USD', factor = 1;
+      if (ccy === 'GBp' || ccy === 'GBX') { ccy = 'GBP'; factor = 0.01; }
+      const fxAt = (cur, mk) => cur === 'USD' ? 1 : (fxSeries[cur]?.get(mk) ?? fxSeries[cur]?.nearest?.(mk) ?? null);
+      const pts = [];
+      for (let i = 0; i < q.t.length; i++) {
+        const mk = monthKey(q.t[i]), fx = fxAt(ccy, mk);
+        if (q.c[i] == null || fx == null) continue;
+        pts.push({ mk, t: q.t[i], usd: q.c[i] * factor * fx });
+      }
+      // Drop isolated data glitches (a month ×5 or ÷5 vs both neighbours).
+      for (let i = pts.length - 2; i >= 1; i--) {
+        const r1 = pts[i].usd / pts[i - 1].usd, r2 = pts[i + 1].usd / pts[i].usd;
+        if ((r1 > 5 && r2 < 0.2) || (r1 < 0.2 && r2 > 5)) pts.splice(i, 1);
+      }
+      if (pts.length < 24) return null;
+      // Each dated cap implies a (split-adjusted) share count; keep anchors that
+      // agree with the median (±35%) and use the most recent of those.
+      const implied = [];
+      for (const a of caps[qid] || []) {
+        const mk = keyFromDate(a.date);
+        if (mk < pts[0].mk) continue;
+        const p = pts.find(x => x.mk === mk) || pts.filter(x => x.mk <= mk).pop();
+        const fx = fxAt(a.unit, mk);
+        if (p && fx != null) implied.push({ a, mk, shares: (a.cap * fx) / p.usd, capUsd: a.cap * fx });
+      }
+      let shares = null, anchor = null;
+      if (implied.length) {
+        const med = [...implied].sort((x, y) => x.shares - y.shares)[implied.length >> 1].shares;
+        const ok = implied.filter(x => Math.abs(x.shares / med - 1) <= 0.35).sort((x, y) => x.mk - y.mk);
+        const pick = ok[ok.length - 1];
+        if (pick) { shares = pick.shares; anchor = { ...pick.a, capUsd: pick.capUsd, agreeing: ok.length, total: implied.length }; }
+      }
+      const series = pts.map(p => ({ ...p, v: shares ? p.usd * shares : p.usd }));
+      return { sym, name, qid, hn, region, ccy, absolute: !!shares, anchor, series };
+    }
+
+    function ltMetrics(row, years) {
+      const s = row.series.slice(-(years * 12 + 1));
+      const first = s[0], last = s[s.length - 1];
+      const mult = last.v / first.v;
+      const yrs = (last.mk - first.mk) / 12;
+      const cagr = Math.pow(mult, 1 / Math.max(0.5, yrs)) - 1;
+      // Max drawdown (peak → trough) on the window.
+      let peak = s[0], dd = 0, ddFrom = s[0], ddTo = s[0];
+      for (const p of s) { if (p.v > peak.v) peak = p; const d = p.v / peak.v - 1; if (d < dd) { dd = d; ddFrom = peak; ddTo = p; } }
+      // Key moments: largest non-overlapping 3-month moves (|move| ≥ 15%).
+      const wins = [];
+      for (let i = 3; i < s.length; i++) wins.push({ from: s[i - 3], to: s[i], r: s[i].v / s[i - 3].v - 1 });
+      wins.sort((a, b) => Math.abs(b.r) - Math.abs(a.r));
+      const moments = [];
+      for (const w of wins) {
+        if (Math.abs(w.r) < 0.15 || moments.length >= 5) break;
+        if (moments.some(m => !(w.to.mk <= m.from.mk || w.from.mk >= m.to.mk))) continue;
+        if (w.r < 0 && moments.filter(m => m.r < 0).length >= 2) continue;
+        moments.push(w);
+      }
+      moments.sort((a, b) => a.from.mk - b.from.mk);
+      return { s, first, last, mult, cagr, added: row.absolute ? last.v - first.v : null, dd, ddFrom, ddTo, moments, yrs };
+    }
+
+    const ltState = { status: 'idle', rows: [], years: 10, sort: 'added', region: 'ALL', sel: null, log: false, hn: new Map(), err: null };
+    const fmtUsd = (v) => v == null ? '—' : Math.abs(v) >= 1e12 ? `$${(v / 1e12).toFixed(2)}T` : Math.abs(v) >= 1e9 ? `$${(v / 1e9).toFixed(Math.abs(v) >= 1e11 ? 0 : 1)}B` : `$${(v / 1e6).toFixed(0)}M`;
+    const fmtMonth = (t) => new Date(t * 1000).toLocaleDateString('en-GB', { month: 'short', year: 'numeric', timeZone: 'UTC' });
+
+    async function loadLongTerm() {
+      if (ltState.status !== 'idle') return;
+      if (!API_PROXY) { ltState.status = 'error'; ltState.err = 'needs the Worker (API_PROXY)'; return; }
+      ltState.status = 'loading';
+      try {
+        const syms = LT_UNIVERSE.map(u => u[0]);
+        const quotes = {};
+        const getQuotes = async (list) => {
+          for (let i = 0; i < list.length; i += 25) {
+            const j = await (await fetch(`${API_PROXY}/quotes?range=10y&symbols=${list.slice(i, i + 25).map(encodeURIComponent).join(',')}`)).json();
+            for (const q of j.quotes || []) quotes[q.symbol] = q;
+          }
+        };
+        const [, caps] = await Promise.all([
+          getQuotes(syms),
+          fetch(`${API_PROXY}/caps?ids=${LT_UNIVERSE.map(u => u[2]).filter(Boolean).join(',')}`).then(r => r.ok ? r.json() : {}).catch(() => ({})),
+        ]);
+        const ccys = new Set();
+        for (const s of syms) { const c = quotes[s]?.currency; if (c) ccys.add(c === 'GBp' || c === 'GBX' ? 'GBP' : c); }
+        for (const v of Object.values(caps)) for (const a of v) ccys.add(a.unit);
+        ccys.delete('USD');
+        const fxSyms = [...ccys].map(c => `${c}USD=X`);
+        await getQuotes(fxSyms);
+        const fx = {};
+        for (const c of ccys) {
+          const q = quotes[`${c}USD=X`]; if (!q?.t) continue;
+          const m = new Map(); q.t.forEach((t, i) => { if (q.c[i] != null) m.set(monthKey(t), q.c[i]); });
+          m.nearest = (mk) => { let best = null, bd = 1e9; for (const [k, v] of m) { const d = Math.abs(k - mk); if (d < bd) { bd = d; best = v; } } return best; };
+          fx[c] = m;
+        }
+        ltState.rows = LT_UNIVERSE.map(u => ltBuildSeries(u, quotes[u[0]], fx, caps)).filter(Boolean);
+        ltState.status = 'ready';
+      } catch (e) { ltState.status = 'error'; ltState.err = String(e.message || e); }
+    }
+
+    // Small single-series sparkline (no axes) for the leaderboard.
+    function ltSpark(s, w = 120, h = 28) {
+      const vs = s.map(p => p.v), lo = Math.min(...vs), hi = Math.max(...vs);
+      const d = s.map((p, i) => `${i ? 'L' : 'M'}${(i / (s.length - 1) * w).toFixed(1)},${(h - 2 - (p.v - lo) / (hi - lo || 1) * (h - 4)).toFixed(1)}`).join('');
+      return `<svg class="lt-spark" viewBox="0 0 ${w} ${h}" width="${w}" height="${h}" aria-hidden="true"><path d="${d}"/></svg>`;
+    }
+
+    // Main chart: market cap (or USD price) over the window; numbered markers on
+    // the key moments; crosshair + tooltip on hover.
+    function ltChart(row, m) {
+      const W = 640, H = 260, L = 58, R = 12, T = 12, B = 26;
+      const s = m.s, n = s.length;
+      const log = ltState.log;
+      const vs = s.map(p => p.v), lo = Math.min(...vs), hi = Math.max(...vs);
+      const f = log ? Math.log : (x) => x;
+      const y0 = f(log ? lo : Math.min(0, lo)), y1 = f(hi);
+      const X = (i) => L + (i / (n - 1)) * (W - L - R);
+      const Y = (v) => T + (1 - (f(v) - y0) / ((y1 - y0) || 1)) * (H - T - B);
+      const line = s.map((p, i) => `${i ? 'L' : 'M'}${X(i).toFixed(1)},${Y(p.v).toFixed(1)}`).join('');
+      const area = `${line}L${X(n - 1).toFixed(1)},${(H - B)}L${X(0).toFixed(1)},${H - B}Z`;
+      // y ticks
+      const ticks = [];
+      if (log) { for (let e = Math.floor(Math.log10(lo)); e <= Math.ceil(Math.log10(hi)); e++) for (const k of [1, 3]) { const v = k * 10 ** e; if (v >= lo * 0.98 && v <= hi * 1.02) ticks.push(v); } }
+      else { const step = 10 ** Math.floor(Math.log10(hi / 4 || 1)); const st = [1, 2, 2.5, 5, 10].map(k => k * step).find(k => hi / k <= 5) || step * 10; for (let v = 0; v <= hi * 1.001; v += st) ticks.push(v); }
+      const fmtTick = (v) => row.absolute ? fmtUsd(v) : `$${v >= 100 ? v.toFixed(0) : v.toFixed(v >= 10 ? 1 : 2)}`;
+      // x ticks: January of each year
+      const xt = s.map((p, i) => [p, i]).filter(([p]) => new Date(p.t * 1000).getUTCMonth() === 0);
+      const idx = (p) => s.indexOf(p);
+      const marks = m.moments.map((mo, k) => ({ k: k + 1, i: idx(mo.to), mo }));
+      return `<div class="lt-chart-wrap"><svg class="lt-chart" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" role="img"
+          aria-label="${escapeHtml(row.name)} ${row.absolute ? 'market capitalisation' : 'share price'} over ${ltState.years} years">
+        ${ticks.map(v => `<line class="grid" x1="${L}" x2="${W - R}" y1="${Y(v).toFixed(1)}" y2="${Y(v).toFixed(1)}"/><text class="ytk" x="${L - 6}" y="${(Y(v) + 3).toFixed(1)}">${fmtTick(v)}</text>`).join('')}
+        ${xt.map(([p, i]) => `<text class="xtk" x="${X(i).toFixed(1)}" y="${H - 8}">${new Date(p.t * 1000).getUTCFullYear()}</text>`).join('')}
+        ${m.moments.map(mo => `<rect class="mo-band ${mo.r > 0 ? 'up' : 'down'}" x="${X(idx(mo.from)).toFixed(1)}" y="${T}" width="${(X(idx(mo.to)) - X(idx(mo.from))).toFixed(1)}" height="${H - T - B}"/>`).join('')}
+        <path class="area" d="${area}"/><path class="ln" d="${line}"/>
+        ${marks.map(k => `<g class="mk"><circle cx="${X(k.i).toFixed(1)}" cy="${Y(s[k.i].v).toFixed(1)}" r="8"/><text x="${X(k.i).toFixed(1)}" y="${(Y(s[k.i].v) + 3.5).toFixed(1)}">${k.k}</text></g>`).join('')}
+        <line class="cross" x1="0" x2="0" y1="${T}" y2="${H - B}" visibility="hidden"/>
+      </svg><div class="lt-tip" hidden></div></div>`;
+    }
+    function wireLtChart(row, m) {
+      const wrap = document.querySelector('.lt-chart-wrap'); if (!wrap) return;
+      const svg = wrap.querySelector('svg'), tip = wrap.querySelector('.lt-tip'), cross = svg.querySelector('.cross');
+      const s = m.s, n = s.length, W = 640, L = 58, R = 12;
+      svg.addEventListener('pointermove', (e) => {
+        const b = svg.getBoundingClientRect();
+        const vx = (e.clientX - b.left) / b.width * W;
+        const i = Math.max(0, Math.min(n - 1, Math.round((vx - L) / (W - L - R) * (n - 1))));
+        const x = L + (i / (n - 1)) * (W - L - R);
+        cross.setAttribute('x1', x); cross.setAttribute('x2', x); cross.setAttribute('visibility', 'visible');
+        const p = s[i], chg = p.v / s[0].v;
+        tip.hidden = false;
+        tip.innerHTML = `<b>${fmtMonth(p.t)}</b> · ${row.absolute ? fmtUsd(p.v) : '$' + p.v.toFixed(2)} · ×${chg.toFixed(2)} vs start`;
+        tip.style.left = Math.min(b.width - 230, Math.max(0, (x / W) * b.width - 115)) + 'px';
+      });
+      svg.addEventListener('pointerleave', () => { cross.setAttribute('visibility', 'hidden'); tip.hidden = true; });
+    }
+
+    // Headlines from the time of each key moment — Hacker News archive (Algolia):
+    // keyless, searchable by date, links to the original articles. Tech-leaning,
+    // so some non-tech moments return nothing.
+    async function ltHeadlines(row, mo) {
+      const key = `${row.sym}:${mo.from.mk}:${mo.to.mk}`;
+      if (ltState.hn.has(key)) return ltState.hn.get(key);
+      const a = mo.from.t - 15 * 86400, b = mo.to.t + 20 * 86400;
+      const term = row.hn;
+      const url = `https://hn.algolia.com/api/v1/search?query=${encodeURIComponent(term)}&tags=story&hitsPerPage=12&numericFilters=${encodeURIComponent(`created_at_i>${a},created_at_i<${b}`)}`;
+      const p = fetch(url).then(r => r.json()).then(j => {
+        const first = deaccent(term.split(' ')[0].toLowerCase());
+        return (j.hits || []).filter(h => h.title && deaccent(h.title.toLowerCase()).includes(first))
+          .sort((x, y) => (y.points || 0) - (x.points || 0)).slice(0, 3)
+          .map(h => ({ title: h.title, url: h.url || `https://news.ycombinator.com/item?id=${h.objectID}`, domain: h.url ? new URL(h.url).hostname.replace(/^www\./, '') : 'news.ycombinator.com', date: h.created_at?.slice(0, 10), points: h.points }));
+      }).catch(() => []);
+      ltState.hn.set(key, p);
+      return p;
+    }
+
+    async function renderLongDesk() {
+      const el = document.getElementById('longBody'), head = document.getElementById('longMeta');
+      if (ltState.status === 'idle') { el.innerHTML = `<div class="desk-empty">Loading 10 years of monthly prices for ${LT_UNIVERSE.length} large companies, market-cap anchors (Wikidata) and FX…</div>`; await loadLongTerm(); }
+      if (ltState.status === 'loading') return;
+      if (ltState.status === 'error') { el.innerHTML = `<div class="desk-empty">Long-term data unavailable: ${escapeHtml(ltState.err)}</div>`; return; }
+      const Y = ltState.years;
+      const rows = ltState.rows.filter(r => ltState.region === 'ALL' || r.region === ltState.region).map(r => ({ r, m: ltMetrics(r, Y) }));
+      const key = { added: x => x.m.added ?? -Infinity, mult: x => x.m.mult, cagr: x => x.m.cagr, cap: x => x.r.absolute ? x.m.last.v : -Infinity }[ltState.sort];
+      rows.sort((a, b) => key(b) - key(a));
+      if (!ltState.sel || !rows.some(x => x.r === ltState.sel)) ltState.sel = rows[0]?.r || null;
+      const maxAdd = Math.max(1, ...rows.map(x => Math.abs(x.m.added || 0)));
+      head.innerHTML = `<b>${ltState.rows.length}</b> companies · <b>${ltState.rows.filter(r => r.absolute).length}</b> with market-cap anchors · USD`;
+      const sortBtn = (k, lbl) => `<button class="desk-chip${ltState.sort === k ? ' on' : ''}" data-sort="${k}">${lbl}</button>`;
+      el.innerHTML = `
+        <div class="desk-toolbar">
+          <span class="lt-seg">${[5, 10].map(y => `<button class="desk-chip${Y === y ? ' on' : ''}" data-years="${y}">${y} YEARS</button>`).join('')}</span>
+          <span class="lt-seg">${['ALL', 'US', 'EUROPE', 'ASIA'].map(g => `<button class="desk-chip${ltState.region === g ? ' on' : ''}" data-region="${g}">${{ ALL: 'All', US: 'US', EUROPE: 'Europe', ASIA: 'Asia' }[g]}</button>`).join('')}</span>
+          <span class="lt-seg">Sort: ${sortBtn('added', 'Value created')}${sortBtn('mult', 'Multiple')}${sortBtn('cagr', 'CAGR')}${sortBtn('cap', 'Market cap')}</span>
+        </div>
+        <div class="lt-grid">
+          <div class="lt-table-wrap"><table class="lt-table">
+            <thead><tr><th>#</th><th>Company</th><th class="num">Mkt cap</th><th class="num">×</th><th class="num">CAGR</th><th>Value created</th><th>${Y} y</th></tr></thead>
+            <tbody>${rows.map((x, i) => {
+              const a = x.m.added, w = a == null ? 0 : Math.abs(a) / maxAdd * 100;
+              return `<tr class="${x.r === ltState.sel ? 'on' : ''}" data-sym="${escapeHtml(x.r.sym)}" tabindex="0">
+                <td class="rk">${i + 1}</td>
+                <td><b>${escapeHtml(x.r.name)}</b><small>${escapeHtml(x.r.sym)} · ${x.r.region === 'EUROPE' ? 'EU' : x.r.region}${x.r.absolute ? '' : ' · price only'}</small></td>
+                <td class="num">${x.r.absolute ? fmtUsd(x.m.last.v) : '—'}</td>
+                <td class="num">${x.m.mult >= 10 ? x.m.mult.toFixed(0) : x.m.mult.toFixed(1)}×</td>
+                <td class="num">${(x.m.cagr * 100).toFixed(1)}%</td>
+                <td class="bar">${a == null ? '<span class="na">n/a</span>' : `<span class="b ${a >= 0 ? 'pos' : 'neg'}" style="width:${w.toFixed(1)}%"></span><span class="bv">${a >= 0 ? '+' : '−'}${fmtUsd(Math.abs(a))}</span>`}</td>
+                <td>${ltSpark(x.m.s)}</td></tr>`; }).join('')}</tbody></table></div>
+          <section class="lt-detail" id="ltDetail"></section>
+        </div>
+        <div class="desk-note" style="margin-top:14px">Method: monthly closes (Yahoo) converted to USD. Market cap = price × share count implied by the latest consistent Wikidata market-cap statement (constant share count assumed — buybacks/issuance not modelled). "Price only" = no reliable anchor; multiples and CAGR still exact for the share price. Key moments = largest 3-month moves; headlines are archived coverage from that period (Hacker News), shown as context, not proof of cause.</div>`;
+
+      el.querySelectorAll('[data-years]').forEach(b => b.addEventListener('click', () => { ltState.years = +b.dataset.years; renderLongDesk(); }));
+      el.querySelectorAll('[data-region]').forEach(b => b.addEventListener('click', () => { ltState.region = b.dataset.region; renderLongDesk(); }));
+      el.querySelectorAll('[data-sort]').forEach(b => b.addEventListener('click', () => { ltState.sort = b.dataset.sort; renderLongDesk(); }));
+      el.querySelectorAll('tr[data-sym]').forEach(tr => {
+        const pick = () => { ltState.sel = ltState.rows.find(r => r.sym === tr.dataset.sym); el.querySelectorAll('tr.on').forEach(x => x.classList.remove('on')); tr.classList.add('on'); renderLtDetail(); };
+        tr.addEventListener('click', pick);
+        tr.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pick(); } });
+      });
+      renderLtDetail();
+    }
+
+    function renderLtDetail() {
+      const el = document.getElementById('ltDetail'); const row = ltState.sel; if (!el || !row) return;
+      const m = ltMetrics(row, ltState.years);
+      const comp = typeof COMPANIES !== 'undefined' ? COMPANIES.find(c => c[0] === row.sym) : null;
+      const pool = [...state.articles, ...(deskState.biz.stories || []).map(s => s.lead), ...(deskState.fr.stories || []).map(s => s.lead)];
+      const today = comp ? pool.filter(a => comp[2].test(a.title || '')).slice(0, 4) : [];
+      const tile = (k, v, sub) => `<div class="lt-tile"><span class="k">${k}</span><span class="v">${v}</span>${sub ? `<span class="s">${sub}</span>` : ''}</div>`;
+      el.innerHTML = `
+        <div class="lt-dh"><div><h3>${escapeHtml(row.name)}</h3><small>${escapeHtml(row.sym)} · ${row.absolute ? `market cap, USD · anchor ${escapeHtml(row.anchor.date)} (Wikidata)` : 'share price in USD (no reliable market-cap anchor)'}</small></div>
+          <button class="desk-chip${ltState.log ? ' on' : ''}" id="ltLog">LOG SCALE</button></div>
+        <div class="lt-tiles">
+          ${tile(row.absolute ? 'Now' : 'Price now', row.absolute ? fmtUsd(m.last.v) : '$' + m.last.v.toFixed(2), fmtMonth(m.last.t))}
+          ${tile(`${ltState.years} y ago`, row.absolute ? fmtUsd(m.first.v) : '$' + m.first.v.toFixed(2), fmtMonth(m.first.t))}
+          ${tile('Multiple', `×${m.mult.toFixed(m.mult >= 10 ? 0 : 2)}`, `${(m.cagr * 100).toFixed(1)}% a year`)}
+          ${tile('Worst drawdown', `${(m.dd * 100).toFixed(0)}%`, `${fmtMonth(m.ddFrom.t)} → ${fmtMonth(m.ddTo.t)}`)}
+        </div>
+        ${ltChart(row, m)}
+        <h4 class="lt-h">WHY IT MOVED · KEY MOMENTS</h4>
+        <div class="lt-moments">${m.moments.length ? m.moments.map((mo, k) => `
+          <div class="lt-mo ${mo.r > 0 ? 'up' : 'down'}">
+            <div class="mh"><span class="n">${k + 1}</span>${fmtMonth(mo.from.t)} → ${fmtMonth(mo.to.t)}<span class="r">${mo.r > 0 ? '▲ +' : '▼ −'}${Math.abs(mo.r * 100).toFixed(0)}%</span>
+              ${row.absolute ? `<span class="d">${mo.r > 0 ? '+' : '−'}${fmtUsd(Math.abs(mo.to.v - mo.from.v))}</span>` : ''}</div>
+            <div class="hl" data-k="${k}"><span class="desk-note">searching the news of the time…</span></div>
+          </div>`).join('') : '<div class="desk-empty">No 3-month move larger than 15% in this window — steady compounding.</div>'}</div>
+        ${today.length ? `<h4 class="lt-h">IN THE NEWS NOW</h4><div class="lt-today">${today.map(a => `<button class="lt-now" data-url="${escapeHtml(a.url)}">${escapeHtml(a.title)}<small>${escapeHtml(a.domain || '')}${articleAge(a) ? ' · ' + articleAge(a) + ' ago' : ''}</small></button>`).join('')}</div>` : ''}`;
+      wireLtChart(row, m);
+      document.getElementById('ltLog').addEventListener('click', () => { ltState.log = !ltState.log; renderLtDetail(); });
+      el.querySelectorAll('.lt-now').forEach(b => b.addEventListener('click', () => { const a = pool.find(x => x.url === b.dataset.url); if (a) openArticle({ ...a }); }));
+      m.moments.forEach(async (mo, k) => {
+        const hits = await ltHeadlines(row, mo);
+        if (ltState.sel !== row) return;
+        const box = el.querySelector(`.hl[data-k="${k}"]`); if (!box) return;
+        box.innerHTML = hits.length ? hits.map(h => `<a class="lt-hl" href="${escapeHtml(h.url)}" target="_blank" rel="noopener">${escapeHtml(h.title)}<small>${escapeHtml(h.domain)} · ${escapeHtml(h.date || '')}</small></a>`).join('')
+          : `<span class="desk-note">No archived headline matched “${escapeHtml(row.hn)}” in this period.</span>`;
+      });
+    }
+
     // setInterval that skips ticks while the tab is hidden (no point burning
     // battery + third-party API quota on an invisible dashboard). `catchUp`
     // pollers also fire once immediately when the tab becomes visible again.
@@ -14367,7 +14749,7 @@ PELICAN-9
         // stock prices every 5 min (the Worker caches quotes for 5 min).
         everyVisible(() => {
           if (state.tab === 'france') loadFranceFeed(true).then(renderFranceDesk);
-          if (state.tab === 'impact') loadDeskFeed('biz', true).then(renderImpactDesk);
+          if (state.tab === 'markets' && state.mktView === 'impact') loadDeskFeed('biz', true).then(renderImpactDesk);
         }, 5 * 60 * 1000);
         _catchUp.push(() => { if (Date.now() - lastNewsRefresh > NEWS_EVERY) newsTick(); });
 
