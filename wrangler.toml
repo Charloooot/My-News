@@ -21,9 +21,8 @@ compatibility_date = "2024-11-01"
 [triggers]
 crons = ["*/15 * * * *"]
 
-# Recommended: uncomment after `wrangler kv namespace create NEWS`. Left
-# commented, the Worker still deploys and falls back to the edge cache
-# (works, but each region rebuilds its own copy).
-# [[kv_namespaces]]
-# binding = "NEWS"
-# id = "PASTE_KV_NAMESPACE_ID_HERE"
+# Merged news feed store (created with `wrangler kv namespace create NEWS`).
+# Remove this block to fall back to the edge cache (works, but per-region).
+[[kv_namespaces]]
+binding = "NEWS"
+id = "9849728f8081480f8fd5cb189b48186e"

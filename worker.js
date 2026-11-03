@@ -92,7 +92,9 @@ function peekGenerated(txt) {
 }
 
 async function refreshNews(env) {
-  const data = await collectNews(env);
+  let previous = null;
+  try { const st = await readStoredNews(env); if (st) previous = JSON.parse(st.txt); } catch {}
+  const data = await collectNews(env, previous);
   // Never replace a good feed with an empty one (all sources down at once).
   if (!data.count) return null;
   const txt = JSON.stringify(data);

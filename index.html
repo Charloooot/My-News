@@ -9250,7 +9250,7 @@ PELICAN-9
     // article extraction route through it, giving server-side shared caching and
     // reliable CORS — which removes per-visitor rate limiting entirely. This is
     // the most robust setup; the direct/public-proxy path below is the fallback.
-    const API_PROXY = '';
+    const API_PROXY = 'https://wrld-news.mat-charles13-d43.workers.dev';
 
     // GDELT throttles aggressively per-IP (1 req / 5s, and often returns a 429 /
     // plain-text "Please limit requests…" even on the first hit). We try the API

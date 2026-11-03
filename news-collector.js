@@ -61,17 +61,34 @@ const NOISE = /^(latest news bulletin|news ?bulletin|morning briefing|evening br
 const MAX_ARTICLES = 1800;
 
 // ───────────────────────────────────────────────────────────────────────────
-export async function collectNews(env = {}) {
+// `previous` = the last stored feed. When a source fails this round (GDELT
+// throttles Cloudflare's shared egress IPs, sites have hiccups), its items
+// from the previous run are carried over instead of vanishing for 15 min.
+const CARRY_MAX_AGE_MS = 6 * 3600e3;
+
+export async function collectNews(env = {}, previous = null) {
   const started = Date.now();
   const report = {};
+  const prevAge = previous?.generated ? Date.now() - Date.parse(previous.generated) : Infinity;
+  const prevByFeed = new Map();
+  if (prevAge < CARRY_MAX_AGE_MS) {
+    for (const a of previous.articles || []) {
+      if (!a.feed) continue;
+      if (!prevByFeed.has(a.feed)) prevByFeed.set(a.feed, []);
+      prevByFeed.get(a.feed).push(a);
+    }
+  }
   const track = async (name, fn) => {
     try {
       const items = await fn();
+      for (const a of items) a.feed = name;
       report[name] = { ok: true, count: items.length };
       return items;
     } catch (e) {
-      report[name] = { ok: false, count: 0, error: String(e && e.message || e).slice(0, 160) };
-      return [];
+      const carried = prevByFeed.get(name) || [];
+      report[name] = { ok: false, count: carried.length, carried: carried.length > 0,
+        error: String(e && e.message || e).slice(0, 160) };
+      return carried;
     }
   };
 
