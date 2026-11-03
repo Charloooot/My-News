@@ -156,7 +156,7 @@
   body.map-mode .overlay { display: none; }
 
   /* Leaflet visual tuning to match holographic look */
-  .leaflet-container { background: #02060e; font-family: ui-monospace, "SF Mono", Menlo, monospace; }
+  .leaflet-container { background: #0c0c0c; font-family: ui-monospace, "SF Mono", Menlo, monospace; }
   .leaflet-control-attribution { background: rgba(2,6,14,0.6) !important; color: var(--dim) !important; font-size: 9px !important; }
   .leaflet-control-attribution a { color: var(--cyan) !important; }
   .leaflet-control-zoom a { background: rgba(2,6,14,0.85) !important; color: var(--cyan) !important; border: 1px solid var(--line2) !important; }
@@ -13559,20 +13559,51 @@ PELICAN-9
         center: [40, 10],
         zoom: 3,
         minZoom: 2,
-        maxZoom: 12,
+        maxZoom: 15,             // vector tiles stay sharp up close
         worldCopyJump: false,
         zoomControl: true,
         attributionControl: true,
       });
-      // CARTO basemaps now demand an API key (tiles come back watermarked), so
-      // use Esri's keyless Dark Gray Canvas — same dark look, labels included.
+      // Basemap = the same vector map as the CAMERAS tab (MapLibre GL +
+      // OpenFreeMap dark style, keyless), rendered inside Leaflet by the
+      // official maplibre-gl-leaflet bridge so every existing Leaflet overlay
+      // (news, conflicts, quakes…) keeps working unchanged. Esri's raster
+      // Dark Gray Canvas shows first and stays as the fallback.
       tileLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
         maxZoom: 16,
         attribution: 'Tiles &copy; Esri &mdash; Esri, HERE, Garmin, &copy; OpenStreetMap contributors',
       }).addTo(leafletMap);
+      useVectorBasemap();
       mapOverlay = L.layerGroup().addTo(leafletMap);
       // Re-render overlays when zoom changes (affects icon sizes / cluster spread)
       leafletMap.on('zoomend', () => drawMap());
+    }
+
+    function loadScriptOnce(src) {
+      return new Promise((resolve, reject) => {
+        if (document.querySelector(`script[src="${src}"]`)) return resolve();
+        const el = document.createElement('script');
+        el.src = src; el.onload = () => resolve(); el.onerror = () => reject(new Error('failed: ' + src));
+        document.head.appendChild(el);
+      });
+    }
+    async function useVectorBasemap() {
+      try {
+        await loadMapLibre();   // shared with the CAMERAS tab
+        await loadScriptOnce('https://cdn.jsdelivr.net/npm/@maplibre/maplibre-gl-leaflet@0.1.3/leaflet-maplibre-gl.js');
+        if (!L.maplibreGL) throw new Error('bridge missing');
+        const vector = L.maplibreGL({
+          style: 'https://tiles.openfreemap.org/styles/dark',
+          attribution: '<a href="https://openfreemap.org" target="_blank" rel="noopener">OpenFreeMap</a> &copy; <a href="https://www.openmaptiles.org/" target="_blank" rel="noopener">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>',
+        });
+        vector.addTo(leafletMap);
+        // Swap only once the vector style has actually rendered (no blank flash).
+        const gl = vector.getMaplibreMap?.();
+        const swap = () => { if (tileLayer && tileLayer !== vector) leafletMap.removeLayer(tileLayer); tileLayer = vector; };
+        if (gl && !gl.loaded()) gl.once('load', swap); else swap();
+      } catch (e) {
+        console.warn('vector basemap unavailable, keeping raster', e);
+      }
     }
 
     // Kept as a shim so existing callers (mapState references) compile;
