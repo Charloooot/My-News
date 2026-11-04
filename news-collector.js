@@ -259,6 +259,22 @@ export async function collectBusiness(env = {}, previous = null) {
 // ── Stock quotes (Yahoo Finance chart API, no key) ─────────────────────────
 // Compact series for the IMPACT tab: [{ symbol, name, currency, tz, price,
 // prevClose, t: [unix s], c: [close] }]. Nulls (halts, gaps) are dropped.
+// Listed companies matching a name or ticker (Yahoo's public search, no key).
+export async function searchCompanies(query) {
+  const url = `https://query2.finance.yahoo.com/v1/finance/search?q=${encodeURIComponent(query)}&quotesCount=15&newsCount=0&listsCount=0`;
+  const r = await fetch(url, { headers: { 'User-Agent': 'Mozilla/5.0' } });
+  if (!r.ok) throw new Error('yahoo search ' + r.status);
+  const j = await r.json();
+  return (j.quotes || [])
+    .filter(q => q.quoteType === 'EQUITY' && q.isYahooFinance !== false && /^[A-Z0-9.^=-]{1,16}$/.test(q.symbol || ''))
+    .map(q => ({
+      symbol: q.symbol,
+      name: String(q.longname || q.shortname || q.symbol).replace(/\s+/g, ' ').trim(),
+      exchange: q.exchange || '',
+      exchDisp: q.exchDisp || q.exchange || '',
+    }));
+}
+
 export async function fetchQuote(symbol, range = '5d', interval = '15m') {
   const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?range=${range}&interval=${interval}&includePrePost=false`;
   const r = await fetch(url, { headers: { 'User-Agent': 'Mozilla/5.0 (wrld-news)', Accept: 'application/json' } });

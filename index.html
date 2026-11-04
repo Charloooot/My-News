@@ -766,7 +766,35 @@
   .lt-hl small .biz { color: var(--yellow); font-weight: 400; letter-spacing: 0.08em; }
   .lt-today { display: flex; flex-direction: column; gap: 6px; }
   .lt-now { text-align: left; font-size: 11px; color: var(--paper); line-height: 1.4; } .lt-now:hover { color: var(--cyan); }
-  @media (max-width: 1250px) { .lt-grid { grid-template-columns: 1fr; } .lt-detail { position: static; max-height: none; } }
+  .cty-search { position: relative; flex: 1 1 280px; max-width: 460px; }
+  .cty-search input { width: 100%; padding: 8px 12px; font: inherit; font-size: 12px; color: var(--paper); background: rgba(5,11,24,0.9); border: 1px solid var(--line2); }
+  .cty-search input:focus { outline: none; border-color: var(--cyan); box-shadow: 0 0 10px rgba(0,240,255,0.2); }
+  .cty-search ul { position: absolute; z-index: 5; left: 0; right: 0; top: 100%; margin: 2px 0 0; padding: 0; list-style: none; background: rgba(5,11,24,0.98); border: 1px solid var(--line2); }
+  .cty-search li { display: flex; align-items: baseline; gap: 8px; padding: 8px 12px; font-size: 12px; color: var(--paper); cursor: pointer; }
+  .cty-search li small { color: var(--dim); font-size: 10px; } .cty-search li em { margin-left: auto; font-style: normal; font-size: 9px; letter-spacing: 0.08em; color: var(--dim); }
+  .cty-search li.on, .cty-search li:hover { background: rgba(0,240,255,0.14); } .cty-search li.none { color: var(--dim); cursor: default; background: none; }
+  .cty-title { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px; margin-bottom: 4px; }
+  .cty-title h2 { font-size: 22px; color: var(--paper); margin: 0; } .cty-sub { font-size: 11px; color: var(--dim); }
+  .cty-sectors span { display: inline-block; margin-right: 4px; padding: 1px 7px; font-size: 10px; color: var(--cyan); border: 1px solid var(--line2); }
+  .cty-open { padding: 0; font: inherit; font-size: 10px; color: var(--cyan); background: none; border: 0; cursor: pointer; } .cty-open:hover { text-decoration: underline; }
+  .cty-grid.solo { grid-template-columns: minmax(0, 1fr); }
+  .cty-tiles { grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); }
+  .cty-tiles .lt-tile .s { line-height: 1.4; }
+  .cty-chg.up { color: var(--green); } .cty-chg.down { color: var(--red); } .cty-na { color: var(--dim); }
+  .cty-tabs { display: flex; gap: 2px; margin: 16px 0 14px; border-bottom: 1px solid var(--line2); }
+  .cty-tabs button { padding: 9px 18px; font-size: 11px; letter-spacing: 0.14em; color: var(--dim); border-bottom: 2px solid transparent; margin-bottom: -1px; }
+  .cty-tabs button:hover { color: var(--paper); } .cty-tabs button.on { color: var(--paper); border-bottom-color: var(--cyan); }
+  .cty-tabs button:focus-visible, .cty-search li:focus-visible { outline: 2px solid var(--cyan); outline-offset: -2px; }
+  .cty-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 560px); gap: 22px; align-items: start; }
+  .cty-chart-box { border: 1px solid var(--line); background: rgba(5,11,24,0.75); padding: 12px 14px; min-width: 0; }
+  .cty-chart-head { font-size: 12px; color: var(--dim); margin-bottom: 8px; font-variant-numeric: tabular-nums; } .cty-chart-head b { color: var(--paper); font-size: 14px; }
+  .cty-svg { display: block; max-width: 100%; }
+  .cty-svg .grid { stroke: rgba(0,240,255,0.08); } .cty-svg .ytk { fill: var(--dim); font-size: 10px; text-anchor: end; } .cty-svg .xtk { fill: var(--dim); font-size: 10px; text-anchor: middle; }
+  .cty-svg .basel { stroke: var(--dim); stroke-dasharray: 3 4; opacity: 0.55; }
+  .cty-svg .line { fill: none; stroke: var(--cyan); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+  .cty-svg .end, .cty-svg .hov { fill: var(--cyan); stroke: #050b18; stroke-width: 2; } .cty-svg .cross { stroke: var(--dim); }
+  .cty-news { max-width: 900px; border: 1px solid var(--line); } .cty-news .feed-item { cursor: pointer; }
+  @media (max-width: 1250px) { .lt-grid { grid-template-columns: 1fr; } .lt-detail { position: static; max-height: none; } .cty-grid { grid-template-columns: 1fr; } }
   @media (max-width: 760px) {
     .mkt-nav { left: 8px; right: 8px; transform: none; overflow-x: auto; }
     body.mkt-tab .desk-stage { top: calc(var(--top-h, 120px) + 40px); }
@@ -1708,9 +1736,22 @@
   </div>
   <nav class="mkt-nav" id="mktNav" aria-label="Markets views">
     <button data-mv="globe">WORLD · LIVE</button>
+    <button data-mv="country">SEARCH</button>
     <button data-mv="impact">NEWS IMPACT</button>
     <button data-mv="long">LONG TERM · 5–10 Y</button>
   </nav>
+  <div class="desk-stage" id="countryStage">
+    <div class="desk-head">
+      <div class="desk-title">MARKETS <b>// SEARCH</b><span class="desk-sub">One country or company at a glance, then its news, short-term moves and long-term record</span></div>
+      <div class="cty-search">
+        <input id="ctySearch" type="search" placeholder="Country or company (France, Renault, AAPL…)" autocomplete="off" spellcheck="false"
+          role="combobox" aria-label="Search a country or company" aria-autocomplete="list" aria-controls="ctyResults" aria-expanded="false" />
+        <ul id="ctyResults" role="listbox" aria-label="Countries and companies" hidden></ul>
+      </div>
+      <div class="desk-meta" id="ctyMeta">—</div>
+    </div>
+    <div id="ctyBody"></div>
+  </div>
   <div class="desk-stage" id="longStage">
     <div class="desk-head">
       <div class="desk-title">MARKETS <b>// LONG TERM</b><span class="desk-sub">How much value the largest listed companies created over 5–10 years — and the news around their biggest moves</span></div>
@@ -12523,6 +12564,7 @@ PELICAN-9
       let html = '';
       html += `<div style="padding:10px 12px;border-bottom:1px solid var(--line);">
         <button id="marketBackBtn" style="font-size:10px;letter-spacing:0.14em;color:var(--cyan);cursor:pointer;background:none;border:0;padding:0;">← ALL COUNTRIES</button>
+        <button id="marketFullBtn" style="float:right;font-size:10px;letter-spacing:0.14em;color:var(--cyan);cursor:pointer;background:none;border:0;padding:0;">FULL OVERVIEW →</button>
       </div>`;
 
       // Currency block
@@ -12571,6 +12613,11 @@ PELICAN-9
 
       feedListEl.innerHTML = html;
       document.getElementById('marketBackBtn').addEventListener('click', () => selectMarketCountry(null));
+      document.getElementById('marketFullBtn').addEventListener('click', () => {
+        ctyState.country = country; ctyState.company = null; ctyState.sym = null;
+        state.mktView = 'country';
+        setTab('markets');
+      });
       bindFeedItemClicks(newsItems.slice(0, 8));
     }
 
@@ -12767,6 +12814,7 @@ PELICAN-9
       document.getElementById('franceStage').classList.toggle('on', name === 'france');
       document.getElementById('impactStage').classList.toggle('on', mv === 'impact');
       document.getElementById('longStage').classList.toggle('on', mv === 'long');
+      document.getElementById('countryStage').classList.toggle('on', mv === 'country');
       for (const b of document.querySelectorAll('#mktNav [data-mv]')) b.classList.toggle('on', b.dataset.mv === mv);
       for (const t of document.querySelectorAll('.tab')) {
         t.classList.toggle('active', t.dataset.tab === name);
@@ -12811,6 +12859,7 @@ PELICAN-9
         case 'markets':
           if (mv === 'impact') renderImpactDesk();
           else if (mv === 'long') renderLongDesk();
+          else if (mv === 'country') renderCountryDesk();
           else renderFeedMarkets();
           break;
         case 'outbreaks': renderFeedOutbreaks(); break;
@@ -15590,7 +15639,7 @@ PELICAN-9
       ['BP.L', 'BP', /\bBP\b/], ['SHEL.L', 'Shell', /\bShell\b(?= (?:plc|profit|shares|oil|gas|says|to|will|chief))/], ['HSBA.L', 'HSBC', /\bHSBC\b/], ['BARC.L', 'Barclays', /\bBarclays\b/],
       ['AZN.L', 'AstraZeneca', /\bAstraZeneca\b/], ['ULVR.L', 'Unilever', /\bUnilever\b/], ['RR.L', 'Rolls-Royce', /\bRolls-Royce\b/], ['BA.L', 'BAE Systems', /\bBAE Systems\b/],
       ['GSK.L', 'GSK', /\bGSK\b/], ['VOD.L', 'Vodafone', /\bVodafone\b/], ['TSCO.L', 'Tesco', /\bTesco\b/], ['RIO.L', 'Rio Tinto', /\bRio Tinto\b/], ['GLEN.L', 'Glencore', /\bGlencore\b/],
-      ['NESN.SW', 'Nestlé', /\bNestl[eé]\b/], ['NOVN.SW', 'Novartis', /\bNovartis\b/], ['ROG.SW', 'Roche', /(?<!La )\bRoche\b(?![-'’])/], ['UBSG.SW', 'UBS', /\bUBS\b/],
+      ['NESN.SW', 'Nestlé', /\bNestl[eé]\b/], ['NOVN.SW', 'Novartis', /\bNovartis\b/], ['RO.SW', 'Roche', /(?<!La )\bRoche\b(?![-'’])/], ['UBSG.SW', 'UBS', /\bUBS\b/],
       ['HEIA.AS', 'Heineken', /\bHeineken\b/], ['PHIA.AS', 'Philips', /\bPhilips\b/], ['RACE', 'Ferrari', /\bFerrari\b/], ['ITX.MC', 'Inditex', /\b(Inditex|Zara)\b/],
       ['SAN.MC', 'Santander', /\bSantander\b/], ['NOKIA.HE', 'Nokia', /\bNokia\b/], ['ERIC-B.ST', 'Ericsson', /\bEricsson\b/],
     ];
@@ -16108,6 +16157,624 @@ PELICAN-9
     // battery + third-party API quota on an invisible dashboard). `catchUp`
     // pollers also fire once immediately when the tab becomes visible again.
     const _catchUp = [];
+    // ── COUNTRY SEARCH: one country's markets — overview, then news / short / long ──
+    // Yahoo symbols for COUNTRY_MARKETS. Russia has none: Yahoo returns no current
+    // Moscow Exchange quotes, so it keeps news and currency only.
+    const COUNTRY_TICKERS = {
+      'United States': { idx: [['S&P 500', '^GSPC'], ['NASDAQ', '^IXIC'], ['Dow Jones', '^DJI']], co: [['Apple', 'AAPL'], ['Microsoft', 'MSFT'], ['NVIDIA', 'NVDA'], ['Tesla', 'TSLA'], ['Amazon', 'AMZN'], ['Meta', 'META'], ['Alphabet', 'GOOGL'], ['JPMorgan', 'JPM'], ['Berkshire Hathaway', 'BRK-B'], ['ExxonMobil', 'XOM']] },
+      'China': { idx: [['Shanghai Composite', '000001.SS'], ['Shenzhen', '399001.SZ'], ['Hang Seng', '^HSI']], co: [['Tencent', '0700.HK'], ['Alibaba', '9988.HK'], ['ICBC', '1398.HK'], ['BYD', '1211.HK'], ['PingAn', '2318.HK'], ['PetroChina', '0857.HK'], ['CATL', '300750.SZ'], ['Meituan', '3690.HK'], ['JD.com', '9618.HK'], ['Baidu', '9888.HK']] },
+      'Japan': { idx: [['Nikkei 225', '^N225'], ['TOPIX (ETF 1306)', '1306.T']], co: [['Toyota', '7203.T'], ['Sony', '6758.T'], ['SoftBank', '9984.T'], ['Mitsubishi UFJ', '8306.T'], ['Nintendo', '7974.T'], ['Keyence', '6861.T'], ['Hitachi', '6501.T'], ['Honda', '7267.T'], ['Tokyo Electron', '8035.T'], ['Daikin', '6367.T']] },
+      'United Kingdom': { idx: [['FTSE 100', '^FTSE'], ['FTSE 250', '^FTMC']], co: [['HSBC', 'HSBA.L'], ['Shell', 'SHEL.L'], ['AstraZeneca', 'AZN.L'], ['Unilever', 'ULVR.L'], ['BP', 'BP.L'], ['GSK', 'GSK.L'], ['Diageo', 'DGE.L'], ['Barclays', 'BARC.L'], ['Rio Tinto', 'RIO.L'], ['Lloyds', 'LLOY.L']] },
+      'Germany': { idx: [['DAX', '^GDAXI'], ['MDAX', '^MDAXI']], co: [['SAP', 'SAP.DE'], ['Siemens', 'SIE.DE'], ['Volkswagen', 'VOW3.DE'], ['Mercedes-Benz', 'MBG.DE'], ['Allianz', 'ALV.DE'], ['Deutsche Telekom', 'DTE.DE'], ['BMW', 'BMW.DE'], ['BASF', 'BAS.DE'], ['Bayer', 'BAYN.DE'], ['Adidas', 'ADS.DE']] },
+      'France': { idx: [['CAC 40', '^FCHI']], co: [['LVMH', 'MC.PA'], ['TotalEnergies', 'TTE.PA'], ["L'Oréal", 'OR.PA'], ['Hermès', 'RMS.PA'], ['Sanofi', 'SAN.PA'], ['Airbus', 'AIR.PA'], ['BNP Paribas', 'BNP.PA'], ['Schneider', 'SU.PA'], ['AXA', 'CS.PA'], ['Vinci', 'DG.PA']] },
+      'India': { idx: [['SENSEX', '^BSESN'], ['NIFTY 50', '^NSEI']], co: [['Reliance', 'RELIANCE.NS'], ['TCS', 'TCS.NS'], ['HDFC Bank', 'HDFCBANK.NS'], ['Infosys', 'INFY.NS'], ['ICICI Bank', 'ICICIBANK.NS'], ['Bharti Airtel', 'BHARTIARTL.NS'], ['ITC', 'ITC.NS'], ['LIC', 'LICI.NS'], ['Larsen & Toubro', 'LT.NS'], ['Adani Enterprises', 'ADANIENT.NS']] },
+      'Canada': { idx: [['TSX', '^GSPTSE'], ['TSX 60 (ETF XIU)', 'XIU.TO']], co: [['RBC', 'RY.TO'], ['TD Bank', 'TD.TO'], ['Shopify', 'SHOP.TO'], ['Enbridge', 'ENB.TO'], ['Brookfield', 'BN.TO'], ['Canadian National', 'CNR.TO'], ['Suncor', 'SU.TO'], ['BMO', 'BMO.TO'], ['Manulife', 'MFC.TO'], ['Loblaw', 'L.TO']] },
+      'Australia': { idx: [['ASX 200', '^AXJO']], co: [['BHP', 'BHP.AX'], ['Commonwealth Bank', 'CBA.AX'], ['CSL', 'CSL.AX'], ['Westpac', 'WBC.AX'], ['NAB', 'NAB.AX'], ['ANZ', 'ANZ.AX'], ['Macquarie', 'MQG.AX'], ['Fortescue', 'FMG.AX'], ['Woolworths', 'WOW.AX'], ['Telstra', 'TLS.AX']] },
+      'Brazil': { idx: [['Bovespa', '^BVSP']], co: [['Petrobras', 'PETR4.SA'], ['Vale', 'VALE3.SA'], ['Itaú', 'ITUB4.SA'], ['Bradesco', 'BBDC4.SA'], ['Ambev', 'ABEV3.SA'], ['Banco do Brasil', 'BBAS3.SA'], ['WEG', 'WEGE3.SA'], ['JBS', 'JBSS32.SA'], ['Santander Br', 'SANB11.SA'], ['B3', 'B3SA3.SA']] },
+      'South Korea': { idx: [['KOSPI', '^KS11'], ['KOSDAQ', '^KQ11']], co: [['Samsung Electronics', '005930.KS'], ['SK Hynix', '000660.KS'], ['LG Energy', '373220.KS'], ['Hyundai', '005380.KS'], ['POSCO', '005490.KS'], ['Kia', '000270.KS'], ['Naver', '035420.KS'], ['Kakao', '035720.KS'], ['SK Innovation', '096770.KS'], ['Celltrion', '068270.KS']] },
+      'Taiwan': { idx: [['TAIEX', '^TWII']], co: [['TSMC', '2330.TW'], ['Foxconn', '2317.TW'], ['MediaTek', '2454.TW'], ['Largan', '3008.TW'], ['ASE Tech', '3711.TW'], ['CTBC', '2891.TW'], ['Cathay', '2882.TW'], ['UMC', '2303.TW'], ['Delta', '2308.TW'], ['Fubon', '2881.TW']] },
+      'Hong Kong': { idx: [['Hang Seng', '^HSI']], co: [['HSBC', '0005.HK'], ['AIA', '1299.HK'], ['Tencent', '0700.HK'], ['Hong Kong Exchanges', '0388.HK'], ['CK Hutchison', '0001.HK'], ['Sun Hung Kai', '0016.HK'], ['CLP', '0002.HK'], ['BoC HK', '2388.HK'], ['China Mobile', '0941.HK'], ['Sino Land', '0083.HK']] },
+      'Switzerland': { idx: [['SMI', '^SSMI']], co: [['Nestlé', 'NESN.SW'], ['Roche', 'RO.SW'], ['Novartis', 'NOVN.SW'], ['UBS', 'UBSG.SW'], ['Zurich', 'ZURN.SW'], ['Richemont', 'CFR.SW'], ['ABB', 'ABBN.SW'], ['Lonza', 'LONN.SW'], ['Swiss Re', 'SREN.SW'], ['Givaudan', 'GIVN.SW']] },
+      'Netherlands': { idx: [['AEX', '^AEX']], co: [['ASML', 'ASML.AS'], ['Shell', 'SHELL.AS'], ['Unilever', 'UNA.AS'], ['Prosus', 'PRX.AS'], ['ING', 'INGA.AS'], ['Heineken', 'HEIA.AS'], ['Philips', 'PHIA.AS'], ['Wolters Kluwer', 'WKL.AS'], ['Adyen', 'ADYEN.AS'], ['Stellantis', 'STLAM.MI']] },
+      'Italy': { idx: [['FTSE MIB', 'FTSEMIB.MI']], co: [['Eni', 'ENI.MI'], ['Ferrari', 'RACE.MI'], ['Stellantis', 'STLAM.MI'], ['Enel', 'ENEL.MI'], ['Intesa Sanpaolo', 'ISP.MI'], ['UniCredit', 'UCG.MI'], ['Generali', 'G.MI'], ['Pirelli', 'PIRC.MI'], ['Moncler', 'MONC.MI'], ['Leonardo', 'LDO.MI']] },
+      'Spain': { idx: [['IBEX 35', '^IBEX']], co: [['Inditex', 'ITX.MC'], ['Iberdrola', 'IBE.MC'], ['Santander', 'SAN.MC'], ['BBVA', 'BBVA.MC'], ['Repsol', 'REP.MC'], ['Telefónica', 'TEF.MC'], ['CaixaBank', 'CABK.MC'], ['Ferrovial', 'FER.MC'], ['Naturgy', 'NTGY.MC'], ['Endesa', 'ELE.MC']] },
+      'Saudi Arabia': { idx: [['Tadawul (TASI)', '^TASI.SR']], co: [['Saudi Aramco', '2222.SR'], ['Al Rajhi Bank', '1120.SR'], ['STC', '7010.SR'], ['SABIC', '2010.SR'], ['SNB', '1180.SR'], ['ACWA Power', '2082.SR'], ['Maaden', '1211.SR'], ['Riyad Bank', '1010.SR'], ['Yansab', '2290.SR'], ['Almarai', '2280.SR']] },
+      'Mexico': { idx: [['IPC', '^MXX']], co: [['América Móvil', 'AMXB.MX'], ['Walmex', 'WALMEX.MX'], ['FEMSA', 'FEMSAUBD.MX'], ['Cemex', 'CEMEXCPO.MX'], ['Banorte', 'GFNORTEO.MX'], ['Grupo México', 'GMEXICOB.MX'], ['GAP', 'GAPB.MX'], ['Liverpool', 'LIVEPOLC-1.MX'], ['Bimbo', 'BIMBOA.MX'], ['Televisa', 'TLEVISACPO.MX']] },
+      'Singapore': { idx: [['STI', '^STI']], co: [['DBS', 'D05.SI'], ['OCBC', 'O39.SI'], ['UOB', 'U11.SI'], ['Singtel', 'Z74.SI'], ['SGX', 'S68.SI'], ['Sea Ltd', 'SE'], ['CapitaLand', '9CI.SI'], ['Wilmar', 'F34.SI'], ['Keppel', 'BN4.SI'], ['ST Engineering', 'S63.SI']] },
+      'Turkey': { idx: [['BIST 100', 'XU100.IS']], co: [['Türkiye İş Bankası', 'ISCTR.IS'], ['Garanti', 'GARAN.IS'], ['Akbank', 'AKBNK.IS'], ['THY', 'THYAO.IS'], ['Koç Holding', 'KCHOL.IS'], ['Sabancı', 'SAHOL.IS'], ['BIM', 'BIMAS.IS'], ['Yapı Kredi', 'YKBNK.IS'], ['Tüpraş', 'TUPRS.IS'], ['Aselsan', 'ASELS.IS']] },
+    };
+    const ctyState = { country: null, company: null, tab: 'news', news: 'all', range: '1d', years: 5, sym: null, quotes: new Map() };
+    const CTY_QUOTE_TTL = { '1d': 5 * 60e3, '1mo': 15 * 60e3, '5d': 5 * 60e3, '10y': 12 * 3600e3 };
+    const ctyEsc = escapeHtml;
+    const ctyTickers = (c) => COUNTRY_TICKERS[c] || { idx: [], co: [] };
+
+    // Searchable companies: each country's top ten plus the IMPACT desk's list.
+    const LISTING_COUNTRY = { PA: 'France', DE: 'Germany', L: 'United Kingdom', AS: 'Netherlands', SW: 'Switzerland', MC: 'Spain', MI: 'Italy', T: 'Japan', KS: 'South Korea', HK: 'Hong Kong', NS: 'India', HE: 'Finland', ST: 'Sweden', TO: 'Canada', V: 'Canada', CN: 'Canada', NE: 'Canada', BR: 'Belgium', VI: 'Austria', OL: 'Norway', CO: 'Denmark', LS: 'Portugal', IR: 'Ireland', AT: 'Greece', WA: 'Poland', PR: 'Czech Republic', BO: 'India', NZ: 'New Zealand', BK: 'Thailand', JK: 'Indonesia', KL: 'Malaysia', TA: 'Israel', JO: 'South Africa', KQ: 'South Korea', TWO: 'Taiwan', BA: 'Argentina', SN: 'Chile', QA: 'Qatar', F: 'Germany', SG: 'Germany', BE: 'Germany', DU: 'Germany', HM: 'Germany', HA: 'Germany', MU: 'Germany', AX: 'Australia', SA: 'Brazil', TW: 'Taiwan', SR: 'Saudi Arabia', MX: 'Mexico', SI: 'Singapore', IS: 'Turkey', SS: 'China', SZ: 'China' };
+    const FOREIGN_US_LISTINGS = { SONY: 'Japan', TSM: 'Taiwan', BABA: 'China', BIDU: 'China', INFY: 'India', NVO: 'Denmark', RACE: 'Italy', ASML: 'Netherlands', SPOT: 'Sweden', SE: 'Singapore' };
+    // Names that would also match unrelated news (a city, a football club, a central bank…).
+    const COMPANY_NEWS_TERMS = {
+      'LIVEPOLC-1.MX': 'El Puerto de Liverpool', 'ZURN.SW': 'Zurich Insurance', '2308.TW': 'Delta Electronics', '2882.TW': 'Cathay Financial',
+      'GAPB.MX': 'Grupo Aeroportuario del Pacífico', 'ITC.NS': 'ITC Ltd|ITC Limited', 'LICI.NS': 'Life Insurance Corporation', '0002.HK': 'CLP Holdings',
+      'B3SA3.SA': 'B3 SA|B3 S.A.', 'THYAO.IS': 'Turkish Airlines|Türk Hava Yolları', '1299.HK': 'AIA Group', 'BIMAS.IS': 'BIM Birleşik', '7010.SR': 'Saudi Telecom',
+      '1180.SR': 'Saudi National Bank', 'SE': 'Sea Limited|Sea Ltd|Shopee', 'RELIANCE.NS': 'Reliance Industries|Mukesh Ambani', 'WEGE3.SA': 'WEG S.A.|WEG SA',
+      '2891.TW': 'CTBC', '6501.T': 'Hitachi', '1010.SR': 'Riyad Bank', 'VALE3.SA': 'Vale SA|Vale S.A.|mining giant Vale', 'G.MI': 'Generali', 'BN4.SI': 'Keppel Corp|Keppel Ltd|Keppel',
+    };
+    // ── Yahoo's search, for any listed company beyond the curated list
+    const LEGAL_SUFFIX = /[\s,]+(s\.?a\.?|s\.?e\.?|inc\.?|incorporated|corp\.?|corporation|plc|p\.l\.c\.|ag|n\.?v\.?|ltd\.?|limited|llc|holdings?|group|co\.?|company|asa|a\/s|ab|oyj|spa|s\.p\.a\.|gmbh|kgaa|the)$/i;
+    function ctyShortName(name) {
+      let out = name.trim(), prev;
+      do { prev = out; out = out.replace(LEGAL_SUFFIX, '').trim(); } while (out !== prev);
+      return out.length >= 3 ? out : name.trim();
+    }
+    const OTC_EXCHANGES = new Set(['PNK', 'OQB', 'OQX', 'OTC']);
+    const ctySearchCache = new Map();
+    async function ctyRemoteCompanies(text) {
+      const q = deaccent(text.trim()).toLowerCase();
+      if (!API_PROXY || q.length < 2) return [];
+      if (!ctySearchCache.has(q)) {
+        ctySearchCache.set(q, fetch(`${API_PROXY}/search?q=${encodeURIComponent(q)}`)
+          .then(r => r.ok ? r.json() : { quotes: [] })
+          .catch(() => { ctySearchCache.delete(q); return { quotes: [] }; }));
+      }
+      const { quotes = [] } = await ctySearchCache.get(q);
+      // Over-the-counter lines mirror a main listing; each name keeps its first (best) listing.
+      const main = quotes.filter(x => !OTC_EXCHANGES.has(x.exchange));
+      const list = (main.length ? main : quotes).filter(x => !/^[A-Z]{2}[A-Z0-9]{9}\d\./.test(x.symbol));   // ISIN-coded lines
+      const known = new Map(ctyCompanyList().map(c => [c.sym, c]));
+      const names = new Set(ctyCompanyList().map(c => c.key));
+      const shortKey = (x) => deaccent(ctyShortName(x.name)).toLowerCase();
+      const out = [];
+      // A listing we already curate wins, and hides its other lines (Toyota 7203.T over the TM ADR).
+      for (const x of list) if (known.has(x.symbol)) { out.push(known.get(x.symbol)); names.add(shortKey(x)); }
+      for (const x of list) {
+        const short = ctyShortName(x.name), key = shortKey(x);
+        if (known.has(x.symbol) || names.has(key)) continue;
+        names.add(key);
+        const suffix = (x.symbol.match(/\.([A-Z]+)$/) || [])[1];
+        const country = suffix ? (LISTING_COUNTRY[suffix] || null) : 'United States';
+        out.push({ sym: x.symbol, name: short, country, exchange: x.exchDisp, key, symKey: x.symbol.toLowerCase(), aliases: [], fromYahoo: true });
+      }
+      return out.slice(0, 6);
+    }
+
+    let ctyCompanies = null;
+    function ctyCompanyList() {
+      if (ctyCompanies) return ctyCompanies;
+      const norm = (t) => deaccent(t).toLowerCase();
+      const regexOf = new Map(COMPANIES.map(([sym, name, re]) => [norm(name), re]));
+      const seen = new Set(), out = [];
+      const add = (sym, name, country) => {
+        const key = norm(name) + '|' + country;
+        if (seen.has(sym) || seen.has(key)) return;   // one line per company per country; primary listing wins
+        seen.add(sym); seen.add(key);
+        const re = regexOf.get(norm(name));
+        const names = /^\\b\(([^()?]+)\)\\b$/.exec(re?.source || '');
+        out.push({ sym, name, country, key: norm(name), symKey: sym.toLowerCase(),
+          aliases: (names ? names[1].split('|') : []).filter(a => norm(a) !== norm(name)).map(label => ({ key: norm(label), label })) });
+      };
+      for (const [country, t] of Object.entries(COUNTRY_TICKERS)) for (const [name, sym] of t.co) add(sym, name, country);
+      for (const [sym, name] of COMPANIES) {
+        const suffix = (sym.match(/\.([A-Z]+)$/) || [])[1];
+        add(sym, name, suffix ? LISTING_COUNTRY[suffix] : (FOREIGN_US_LISTINGS[sym] || 'United States'));
+      }
+      return (ctyCompanies = out);
+    }
+    // Tests a headline for this company: its curated pattern, else its name as a whole word.
+    function ctyCompanyMatcher(c) {
+      const curated = !COMPANY_NEWS_TERMS[c.sym] && COMPANIES.find(x => deaccent(x[1]).toLowerCase() === c.key)?.[2];
+      if (curated) return (text) => curated.test(text);
+      const esc = (t) => deaccent(t).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const terms = (COMPANY_NEWS_TERMS[c.sym] || c.name).split('|').map(esc).join('|');
+      const re = new RegExp(`(?<![\\p{L}\\p{N}])(?:${terms})(?![\\p{L}\\p{N}])`, 'u');
+      return (text) => re.test(deaccent(text).replace(/’/g, "'"));
+    }
+    const ctyFxSym = (c) => { const cur = COUNTRY_MARKETS[c]?.currency; return cur && cur !== 'USD' ? `${cur}USD=X` : null; };
+
+    async function ctyLoadQuotes(symbols, range) {
+      const fresh = (s) => { const q = ctyState.quotes.get(range + s); return q && Date.now() - q._at < CTY_QUOTE_TTL[range]; };
+      const need = [...new Set(symbols)].filter(s => !fresh(s));
+      for (let i = 0; i < need.length; i += 25) {
+        const chunk = need.slice(i, i + 25);
+        try {
+          const r = await fetch(`${API_PROXY}/quotes?range=${range}&symbols=${chunk.map(encodeURIComponent).join(',')}`);
+          const j = await r.json();
+          for (const q of j.quotes || []) ctyState.quotes.set(range + q.symbol, { ...q, _at: Date.now() });
+        } catch (e) { console.warn('country quotes', e); }
+      }
+    }
+    // [{ t, v }] without gaps, or null when the source has nothing.
+    function ctySeries(sym, range) {
+      const q = ctyState.quotes.get(range + sym);
+      if (!q || q.error || !q.t?.length) return null;
+      const pts = [];
+      q.t.forEach((t, i) => { if (q.c[i] != null) pts.push({ t, v: q.c[i], mk: monthKey(t) }); });
+      if (range === '10y') {   // same glitch filter as LONG TERM: a lone month ×5 or ÷5
+        for (let i = pts.length - 2; i >= 1; i--) {
+          const r1 = pts[i].v / pts[i - 1].v, r2 = pts[i + 1].v / pts[i].v;
+          if ((r1 > 5 && r2 < 0.2) || (r1 < 0.2 && r2 > 5)) pts.splice(i, 1);
+        }
+      }
+      return pts.length >= 2 ? { q, pts } : null;
+    }
+    // Change over a short range. One day is measured from the previous close.
+    function ctyShortMove(sym, range) {
+      const s = ctySeries(sym, range); if (!s) return null;
+      const last = s.pts[s.pts.length - 1].v;
+      const base = range === '1d' && s.q.prevClose ? s.q.prevClose : s.pts[0].v;
+      return { s, last, base, move: last / base - 1 };
+    }
+    function ctyLongMove(sym, years) {
+      const s = ctySeries(sym, '10y'); if (!s) return null;
+      const m = ltMetrics({ series: s.pts }, years);
+      return { s, m, partial: m.yrs < years - 0.5 };
+    }
+    const ctyNum = (v) => {
+      if (v == null) return '—';
+      const a = Math.abs(v);
+      if (a >= 1000) return v.toLocaleString('en-US', { maximumFractionDigits: a >= 10000 ? 0 : 2 });
+      return a >= 1 ? v.toFixed(2) : v.toPrecision(4);
+    };
+    const ctyChg = (x, digits = 2) => x == null ? '<span class="cty-na">—</span>'
+      : `<span class="cty-chg ${x > 0.0005 ? 'up' : x < -0.0005 ? 'down' : ''}">${arrow(x)} ${pct(x, digits)}</span>`;
+
+    // ── search index: country names, plus the gazetteer's aliases in other languages
+    let ctyIndex = null;
+    function ctyBuildIndex() {
+      const norm = (t) => deaccent(t).toLowerCase();
+      const entries = new Map();
+      const entry = (name) => {
+        if (!entries.has(name)) entries.set(name, { name, key: norm(name), aliases: [] });
+        return entries.get(name);
+      };
+      for (const c of Object.keys(COUNTRY_MARKETS)) entry(c);
+      for (const c of Object.keys(CENTROIDS)) entry(c);
+      const addAlias = (c, term) => {
+        const clean = term.replace(/^~|\*$/g, '');
+        if (CENTROIDS[c] || COUNTRY_MARKETS[c]) entry(c).aliases.push({ key: norm(clean), label: clean });
+      };
+      for (const [c, terms] of Object.entries({ ...GEO_TERMS })) terms.split('|').forEach(t => addAlias(c, t));
+      for (const [c, terms] of Object.entries(GEO_I18N)) terms.split('|').filter(t => !t.startsWith('~')).forEach(t => addAlias(c, t));
+      for (const [alias, c] of Object.entries(ALIASES)) addAlias(c, alias);
+      ctyIndex = [...entries.values()];
+    }
+    function ctySearch(text) {
+      if (!ctyIndex) ctyBuildIndex();
+      const q = deaccent(text.trim()).toLowerCase();
+      if (!q) return [];
+      const hits = [];
+      for (const e of ctyIndex) {
+        let score = e.key === q ? 0 : e.key.startsWith(q) ? 1 : e.key.includes(' ' + q) ? 3 : 9, via = null;
+        if (score === 9) {
+          const a = e.aliases.find(x => x.key === q) || e.aliases.find(x => x.key.startsWith(q));
+          if (a) { score = a.key === q ? 1 : 2; via = a.label; }
+        }
+        if (score === 9) continue;
+        hits.push({ type: 'country', name: e.name, via, score, weight: COUNTRY_MARKETS[e.name]?.weight || 0 });
+      }
+      for (const c of ctyCompanyList()) {
+        let score = c.key === q || c.symKey === q ? 0 : c.key.startsWith(q) ? 1 : c.symKey.startsWith(q) ? 2 : c.key.includes(' ' + q) ? 3 : 9, via = null;
+        if (score === 9) {
+          const a = c.aliases.find(x => x.key === q) || c.aliases.find(x => x.key.startsWith(q));
+          if (a) { score = a.key === q ? 1 : 2; via = a.label; }
+        }
+        if (score === 9) continue;
+        hits.push({ type: 'company', name: c.name, via, score, company: c, weight: 0 });
+      }
+      return hits.sort((a, b) => a.score - b.score || (a.type === b.type ? b.weight - a.weight : a.type === 'country' ? -1 : 1) || a.name.localeCompare(b.name)).slice(0, 10);
+    }
+
+    // ── line chart: single series, drawn at the container's real pixel size
+    function ctyAxisLabel(t, range, tz) {
+      const d = new Date(t * 1000), o = { timeZone: tz || 'UTC' };
+      if (range === '1d') return { key: d.toLocaleTimeString('en-GB', { ...o, hour: '2-digit' }), label: d.toLocaleTimeString('en-GB', { ...o, hour: '2-digit', minute: '2-digit' }) };
+      if (range === '5d') return { key: d.toLocaleDateString('en-GB', o), label: d.toLocaleDateString('en-GB', { ...o, weekday: 'short', day: 'numeric' }) };
+      if (range === '1mo') { const s = d.toLocaleDateString('en-GB', { ...o, day: 'numeric', month: 'short' }); return { key: s, label: s }; }
+      const y = d.getUTCFullYear(); return { key: String(y), label: String(y) };
+    }
+    function ctyTipTime(t, range, tz) {
+      const o = { timeZone: tz || 'UTC' };
+      if (range === '10y') return fmtMonth(t);
+      return new Date(t * 1000).toLocaleString('en-GB', { ...o, day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+    }
+    function ctyDrawChart(el, { pts, base, range, tz, name, unit }) {
+      const W = Math.max(280, el.clientWidth), H = 260, L = 62, R = 14, T = 12, B = 26, n = pts.length;
+      const vs = pts.map(p => p.v);
+      let lo = Math.min(...vs, base), hi = Math.max(...vs, base);
+      if (hi === lo) { hi += Math.abs(hi) * 0.01 || 1; lo -= Math.abs(lo) * 0.01 || 1; }
+      const X = (i) => L + (i / (n - 1)) * (W - L - R);
+      const Y = (v) => T + (1 - (v - lo) / (hi - lo)) * (H - T - B);
+      const rough = (hi - lo) / 4, mag = 10 ** Math.floor(Math.log10(rough));
+      const step = [1, 2, 2.5, 5, 10].map(k => k * mag).find(k => k >= rough);
+      const yt = [];
+      for (let v = Math.ceil(lo / step) * step; v <= hi + step * 1e-6; v += step) yt.push(v);
+      const xt = [];
+      let prevKey = null;
+      pts.forEach((p, i) => { const a = ctyAxisLabel(p.t, range, tz); if (a.key !== prevKey) { xt.push({ i, label: a.label }); prevKey = a.key; } });
+      if (xt.length > 1 && X(xt[1].i) - X(xt[0].i) < 70) xt.shift();   // partial first period
+      let lastTickX = -Infinity;
+      const xShown = xt.filter(x => { if (X(x.i) - lastTickX < 70) return false; lastTickX = X(x.i); return true; });
+      const line = pts.map((p, i) => `${i ? 'L' : 'M'}${X(i).toFixed(1)},${Y(p.v).toFixed(1)}`).join('');
+      el.innerHTML = `<div class="lt-chart-wrap"><svg class="cty-svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img"
+          aria-label="${ctyEsc(name)}, from ${ctyNum(pts[0].v)} to ${ctyNum(pts[n - 1].v)}${unit ? ' ' + ctyEsc(unit) : ''}">
+          ${yt.map(v => `<line class="grid" x1="${L}" x2="${W - R}" y1="${Y(v).toFixed(1)}" y2="${Y(v).toFixed(1)}"/><text class="ytk" x="${L - 8}" y="${(Y(v) + 3).toFixed(1)}">${ctyNum(v)}</text>`).join('')}
+          ${xShown.map(x => `<text class="xtk" x="${X(x.i).toFixed(1)}" y="${H - 8}">${ctyEsc(x.label)}</text>`).join('')}
+          <line class="basel" x1="${L}" x2="${W - R}" y1="${Y(base).toFixed(1)}" y2="${Y(base).toFixed(1)}"/>
+          <path class="line" d="${line}"/>
+          <circle class="end" cx="${X(n - 1).toFixed(1)}" cy="${Y(pts[n - 1].v).toFixed(1)}" r="4"/>
+          <line class="cross" x1="0" x2="0" y1="${T}" y2="${H - B}" visibility="hidden"/>
+          <circle class="hov" r="4" visibility="hidden"/>
+        </svg><div class="lt-tip" hidden></div></div>`;
+      const svg = el.querySelector('svg'), tip = el.querySelector('.lt-tip'), cross = svg.querySelector('.cross'), hov = svg.querySelector('.hov');
+      svg.addEventListener('pointermove', (e) => {
+        const b = svg.getBoundingClientRect();
+        const i = Math.max(0, Math.min(n - 1, Math.round((e.clientX - b.left - L) / (W - L - R) * (n - 1))));
+        const x = X(i), p = pts[i];
+        cross.setAttribute('x1', x); cross.setAttribute('x2', x); cross.setAttribute('visibility', 'visible');
+        hov.setAttribute('cx', x); hov.setAttribute('cy', Y(p.v)); hov.setAttribute('visibility', 'visible');
+        tip.hidden = false;
+        tip.innerHTML = `<b>${ctyEsc(ctyTipTime(p.t, range, tz))}</b> · ${ctyNum(p.v)}${unit ? ' ' + ctyEsc(unit) : ''} · ${pct(p.v / base - 1)}`;
+        tip.style.left = Math.max(0, Math.min(W - 250, x - 125)) + 'px';
+      });
+      svg.addEventListener('pointerleave', () => { cross.setAttribute('visibility', 'hidden'); hov.setAttribute('visibility', 'hidden'); tip.hidden = true; });
+    }
+    function ctySpark(pts) {
+      return ltSpark(pts.length > 80 ? pts.filter((_, i) => i % Math.ceil(pts.length / 80) === 0 || i === pts.length - 1) : pts, 100, 24);
+    }
+
+    // ── news
+    function ctyNewsList(country) {
+      const seen = new Set(), out = [];
+      const company = ctyState.company;
+      const matches = company ? ctyCompanyMatcher(company) : null;
+      const relevant = (a) => matches ? matches(`${a.title || ''} ${a.desc || ''}`) : articleCountry(a) === country;
+      const add = (a, biz) => {
+        if (!a?.url || seen.has(a.url) || !relevant(a)) return;
+        seen.add(a.url);
+        out.push({ a, market: biz || (a.tags || []).includes('markets') });
+      };
+      for (const a of state.articles) add(a, false);
+      for (const s of deskState.biz.stories || []) add(s.lead, true);
+      if (company) for (const s of deskState.fr.stories || []) add(s.lead, false);
+      const ts = (a) => parseGdeltDate(a.seendate)?.getTime() || 0;
+      return out.sort((x, y) => (Number(y.market) - Number(x.market)) || ((y.a._story?.sources || 1) - (x.a._story?.sources || 1)) || (ts(y.a) - ts(x.a)));
+    }
+    function ctyRenderNews(panel, country) {
+      const all = ctyNewsList(country);
+      const nMarket = all.filter(x => x.market).length;
+      const shown = (ctyState.news === 'markets' ? all.filter(x => x.market) : all).slice(0, 40);
+      const company = ctyState.company;
+      const items = shown.map(x => ({ ...x.a, _country: company ? (articleCountry(x.a) || undefined) : country }));
+      const layer = classify(state.countries.get(country)?.count || 1);
+      panel.innerHTML = `
+        <div class="desk-toolbar">
+          <button class="desk-chip${ctyState.news === 'all' ? ' on' : ''}" data-news="all">All news · ${all.length}</button>
+          <button class="desk-chip${ctyState.news === 'markets' ? ' on' : ''}" data-news="markets">Markets & business · ${nMarket}</button>
+        </div>
+        ${items.length ? `<div class="cty-news">${items.map(a => renderFeedItem(a, layer)).join('')}</div>`
+          : `<div class="desk-empty">${company ? `No ${ctyState.news === 'markets' ? 'market ' : ''}news mentions ${ctyEsc(company.name)} right now.` : `No ${ctyState.news === 'markets' ? 'market ' : ''}news located in ${ctyEsc(country)} right now.`}</div>`}`;
+      panel.querySelectorAll('[data-news]').forEach(b => b.addEventListener('click', () => { ctyState.news = b.dataset.news; ctyRenderPanel(); }));
+      panel.querySelectorAll('.feed-item').forEach((el, i) => el.addEventListener('click', () => openArticle(items[i])));
+    }
+
+    // ── shared by SHORT and LONG: instrument chips + chart + company table
+    function ctyInstruments(country) {
+      const t = ctyTickers(country), fx = ctyFxSym(country), c = ctyState.company;
+      if (c) return [{ name: c.name, sym: c.sym }, ...t.idx.slice(0, 1).map(([name, sym]) => ({ name, sym }))];
+      const list = t.idx.map(([name, sym]) => ({ name, sym }));
+      if (fx) list.push({ name: `${COUNTRY_MARKETS[country].currency} / USD`, sym: fx, fx: true });
+      return list;
+    }
+    const ctyPeers = (country) => ctyState.company ? [] : ctyTickers(country).co;
+    function ctyCurrentSym(country) {
+      const known = [...ctyInstruments(country), ...ctyPeers(country).map(([name, sym]) => ({ name, sym }))];
+      const cur = known.find(k => k.sym === ctyState.sym) || known[0] || null;
+      if (cur) ctyState.sym = cur.sym;
+      return cur;
+    }
+    const ctyInstrumentChips = (country) => `<span class="lt-seg">${ctyInstruments(country).map(i =>
+      `<button class="desk-chip${i.sym === ctyState.sym ? ' on' : ''}" data-sym="${ctyEsc(i.sym)}">${ctyEsc(i.name)}</button>`).join('')}</span>`;
+    function ctyWirePick(panel) {
+      panel.querySelectorAll('[data-open-co]').forEach(b => b.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const c = ctyCompanyList().find(x => x.sym === b.dataset.openCo);
+        if (c) ctySelectCompany(c);
+      }));
+      panel.querySelectorAll('[data-sym]').forEach(b => {
+        const pick = () => { ctyState.sym = b.dataset.sym; ctyRenderPanel(); };
+        b.addEventListener('click', pick);
+        if (b.tagName === 'TR') b.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pick(); } });
+      });
+    }
+
+    async function ctyRenderShort(panel, country, isCurrent) {
+      const range = ctyState.range, cur = ctyCurrentSym(country);
+      if (!cur) { panel.innerHTML = `<div class="desk-empty">No market data for ${ctyEsc(country)}.</div>`; return; }
+      panel.innerHTML = `<div class="desk-empty">Loading quotes…</div>`;
+      const co = ctyPeers(country);
+      await ctyLoadQuotes([...ctyInstruments(country).map(i => i.sym), ...co.map(c => c[1])], range);
+      if (!isCurrent()) return;
+      const rows = co.map(([name, sym]) => ({ name, sym, r: ctyShortMove(sym, range) })).sort((a, b) => (b.r?.move ?? -Infinity) - (a.r?.move ?? -Infinity));
+      const main = ctyShortMove(cur.sym, range);
+      panel.innerHTML = `
+        <div class="desk-toolbar">
+          <span class="lt-seg">${[['1d', '1 day'], ['5d', '5 days'], ['1mo', '1 month']].map(([k, l]) => `<button class="desk-chip${range === k ? ' on' : ''}" data-range="${k}">${l}</button>`).join('')}</span>
+          ${ctyInstrumentChips(country)}
+        </div>
+        <div class="cty-grid${co.length ? '' : ' solo'}">
+          <section class="cty-chart-box">
+            <div class="cty-chart-head"><b>${ctyEsc(cur.name)}</b> ${main ? `${ctyNum(main.last)} ${ctyEsc(main.s.q.currency || '')} · ${ctyChg(main.move)}` : ''}</div>
+            <div id="ctyChart">${main ? '' : '<div class="desk-empty">No quotes for this range.</div>'}</div>
+          </section>
+          ${co.length ? `<div class="lt-table-wrap"><table class="lt-table">
+            <thead><tr><th>Top company</th><th class="num">Last</th><th class="num">Change</th><th>${{ '1d': 'Today', '5d': '5 days', '1mo': '1 month' }[range]}</th></tr></thead>
+            <tbody>${rows.map(x => `<tr class="${x.sym === cur.sym ? 'on' : ''}" data-sym="${ctyEsc(x.sym)}" tabindex="0">
+              <td><b>${ctyEsc(x.name)}</b><small>${ctyEsc(x.sym)} · <button class="cty-open" data-open-co="${ctyEsc(x.sym)}">open company →</button></small></td>
+              <td class="num">${x.r ? `${ctyNum(x.r.last)} <small>${ctyEsc(x.r.s.q.currency || '')}</small>` : '—'}</td>
+              <td class="num">${ctyChg(x.r?.move)}</td>
+              <td>${x.r ? ctySpark(x.r.s.pts) : ''}</td></tr>`).join('')}</tbody></table></div>` : ''}
+        </div>
+        <div class="desk-note" style="margin-top:14px">Yahoo Finance quotes, may be delayed. Changes are in each listing's own currency. ${range === '1d' ? 'One day is measured from the previous close; the dashed line marks it.' : 'The dashed line marks the start of the period.'}</div>`;
+      if (main) ctyDrawChart(document.getElementById('ctyChart'), { pts: main.s.pts, base: main.base, range, tz: main.s.q.tz, name: cur.name, unit: main.s.q.currency });
+      panel.querySelectorAll('[data-range]').forEach(b => b.addEventListener('click', () => { ctyState.range = b.dataset.range; ctyRenderPanel(); }));
+      ctyWirePick(panel);
+    }
+
+    async function ctyRenderLong(panel, country, isCurrent) {
+      const Y = ctyState.years, cur = ctyCurrentSym(country);
+      if (!cur) { panel.innerHTML = `<div class="desk-empty">No market data for ${ctyEsc(country)}.</div>`; return; }
+      panel.innerHTML = `<div class="desk-empty">Loading ten years of monthly prices…</div>`;
+      const co = ctyPeers(country), fxSym = ctyFxSym(country);
+      await ctyLoadQuotes([...ctyInstruments(country).map(i => i.sym), ...co.map(c => c[1]), ...(fxSym ? [fxSym] : [])], '10y');
+      if (!isCurrent()) return;
+      const rows = co.map(([name, sym]) => ({ name, sym, r: ctyLongMove(sym, Y) })).sort((a, b) => (b.r?.m.cagr ?? -Infinity) - (a.r?.m.cagr ?? -Infinity));
+      const main = ctyLongMove(cur.sym, Y);
+      const since = (r) => r.partial ? `since ${fmtMonth(r.m.first.t)}` : `${Y} years`;
+      // Same period for the currency, so a local gain can be read in dollars.
+      let usdMult = null, fxMult = null;
+      if (main && !cur.fx && fxSym && main.s.q.currency && main.s.q.currency === COUNTRY_MARKETS[country].currency) {
+        const fx = ctySeries(fxSym, '10y');
+        const at = (mk) => { const f = fx?.pts.filter(p => p.mk <= mk); return f?.length ? f[f.length - 1].v : null; };
+        const a = at(main.m.first.mk), b = at(main.m.last.mk);
+        if (a && b) { fxMult = b / a; usdMult = main.m.mult * fxMult; }
+      }
+      const tile = (k, v, s) => `<div class="lt-tile"><span class="k">${k}</span><span class="v">${v}</span><span class="s">${s}</span></div>`;
+      panel.innerHTML = `
+        <div class="desk-toolbar">
+          <span class="lt-seg">${[5, 10].map(y => `<button class="desk-chip${Y === y ? ' on' : ''}" data-years="${y}">${y} years</button>`).join('')}</span>
+          ${ctyInstrumentChips(country)}
+        </div>
+        <div class="cty-grid${co.length ? '' : ' solo'}">
+          <section class="cty-chart-box">
+            <div class="cty-chart-head"><b>${ctyEsc(cur.name)}</b>${main ? ` · ${ctyEsc(since(main))}` : ''}</div>
+            ${main ? `<div class="lt-tiles">
+              ${tile('Total', `×${main.m.mult.toFixed(2)}`, `${ctyNum(main.m.first.v)} → ${ctyNum(main.m.last.v)} ${ctyEsc(main.s.q.currency || '')}`)}
+              ${tile('Per year', pct(main.m.cagr), 'compound growth')}
+              ${tile('Worst fall', pct(main.m.dd, 0), `${fmtMonth(main.m.ddFrom.t)} → ${fmtMonth(main.m.ddTo.t)}`)}
+              ${usdMult != null ? tile('Total in USD', `×${usdMult.toFixed(2)}`, `currency ×${fxMult.toFixed(2)}`) : ''}
+            </div>` : ''}
+            <div id="ctyChart">${main ? '' : '<div class="desk-empty">No long-term history for this instrument.</div>'}</div>
+          </section>
+          ${co.length ? `<div class="lt-table-wrap"><table class="lt-table">
+            <thead><tr><th>Top company</th><th class="num">×</th><th class="num">Per year</th><th class="num">Worst fall</th><th>Trend</th></tr></thead>
+            <tbody>${rows.map(x => `<tr class="${x.sym === cur.sym ? 'on' : ''}" data-sym="${ctyEsc(x.sym)}" tabindex="0">
+              <td><b>${ctyEsc(x.name)}</b><small>${ctyEsc(x.sym)}${x.r?.partial ? ` · ${ctyEsc(since(x.r))}` : ''} · <button class="cty-open" data-open-co="${ctyEsc(x.sym)}">open company →</button></small></td>
+              <td class="num">${x.r ? x.r.m.mult.toFixed(x.r.m.mult >= 10 ? 0 : 1) + '×' : '—'}</td>
+              <td class="num">${x.r ? pct(x.r.m.cagr) : '—'}</td>
+              <td class="num">${x.r ? pct(x.r.m.dd, 0) : '—'}</td>
+              <td>${x.r ? ctySpark(x.r.m.s) : ''}</td></tr>`).join('')}</tbody></table></div>` : ''}
+        </div>
+        <div class="desk-note" style="margin-top:14px">Monthly closes from Yahoo Finance, in each listing's own currency. Company figures are share prices without dividends. Some indices, such as the DAX, include reinvested dividends and others do not, so compare them with care. Companies are sorted by yearly growth and may have a shorter history.</div>`;
+      if (main) ctyDrawChart(document.getElementById('ctyChart'), { pts: main.m.s, base: main.m.first.v, range: '10y', name: cur.name, unit: main.s.q.currency });
+      panel.querySelectorAll('[data-years]').forEach(b => b.addEventListener('click', () => { ctyState.years = +b.dataset.years; ctyRenderPanel(); }));
+      ctyWirePick(panel);
+    }
+
+    let ctyRenderId = 0;
+    function ctyRenderPanel() {
+      const panel = document.getElementById('ctyPanel'), country = ctyState.country;
+      if (!panel || (!country && !ctyState.company)) return;
+      const id = ++ctyRenderId, isCurrent = () => id === ctyRenderId && state.mktView === 'country';
+      document.querySelectorAll('#ctyTabs [role=tab]').forEach(b => {
+        const on = b.dataset.tab === ctyState.tab;
+        b.classList.toggle('on', on); b.setAttribute('aria-selected', on); b.tabIndex = on ? 0 : -1;
+      });
+      if (ctyState.tab === 'news') ctyRenderNews(panel, country);
+      else if (ctyState.tab === 'short') ctyRenderShort(panel, country, isCurrent);
+      else ctyRenderLong(panel, country, isCurrent);
+    }
+
+    async function ctyRenderCompanyTiles(c) {
+      const el = document.getElementById('ctyTiles'); if (!el) return;
+      const main = ctyTickers(c.country).idx[0];
+      const tile = (k, v, sub) => `<div class="lt-tile"><span class="k">${ctyEsc(k)}</span><span class="v">${v}</span><span class="s">${sub}</span></div>`;
+      const draw = () => {
+        if (ctyState.company !== c) return;
+        const news = ctyNewsList(c.country);
+        const d = ctyShortMove(c.sym, '1d'), m = ctyShortMove(c.sym, '1mo'), l = ctyLongMove(c.sym, 5);
+        const b = main && ctyShortMove(main[1], '1d');
+        const unavailable = !d && !m && !l;
+        el.innerHTML = [
+          tile('Today', d ? ctyChg(d.move) : '—', d ? `${ctyNum(d.last)} ${ctyEsc(d.s.q.currency || '')}` : 'no quote'),
+          tile('1 month', m ? ctyChg(m.move) : '—', 'share price'),
+          tile('5 years', l ? pct(l.m.cagr) + '/yr' : '—', l ? `×${l.m.mult.toFixed(2)}${l.partial ? ` since ${fmtMonth(l.m.first.t)}` : ' in total'}` : 'no history'),
+          tile('Worst fall · 5 years', l ? pct(l.m.dd, 0) : '—', l ? `${fmtMonth(l.m.ddFrom.t)} → ${fmtMonth(l.m.ddTo.t)}` : 'no history'),
+          d && b ? tile(`Today vs ${main[0]}`, ctyChg(d.move - b.move), `index ${pct(b.move)}`) : '',
+          tile('News mentions', String(news.length), news.length ? 'in the current feeds' : 'none right now'),
+        ].join('');
+        const head = document.getElementById('ctyCoSub');
+        const q = (d || m || l)?.s.q;
+        if (head) head.textContent = `${c.sym}${q?.exchange ? ' · ' + q.exchange : ''}${q?.currency ? ' · ' + q.currency : ''}${unavailable ? ' · no quotes available' : ''}`;
+      };
+      draw();
+      if (!API_PROXY) return;
+      await Promise.all([
+        ctyLoadQuotes([c.sym, ...(main ? [main[1]] : [])], '1d'),
+        ctyLoadQuotes([c.sym], '1mo'),
+        ctyLoadQuotes([c.sym], '10y'),
+      ]);
+      draw();
+    }
+    async function ctyRenderTiles(country) {
+      if (ctyState.company) return ctyRenderCompanyTiles(ctyState.company);
+      const el = document.getElementById('ctyTiles'); if (!el) return;
+      const t = ctyTickers(country), main = t.idx[0], fx = ctyFxSym(country);
+      const news = ctyNewsList(country);
+      let nC = 0, nE = 0;
+      for (const { a } of news) { const s = classifySeverity(a); if (s === 'critical') nC++; else if (s === 'elevated') nE++; }
+      const tile = (k, v, s) => `<div class="lt-tile"><span class="k">${ctyEsc(k)}</span><span class="v">${v}</span><span class="s">${s}</span></div>`;
+      const draw = () => {
+        if (ctyState.country !== country || ctyState.company) return;
+        const d = main && ctyShortMove(main[1], '1d'), m = main && ctyShortMove(main[1], '1mo'), l = main && ctyLongMove(main[1], 5);
+        const f = fx && ctyShortMove(fx, '1mo');
+        const movers = t.co.map(([name, sym]) => ({ name, r: ctyShortMove(sym, '1d') })).filter(x => x.r).sort((a, b) => b.r.move - a.r.move);
+        const best = movers[0], worst = movers[movers.length - 1];
+        el.innerHTML = [
+          main ? tile(`${main[0]} · today`, d ? ctyChg(d.move) : '—', d ? `${ctyNum(d.last)} ${ctyEsc(d.s.q.currency || '')}` : 'no quote') : '',
+          main ? tile(`${main[0]} · 1 month`, m ? ctyChg(m.move) : '—', 'price change') : '',
+          main ? tile(`${main[0]} · 5 years`, l ? pct(l.m.cagr) + '/yr' : '—', l ? `×${l.m.mult.toFixed(2)} in total` : 'no history') : '',
+          fx ? tile(`${COUNTRY_MARKETS[country].currency} vs USD · 1 month`, f ? ctyChg(f.move) : '—', f ? `1 ${COUNTRY_MARKETS[country].currency} = ${ctyNum(f.last)} USD` : 'no quote') : '',
+          best && movers.length > 1 ? tile('Today among top companies', `${ctyChg(best.r.move)}`, `${ctyEsc(best.name)} best · ${ctyEsc(worst.name)} ${pct(worst.r.move)} worst`) : '',
+          tile('News in feed', String(news.length), `${nC} critical · ${nE} elevated`),
+        ].join('');
+      };
+      draw();
+      if (!API_PROXY) return;
+      await Promise.all([
+        ctyLoadQuotes([...(main ? [main[1]] : []), ...t.co.map(c => c[1])], '1d'),
+        ctyLoadQuotes([...(main ? [main[1]] : []), ...(fx ? [fx] : [])], '1mo'),
+        main ? ctyLoadQuotes([main[1]], '10y') : null,
+      ]);
+      draw();
+    }
+
+    function ctySelect(country) {
+      ctyState.country = country;
+      ctyState.company = null;
+      ctyState.sym = null;
+      const input = document.getElementById('ctySearch');
+      if (input) input.value = '';
+      ctyCloseResults();
+      renderCountryDesk();
+    }
+    function ctySelectCompany(c) {
+      ctyState.company = c;
+      ctyState.country = c.country;
+      ctyState.sym = c.sym;
+      const input = document.getElementById('ctySearch');
+      if (input) input.value = '';
+      ctyCloseResults();
+      renderCountryDesk();
+    }
+    function ctyCloseResults() {
+      const list = document.getElementById('ctyResults'), input = document.getElementById('ctySearch');
+      if (list) { list.hidden = true; list.innerHTML = ''; }
+      input?.setAttribute('aria-expanded', 'false');
+      input?.removeAttribute('aria-activedescendant');
+    }
+    function renderCountryDesk() {
+      const body = document.getElementById('ctyBody'), head = document.getElementById('ctyMeta');
+      const country = ctyState.country;
+      const ranked = Object.entries(COUNTRY_MARKETS).sort((a, b) => b[1].weight - a[1].weight).map(([n]) => n);
+      head.innerHTML = `<b>${ranked.length}</b> country markets · any company listed on Yahoo Finance`;
+      if (!country && !ctyState.company) {
+        body.innerHTML = `<div class="desk-note" style="margin-bottom:12px">Search a country or a company above, or start from a major market:</div>
+          <div class="desk-chips">${ranked.map(n => `<button class="desk-chip" data-pick="${ctyEsc(n)}">${ctyEsc(n)}</button>`).join('')}</div>`;
+        body.querySelectorAll('[data-pick]').forEach(b => b.addEventListener('click', () => ctySelect(b.dataset.pick)));
+        return;
+      }
+      const company = ctyState.company;
+      const d = company ? null : COUNTRY_MARKETS[country];
+      const countryLink = company && country && (COUNTRY_MARKETS[country] || CENTROIDS[country]);
+      const hasQuotes = ctyTickers(country).idx.length > 0;
+      if (!company && !d && ctyState.tab !== 'news') ctyState.tab = 'news';
+      const tabsHtml = `<div class="cty-tabs" id="ctyTabs" role="tablist" aria-label="${ctyEsc(company?.name || country)} market views">
+          ${[['news', 'NEWS'], ['short', 'SHORT TERM'], ['long', 'LONG TERM']].map(([k, l]) => `<button role="tab" data-tab="${k}" aria-controls="ctyPanel">${l}</button>`).join('')}
+        </div>`;
+      body.innerHTML = company ? `
+        <div class="cty-title">
+          <h2>${ctyEsc(company.name)}</h2>
+          <span class="cty-sub" id="ctyCoSub">${ctyEsc(company.sym)}</span>
+          ${countryLink ? `<button class="cty-open" id="ctyCoCountry">${ctyEsc(country)} market →</button>` : ''}
+        </div>
+        <div class="lt-tiles cty-tiles" id="ctyTiles"></div>
+        ${tabsHtml}
+        <div id="ctyPanel" role="tabpanel"></div>` : `
+        <div class="cty-title">
+          <h2>${ctyEsc(country)}</h2>
+          ${d ? `<span class="cty-sub">${ctyEsc(d.currency)} · ${d.indices.map(ctyEsc).join(' · ')}</span>` : ''}
+          ${d ? `<span class="cty-sectors">${d.sectors.map(s => `<span>${ctyEsc(s)}</span>`).join('')}</span>` : ''}
+        </div>
+        ${d && !hasQuotes ? `<div class="desk-note" style="margin-bottom:10px">No current stock quotes are available for ${ctyEsc(country)} from Yahoo Finance: currency and news only.</div>` : ''}
+        ${!d ? `<div class="desk-note" style="margin-bottom:10px">No market data for ${ctyEsc(country)} yet: news only.</div>` : ''}
+        <div class="lt-tiles cty-tiles" id="ctyTiles"></div>
+        ${d ? tabsHtml : ''}
+        <div id="ctyPanel" role="tabpanel"></div>`;
+      document.getElementById('ctyCoCountry')?.addEventListener('click', () => ctySelect(country));
+      const tabs = document.getElementById('ctyTabs');
+      tabs?.addEventListener('click', (e) => { const b = e.target.closest('[data-tab]'); if (b) { ctyState.tab = b.dataset.tab; ctyRenderPanel(); } });
+      tabs?.addEventListener('keydown', (e) => {
+        if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+        const list = [...tabs.querySelectorAll('[role=tab]')], i = list.findIndex(b => b.dataset.tab === ctyState.tab);
+        const next = list[(i + (e.key === 'ArrowRight' ? 1 : list.length - 1)) % list.length];
+        ctyState.tab = next.dataset.tab; ctyRenderPanel(); next.focus();
+      });
+      ctyRenderTiles(country);
+      ctyRenderPanel();
+      if (API_PROXY) Promise.all([loadDeskFeed('biz'), company ? loadDeskFeed('fr') : null]).then(() => {
+        if (ctyState.country !== country || ctyState.company !== company || state.mktView !== 'country') return;
+        ctyRenderTiles(country);
+        if (ctyState.tab === 'news') ctyRenderPanel();
+      });
+    }
+    (function wireCountrySearch() {
+      const input = document.getElementById('ctySearch'), list = document.getElementById('ctyResults');
+      let hits = [], active = -1, searching = false, searchT, searchId = 0;
+      const choose = (h) => h.type === 'company' ? ctySelectCompany(h.company) : ctySelect(h.name);
+      const paint = () => {
+        list.hidden = !input.value.trim();
+        input.setAttribute('aria-expanded', String(!list.hidden));
+        list.innerHTML = hits.length ? hits.map((h, i) => `<li id="ctyOpt${i}" role="option" aria-selected="${i === active}" class="${i === active ? 'on' : ''}" data-i="${i}">
+            <b>${ctyEsc(h.name)}</b>${h.via ? ` <small>${ctyEsc(h.via)}</small>` : ''}<em>${h.type === 'company'
+              ? `COMPANY · ${ctyEsc(h.company.sym)} · ${ctyEsc(h.company.exchange || h.company.country || '')}`
+              : `COUNTRY · ${h.weight ? 'markets + news' : 'news only'}`}</em></li>`).join('')
+          : `<li class="none">${searching ? 'Searching listed companies…' : `No country or company matches “${ctyEsc(input.value.trim())}”`}</li>`;
+        if (active >= 0) input.setAttribute('aria-activedescendant', `ctyOpt${active}`); else input.removeAttribute('aria-activedescendant');
+      };
+      input.addEventListener('input', () => {
+        const text = input.value, id = ++searchId;
+        hits = ctySearch(text); active = hits.length ? 0 : -1;
+        searching = text.trim().length >= 2 && !!API_PROXY;
+        paint();
+        clearTimeout(searchT);
+        if (!searching) return;
+        searchT = setTimeout(async () => {
+          const remote = await ctyRemoteCompanies(text);
+          if (id !== searchId) return;
+          searching = false;
+          const shown = new Set(hits.map(h => h.company?.sym));
+          hits = [...hits, ...remote.filter(c => !shown.has(c.sym)).map(company => ({ type: 'company', name: company.name, company, via: null, score: 8, weight: 0 }))].slice(0, 12);
+          if (active < 0 && hits.length) active = 0;
+          if (document.activeElement === input) paint();
+        }, 250);
+      });
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') { searchId++; clearTimeout(searchT); ctyCloseResults(); return; }
+        if (!hits.length) return;
+        if (e.key === 'ArrowDown') { e.preventDefault(); active = (active + 1) % hits.length; paint(); }
+        else if (e.key === 'ArrowUp') { e.preventDefault(); active = (active + hits.length - 1) % hits.length; paint(); }
+        else if (e.key === 'Enter' && active >= 0) { e.preventDefault(); choose(hits[active]); }
+      });
+      list.addEventListener('pointerdown', (e) => {   // before the input's blur closes the list
+        const li = e.target.closest('[data-i]'); if (li) { e.preventDefault(); choose(hits[+li.dataset.i]); }
+      });
+      input.addEventListener('blur', () => { searchId++; clearTimeout(searchT); ctyCloseResults(); });
+      let resizeT;
+      addEventListener('resize', () => {
+        clearTimeout(resizeT);
+        resizeT = setTimeout(() => { if (state.tab === 'markets' && state.mktView === 'country' && ctyState.tab !== 'news') ctyRenderPanel(); }, 200);
+      });
+    })();
+
     function everyVisible(fn, ms, { catchUp = false } = {}) {
       if (catchUp) _catchUp.push(fn);
       return setInterval(() => { if (!document.hidden) fn(); }, ms);
@@ -16178,6 +16845,12 @@ PELICAN-9
 
         loadPolymarket().catch(err => console.warn('polymarket:', err));
         everyVisible(() => loadPolymarket().catch(()=>{}), 120000);
+        // COUNTRY SEARCH: fresher quotes and news while it is on screen.
+        everyVisible(() => {
+          if (state.tab !== 'markets' || state.mktView !== 'country' || !(ctyState.country || ctyState.company)) return;
+          ctyRenderTiles(ctyState.country);
+          ctyRenderPanel();
+        }, 5 * 60e3);
 
         renderDefcon();
         everyVisible(renderDefcon, 8000);

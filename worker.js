@@ -51,7 +51,7 @@
  * the same copy; the edge cache is per-colo, so each region rebuilds lazily.
  */
 
-import { collectNews, collectFrance, collectBusiness, fetchQuote } from './news-collector.js';
+import { collectNews, collectFrance, collectBusiness, fetchQuote, searchCompanies } from './news-collector.js';
 import { collectConflicts } from './conflicts-collector.js';
 import { caltransDistrict, nzCameras, spainCameras, icelandCameras, npsWebcams } from './cams.js';
 
@@ -72,6 +72,7 @@ export default {
       if (url.pathname === '/biz')     return await handleFeed(FEEDS.biz, env, ctx);
       if (url.pathname === '/conflicts') return await handleFeed(FEEDS.conflicts, env, ctx);
       if (url.pathname === '/quotes')  return await handleQuotes(url, ctx);
+      if (url.pathname === '/search')  return await handleSearch(url, ctx);
       if (url.pathname.startsWith('/cams/')) return await handleCams(url, env, ctx);
       if (url.pathname === '/caps')    return await handleCaps(url, ctx);
       if (url.pathname === '/gdelt')   return await handleGdelt(url);
@@ -250,6 +251,25 @@ async function handleQuotes(reqUrl, ctx) {
   return new Response(JSON.stringify({ range, quotes: out }), {
     headers: { 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=120', ...CORS },
   });
+}
+
+// ── /search ─────────────────────────────────────────────────────────────────
+// Company lookup for MARKETS → SEARCH. Bounded query, cached a day per query.
+async function handleSearch(reqUrl, ctx) {
+  const q = (reqUrl.searchParams.get('q') || '').trim().toLowerCase().replace(/\s+/g, ' ');
+  if (q.length < 2 || q.length > 60) return json({ error: 'q must be 2..60 characters' }, 400);
+  const cache = caches.default;
+  const key = new Request('https://cache/company-search?q=' + encodeURIComponent(q));
+  const hit = await cache.match(key);
+  if (hit) return withCors(hit);
+  let quotes;
+  try { quotes = await searchCompanies(q); }
+  catch (e) { return json({ error: 'search unavailable', detail: String(e.message || e).slice(0, 120) }, 502); }
+  const resp = new Response(JSON.stringify({ quotes }), {
+    headers: { 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=86400' },
+  });
+  ctx.waitUntil(cache.put(key, resp.clone()));
+  return withCors(resp);
 }
 
 // ── /gdelt ────────────────────────────────────────────────────────────────
