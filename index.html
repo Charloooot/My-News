@@ -7339,7 +7339,7 @@ PELICAN-9
       return null;
     }
 
-    // Major cities used in drill-down mode (filter narrowed to one country).
+    // Major cities: stories naming one of them are pinned on it on the globe.
     // Tuples are [city, lat, lon, share-of-country-traffic].  Shares should
     // sum to ~1 per country.  Cities with no MAJOR_CITIES entry just keep the
     // capital cluster.
@@ -8565,11 +8565,12 @@ PELICAN-9
     const camera = new THREE.PerspectiveCamera(45, innerWidth / innerHeight, 0.1, 200);
     camera.position.set(0.8, 1.5, 5.5);
 
+    const GLOBE_MIN_DIST = 1.2;   // close enough to separate neighbouring cities
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
     controls.dampingFactor = 0.07;
     controls.rotateSpeed = 0.55;
-    controls.minDistance = 1.6;
+    controls.minDistance = GLOBE_MIN_DIST;
     controls.maxDistance = 14;
     controls.zoomSpeed = 1.6;     // snappier wheel zoom on the 3D globe
     controls.autoRotate = true;
@@ -8590,7 +8591,18 @@ PELICAN-9
         color: 0x03101e, transparent: true, opacity: 0.95,
       })
     );
+    innerSphere.renderOrder = -2;
     globe.add(innerSphere);
+    // Vector land fill (built with the borders, see loadBorders).
+    const landMesh = new THREE.Mesh(
+      new THREE.BufferGeometry(),
+      new THREE.MeshBasicMaterial({
+        color: 0x0c2d42, transparent: true, opacity: 0.95,
+        side: THREE.DoubleSide, depthWrite: false,
+      })
+    );
+    landMesh.renderOrder = -1;
+    globe.add(landMesh);
     // No-op stub so the animate loop doesn't error
     function updateSphereTiles() {}
 
@@ -8602,7 +8614,7 @@ PELICAN-9
     // conflict-inspection mode (dim everything, brighten the two sides).
     const borderObjects = new Map();   // countryName → [Line, Line, ...]
     const defaultBorderMat = new THREE.LineBasicMaterial({
-      color: 0x00f0ff, transparent: true, opacity: 0.55,
+      color: 0x00f0ff, transparent: true, opacity: 0.7,
       blending: THREE.AdditiveBlending, depthWrite: false,
     });
     const dimBorderMat = new THREE.LineBasicMaterial({
@@ -8642,39 +8654,114 @@ PELICAN-9
     };
     function canonCountry(n) { return TOPO_ALIASES[n] || n; }
 
+    // Vector basemap from Natural Earth: 1:50m at startup, 1:10m the first time
+    // the user zooms in close (3.6 MB, so never on small screens).
     let bordersGeoJSON = null;
-    async function loadBorders() {
-      try {
-        const url = 'https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json';
-        const r = await fetch(url);
-        const topo = await r.json();
-        const fc = topoFeature(topo, topo.objects.countries);
-        bordersGeoJSON = fc;
-        for (const f of fc.features) {
-          const geom = f.geometry;
-          if (!geom) continue;
-          const name = canonCountry(f.properties?.name || 'unknown');
-          const polys = geom.type === 'Polygon' ? [geom.coordinates] : geom.coordinates;
-          const lines = [];
-          for (const poly of polys) {
-            for (const ring of poly) {
-              const pts = ring.map(([lon, lat]) => latLonToVec3(lat, lon, 1.001));
-              if (pts.length < 2) continue;
-              const line = new THREE.Line(
-                new THREE.BufferGeometry().setFromPoints(pts), defaultBorderMat
-              );
-              line.userData.country = name;
-              bordersGroup.add(line);
-              lines.push(line);
-            }
-          }
-          if (lines.length) {
-            const existing = borderObjects.get(name) || [];
-            borderObjects.set(name, existing.concat(lines));
+    const LAND_R = 0.9995, BORDER_R = 1.001;
+    const LAND_MAX_EDGE_DEG = 8;   // longer triangle edges would cut under the sphere
+    const nextTick = () => new Promise(r => setTimeout(r));
+    const fetchAtlas = async (res) => {
+      const r = await fetch(`https://cdn.jsdelivr.net/npm/world-atlas@2/countries-${res}.json`);
+      if (!r.ok) throw new Error(`atlas ${res}: HTTP ${r.status}`);
+      const topo = await r.json();
+      return topoFeature(topo, topo.objects.countries);
+    };
+    const featurePolygons = (f) => !f.geometry ? [] :
+      f.geometry.type === 'Polygon' ? [f.geometry.coordinates] : f.geometry.coordinates;
+
+    // One LineSegments per country, so a highlight stays a single material swap.
+    function buildBorders(fc) {
+      const previous = new Map(borderObjects);
+      for (const lines of previous.values()) for (const line of lines) {
+        bordersGroup.remove(line);
+        line.geometry.dispose();
+      }
+      borderObjects.clear();
+      for (const f of fc.features) {
+        const name = canonCountry(f.properties?.name || 'unknown');
+        const pos = [];
+        for (const poly of featurePolygons(f)) for (const ring of poly) {
+          let prev = null;
+          for (const [lon, lat] of ring) {
+            const v = latLonToVec3(lat, lon, BORDER_R);
+            if (prev) pos.push(prev.x, prev.y, prev.z, v.x, v.y, v.z);
+            prev = v;
           }
         }
+        if (!pos.length) continue;
+        const geo = new THREE.BufferGeometry();
+        geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+        const line = new THREE.LineSegments(geo, previous.get(name)?.[0].material || defaultBorderMat);
+        line.userData.country = name;
+        bordersGroup.add(line);
+        borderObjects.set(name, [...(borderObjects.get(name) || []), line]);
+      }
+    }
+
+    // Earcut in lon/lat (world-atlas cuts polygons at the antimeridian), then
+    // bisect long edges so the triangles follow the curve of the sphere.
+    async function buildLand(fc) {
+      const pos = [], lls = [], index = [];
+      const vert = (lon, lat) => {
+        const v = latLonToVec3(lat, lon, LAND_R);
+        pos.push(v.x, v.y, v.z);
+        lls.push(lon, lat);
+        return lls.length / 2 - 1;
+      };
+      const edgeDeg = (a, b) => {
+        const dLat = lls[a * 2 + 1] - lls[b * 2 + 1];
+        const midLat = (lls[a * 2 + 1] + lls[b * 2 + 1]) / 2;
+        return Math.hypot((lls[a * 2] - lls[b * 2]) * Math.cos(midLat * Math.PI / 180), dLat);
+      };
+      const addTri = (a, b, c) => {
+        const ab = edgeDeg(a, b), bc = edgeDeg(b, c), ca = edgeDeg(c, a);
+        const longest = Math.max(ab, bc, ca);
+        if (longest <= LAND_MAX_EDGE_DEG) { index.push(a, b, c); return; }
+        const [p, q, r] = longest === ab ? [a, b, c] : longest === bc ? [b, c, a] : [c, a, b];
+        const m = vert((lls[p * 2] + lls[q * 2]) / 2, (lls[p * 2 + 1] + lls[q * 2 + 1]) / 2);
+        addTri(p, m, r);
+        addTri(m, q, r);
+      };
+      let sliceStart = performance.now();
+      for (const f of fc.features) {
+        for (const poly of featurePolygons(f)) {
+          const toV2 = (ring) => ring.map(([x, y]) => new THREE.Vector2(x, y));
+          const contour = toV2(poly[0]), holes = poly.slice(1).map(toV2);
+          const faces = THREE.ShapeUtils.triangulateShape(contour, holes);   // drops closing points
+          const base = lls.length / 2;
+          for (const p of contour.concat(...holes)) vert(p.x, p.y);
+          for (const [a, b, c] of faces) addTri(base + a, base + b, base + c);
+          if (performance.now() - sliceStart > 8) { await nextTick(); sliceStart = performance.now(); }
+        }
+      }
+      const geo = new THREE.BufferGeometry();
+      geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+      geo.setIndex(index);
+      landMesh.geometry.dispose();
+      landMesh.geometry = geo;
+    }
+
+    let hiResBasemap = 'locked';   // locked → ready → loading/done
+    async function loadBorders() {
+      try {
+        const fc = await fetchAtlas('50m');
+        bordersGeoJSON = fc;
+        buildBorders(fc);
+        buildLand(fc).then(() => { hiResBasemap = 'ready'; }).catch(err => console.warn('land fill failed', err));
       } catch (err) {
         console.warn('country borders failed', err);
+      }
+    }
+    async function loadHiResBasemap() {
+      hiResBasemap = 'loading';
+      try {
+        const fc = await fetchAtlas('10m');
+        await buildLand(fc);
+        buildBorders(fc);       // the Leaflet map keeps the lighter 50m data
+        hiResBasemap = 'done';
+      } catch (err) {
+        console.warn('hi-res basemap failed', err);
+        setTimeout(() => { hiResBasemap = 'ready'; }, 30000);   // try again on a later zoom
       }
     }
 
@@ -8814,17 +8901,25 @@ PELICAN-9
       elevated: 0xff8a2a,
       moderate: 0xffd84a,
     };
+    // Flat vector-style disc with a dark outline: stays readable over the land
+    // fill and over neighbouring dots, unlike an additive glow.
+    function articleDotTexture(hex) {
+      const s = 128, r = s / 2;
+      const c = document.createElement('canvas');
+      c.width = c.height = s;
+      const ctx = c.getContext('2d');
+      ctx.beginPath(); ctx.arc(r, r, r - 2, 0, Math.PI * 2);
+      ctx.fillStyle = '#02060e'; ctx.fill();
+      ctx.beginPath(); ctx.arc(r, r, r - 16, 0, Math.PI * 2);
+      ctx.fillStyle = '#' + new THREE.Color(hex).getHexString(); ctx.fill();
+      const t = new THREE.CanvasTexture(c);
+      t.colorSpace = THREE.SRGBColorSpace;
+      return t;
+    }
+    // sizeAttenuation off: the sprite scale maps to a fixed size on screen.
     const sharedSeverityMat = Object.fromEntries(
       Object.entries(SEVERITY_COLORS).map(([k, c]) => [k, new THREE.SpriteMaterial({
-        map: sharpDotTexture(c), color: c, transparent: true,
-        blending: THREE.AdditiveBlending, depthWrite: false,
-      })])
-    );
-    // Shared beam material per layer (anchors dot to country surface)
-    const sharedBeamMat = Object.fromEntries(
-      Object.entries(LAYERS).map(([k, v]) => [k, new THREE.LineBasicMaterial({
-        color: v.color, transparent: true, opacity: 0.22,
-        blending: THREE.AdditiveBlending, depthWrite: false,
+        map: articleDotTexture(c), transparent: true, depthWrite: false, depthTest: false, sizeAttenuation: false,
       })])
     );
 
@@ -8863,37 +8958,39 @@ PELICAN-9
       return sprite;
     }
 
-    const shellGroup = new THREE.Group();
-    wireGroup.add(shellGroup);
-    const shellMats = [];
-    Object.entries(LAYERS).forEach(([key, l]) => {
-      if (key === 'local') return;
-      const mat = new THREE.MeshBasicMaterial({
-        color: l.color, wireframe: true,
-        transparent: true, opacity: 0.025,
-        blending: THREE.AdditiveBlending, depthWrite: false,
-      });
-      shellMats.push({ key, mat });
-      shellGroup.add(new THREE.Mesh(new THREE.SphereGeometry(l.radius, 18, 14), mat));
-    });
-
     const signalsGroup = new THREE.Group();
     wireGroup.add(signalsGroup);
     const signalEntries = [];
 
-    // Build a single labeled cluster around an anchor point.
-    function addAnchorCluster({ country, anchor, count, articles, maxSamples = 12, clusterRad = 1.2, labelScale = 1.0 }) {
+    // Article dots sit ON the surface at their real anchor. Zoomed out, a place
+    // is one dot (sized by coverage); zooming in fans its articles out by a fixed
+    // number of pixels around that point, so no coordinates are invented.
+    const SIGNAL_R = 1.002;
+    const SEV_RANK = { critical: 0, elevated: 1, moderate: 2 };
+    const SEV_DOT_PX = { critical: 12, elevated: 10, moderate: 9 };
+    const FAN_STEP_PX = 8;
+    const FAN_FULL_DIST = 2.4, FAN_NONE_DIST = 3.2;   // camera distance from globe centre
+
+    function addAnchorCluster({ country, anchor, count, articles, maxSamples = 12, labelScale = 1.0 }) {
       const layerKey = classify(count);
       const l = LAYERS[layerKey];
-      const samples = (articles && articles.length)
-        ? articles.slice(0, Math.min(maxSamples, articles.length))
-        : [{ title: anchor.name }];
-      const cosLat = Math.max(0.18, Math.cos(anchor.lat * Math.PI / 180));
-      const layerR = l.radius;
+      const samples = ((articles && articles.length) ? articles : [{ title: anchor.name }])
+        .slice(0, maxSamples)
+        .map(a => ({ a, sev: classifySeverity(a) }))
+        .sort((x, y) => SEV_RANK[x.sev] - SEV_RANK[y.sev]);
+      const anchorPos = latLonToVec3(anchor.lat, anchor.lon, SIGNAL_R);
+      const normal = anchorPos.clone().normalize();
+      const east = new THREE.Vector3(0, 1, 0).cross(normal);
+      if (east.lengthSq() < 1e-6) east.set(1, 0, 0);
+      east.normalize();
+      const north = normal.clone().cross(east);
 
       const label = makeCityLabel(anchor.name.toUpperCase(), l.color);
       if (labelScale !== 1.0) label.scale.multiplyScalar(labelScale);
-      label.position.copy(latLonToVec3(anchor.lat, anchor.lon, layerR + 0.045));
+      label.position.copy(anchorPos);
+      label.center.set(0.5, -0.5);      // sits just above the point on screen
+      label.material.depthTest = false; // a billboard this low would cut into the sphere
+      label.renderOrder = 20;
       label.userData = {
         kind: 'label', country, city: anchor.name, layer: layerKey, count,
         baseScale: { x: label.scale.x, y: label.scale.y },
@@ -8901,92 +8998,79 @@ PELICAN-9
       };
       signalsGroup.add(label);
 
-      for (let i = 0; i < samples.length; i++) {
-        const a = samples[i];
-        const sev = classifySeverity(a);
+      const cluster = { anchorPos, count, lead: null, fanRadiusPx: FAN_STEP_PX * Math.sqrt(samples.length - 1) };
+      samples.forEach(({ a, sev }, i) => {
         const sprite = new THREE.Sprite(sharedSeverityMat[sev]);
-        const angle = i * 2.39996;
-        const rad   = clusterRad * Math.sqrt(i / Math.max(1, samples.length));
-        const jLat = anchor.lat + Math.cos(angle) * rad;
-        const jLon = anchor.lon + (Math.sin(angle) * rad) / cosLat;
-        const altR = layerR + (Math.random() - 0.5) * 0.008;
-        sprite.position.copy(latLonToVec3(jLat, jLon, altR));
-        const baseScale = (sev === 'critical' ? 0.060 : sev === 'elevated' ? 0.050 : 0.042) + Math.random() * 0.012;
-        sprite.scale.setScalar(baseScale);
-        sprite.userData = { kind: 'article', country, city: anchor.name, article: a, layer: layerKey, severity: sev, count, baseScale, lat: jLat, lon: jLon };
+        sprite.position.copy(anchorPos);
+        sprite.renderOrder = 12 - SEV_RANK[sev];
+        sprite.userData = { kind: 'article', country, city: anchor.name, article: a, layer: layerKey, severity: sev, count, basePx: SEV_DOT_PX[sev], lat: anchor.lat, lon: anchor.lon };
         signalsGroup.add(sprite);
+        const angle = i * 2.39996, rad = Math.sqrt(i);
+        const fan = east.clone().multiplyScalar(Math.cos(angle) * rad).addScaledVector(north, Math.sin(angle) * rad);
+        const sig = { country, city: anchor.name, sprite, cluster, fan, layer: layerKey, count, article: a, label: i === 0 ? label : null };
+        cluster.lead ||= sig;
+        signalEntries.push(sig);
+      });
+    }
 
-        const beamGeo = new THREE.BufferGeometry().setFromPoints([
-          latLonToVec3(jLat, jLon, 1.001),
-          sprite.position.clone(),
-        ]);
-        const beam = new THREE.Line(beamGeo, sharedBeamMat[layerKey]);
-        signalsGroup.add(beam);
-
-        signalEntries.push({ country, city: anchor.name, sprite, beam, layer: layerKey, count, article: a, label: i === 0 ? label : null });
+    // Stories that name a known city go on that city; the others are about the
+    // country as a whole and sit on its capital.
+    function addCountrySignal({ country, lat, lon, count, articles }) {
+      const capital = capitalFor(country) || { name: country, lat, lon };
+      const cities = new Map((MAJOR_CITIES[country] || []).map(([name, la, lo]) => [name, { name, lat: la, lon: lo }]));
+      const groups = new Map();
+      for (const a of articles || []) {
+        const city = a._geo?.country === country ? a._geo.city : null;
+        const anchor = (city && city !== capital.name && cities.get(city)) || capital;
+        if (!groups.has(anchor.name)) groups.set(anchor.name, { anchor, articles: [] });
+        groups.get(anchor.name).articles.push(a);
+      }
+      if (!groups.size) groups.set(capital.name, { anchor: capital, articles: [] });
+      const reach = (list) => list.reduce((n, a) => n + (a._story?.size || 1), 0);
+      let inCities = 0;
+      for (const g of groups.values()) if (g.anchor !== capital) inCities += reach(g.articles);
+      for (const g of groups.values()) {
+        addAnchorCluster({
+          country, anchor: g.anchor, articles: g.articles,
+          count: g.anchor === capital ? Math.max(1, count - inCities) : reach(g.articles),
+          labelScale: g.anchor === capital ? 1.0 : 0.85,
+        });
       }
     }
 
-    function addCountrySignal({ country, lat, lon, count, articles }) {
-      const cap = capitalFor(country);
-      const anchor = cap || { name: country, lat, lon };
-      addAnchorCluster({ country, anchor, count, articles });
-    }
-
-    // Wipe every signalEntry belonging to a country (sprite + beam + label).
-    function removeCountrySignals(country) {
-      for (let i = signalEntries.length - 1; i >= 0; i--) {
-        const sig = signalEntries[i];
-        if (sig.country !== country) continue;
-        sig.sprite?.parent?.remove(sig.sprite);
-        sig.beam?.parent?.remove(sig.beam);
-        sig.label?.parent?.remove(sig.label);
-        signalEntries.splice(i, 1);
+    function updateSignalDots(t) {
+      const pxToScale = 2 * Math.tan(camera.fov * Math.PI / 360) / innerHeight;
+      const fan = 1 - THREE.MathUtils.smoothstep(camera.position.length(), FAN_FULL_DIST, FAN_NONE_DIST);
+      for (const sig of signalEntries) {
+        const { sprite, cluster } = sig;
+        if (!sprite.visible) continue;
+        // Depth test is off, so anything past the horizon is hidden here.
+        if (cluster.anchorPos.dot(camera.position) <= 1) { sprite.scale.setScalar(0); continue; }
+        const pxToWorld = camera.position.distanceTo(cluster.anchorPos) * pxToScale;
+        sprite.position.copy(cluster.anchorPos).addScaledVector(sig.fan, FAN_STEP_PX * fan * pxToWorld);
+        const u = sprite.userData;
+        const coverageBoost = Math.min(7, 2 * Math.log2(Math.max(1, cluster.count)));
+        let px = cluster.lead === sig ? u.basePx + coverageBoost * (1 - fan) : u.basePx * fan;
+        if (u.severity === 'critical') px *= 1 + 0.08 * Math.sin(t * 2.2);
+        sprite.scale.setScalar(px * pxToScale);
+        if (sig.label) {   // lift the name clear of the fanned-out dots
+          const labelPx = sig.label.scale.y / pxToWorld;
+          sig.label.center.y = -0.5 - fan * cluster.fanRadiusPx / labelPx;
+        }
       }
     }
 
     function enterDrillDown(country) {
       if (state.drillDownCountry === country) return;
       if (state.drillDownCountry) exitDrillDown();
-      const cities = MAJOR_CITIES[country];
-      const c = state.countries.get(country);
-      if (!cities || !c) return;   // no city data → keep capital view
+      if (!MAJOR_CITIES[country] || !state.countries.has(country)) return;
 
-      removeCountrySignals(country);
-      const totalArticles = c.articles || [];
-      // Stories that name a city go to that city; the rest are spread by the
-      // curated traffic shares as before.
-      const pinned = new Map(cities.map(([name]) => [name, []]));
-      const loose = [];
-      for (const a of totalArticles) {
-        const city = a._geo?.city;
-        if (city && pinned.has(city)) pinned.get(city).push(a); else loose.push(a);
-      }
-      const reach = (list) => list.reduce((n, a) => n + (a._story?.size || 1), 0);
-      const looseCount = Math.max(0, c.count - reach([...pinned.values()].flat()));
-      let idx = 0;
-      for (const [name, lat, lon, share] of cities) {
-        const numA = Math.max(1, Math.round(loose.length * share));
-        const spread = loose.slice(idx, idx + numA);
-        idx += spread.length;
-        const cityArticles = [...pinned.get(name), ...spread];
-        const cityCount = Math.max(1, reach(pinned.get(name)) + Math.round(looseCount * share));
-        addAnchorCluster({
-          country, anchor: { name, lat, lon },
-          count: cityCount, articles: cityArticles.length ? cityArticles : null,
-          maxSamples: 6, clusterRad: 0.55, labelScale: 0.7,
-        });
-      }
       state.drillDownCountry = country;
       applyFilters();
     }
 
     function exitDrillDown() {
       if (!state.drillDownCountry) return;
-      const country = state.drillDownCountry;
-      const c = state.countries.get(country);
-      removeCountrySignals(country);
-      if (c) addCountrySignal({ country, lat: c.lat, lon: c.lon, count: c.count, articles: c.articles });
       state.drillDownCountry = null;
       applyFilters();
     }
@@ -10766,7 +10850,6 @@ PELICAN-9
       // Clear current signals before re-ingesting
       for (const sig of signalEntries.splice(0)) {
         sig.sprite?.parent?.remove(sig.sprite);
-        sig.beam?.parent?.remove(sig.beam);
         sig.label?.parent?.remove(sig.label);
       }
       state.countries.clear();
@@ -10789,8 +10872,7 @@ PELICAN-9
       try {
         for (const sig of signalEntries.splice(0)) {
           sig.sprite?.parent?.remove(sig.sprite);
-          sig.beam?.parent?.remove(sig.beam);
-          sig.label?.parent?.remove(sig.label);
+            sig.label?.parent?.remove(sig.label);
         }
         state.countries.clear();
         state.articles = [];
@@ -11079,6 +11161,7 @@ PELICAN-9
       const sel = state.selectedCountry;
       document.body.classList.toggle('country-focus', !!sel);
       const bn = document.getElementById('countryBackName'); if (bn) bn.textContent = sel ? sel.toUpperCase() : '';
+      for (const sig of signalEntries) sig.cluster.lead = null;
       for (const sig of signalEntries) {
         const sev = sig.sprite.userData?.severity || 'moderate';
         const sevOK = state.activeSeverities.has(sev);
@@ -11086,12 +11169,9 @@ PELICAN-9
         const selOK = !sel || sig.country === sel;
         const on = sevOK && filterOK && selOK && (state.tab === 'wire' || state.tab === 'defcon');
         sig.sprite.visible = on;
-        if (sig.beam)  sig.beam.visible  = on;
-        if (sig.label) sig.label.visible = on;
+        if (on) sig.cluster.lead ||= sig;   // entries are severity-sorted: the worst shown story leads
       }
-      for (const sm of shellMats) {
-        sm.mat.visible = (state.tab === 'wire' || state.tab === 'defcon') && !sel;
-      }
+      for (const sig of signalEntries) if (sig.label) sig.label.visible = !!sig.cluster.lead;
       drawMap();
     }
 
@@ -11226,7 +11306,7 @@ PELICAN-9
       resetBorderHighlight();
       applyConflictVisibility();
       renderFeedConflicts();
-      controls.minDistance = (state.tab === 'orbit') ? 1.4 : 1.6;
+      controls.minDistance = (state.tab === 'orbit') ? 1.4 : GLOBE_MIN_DIST;
       drawMap();
     }
 
@@ -12694,7 +12774,7 @@ PELICAN-9
       if (name === 'conflicts') applyConflictVisibility();
       applyFilters();
 
-      controls.minDistance = (name === 'orbit') ? 1.4 : 1.6;
+      controls.minDistance = (name === 'orbit') ? 1.4 : GLOBE_MIN_DIST;
       controls.maxDistance = (name === 'orbit') ? 30 : 14;
 
       if (name === 'orbit' && satLoadState === 'idle') loadSatellites();
@@ -12896,7 +12976,7 @@ PELICAN-9
         const d = o.userData;
         if (d.kind === 'article') {
           tipKicker.textContent = 'SIGNAL';
-          tipName.textContent = d.country;
+          tipName.textContent = d.article?._geo?.city === d.city ? `${d.city} · ${d.country}` : d.country;
           const title = d.article?.title ? `<br/><span style="opacity:0.85">${escapeHtml(d.article.title).slice(0, 110)}…</span>` : '';
           tipMeta.innerHTML =
             `<b style="color:var(--paper)">${d.layer.toUpperCase()}</b> · ${d.count} article${d.count === 1 ? '' : 's'}` + title;
@@ -12974,9 +13054,9 @@ PELICAN-9
         // jumping straight into a single article. Keep the globe context in
         // sync (camera, drill-down, borders, sidebar) so it's ready underneath.
         const country = d.country;
-        // Scope to a city only when already drilled into that country's cities;
-        // otherwise the anchor is just the capital standing in for the country.
-        const city = (state.drillDownCountry === country) ? d.city : null;
+        // Scope to a city only when drilled into that country and the story really
+        // names it; otherwise the anchor is the capital standing in for the country.
+        const city = (state.drillDownCountry === country && d.article?._geo?.city === d.city) ? d.city : null;
         state.selectedCountry = country;
         focusCountry(country);
         if (state.tab !== 'wire') setTab('wire');
@@ -14215,19 +14295,19 @@ PELICAN-9
       _declutterAt = nowMs;
       const labels = signalsGroup.children.filter(c => c.userData?.kind === 'label' && c.visible);
       labels.sort((a, b) => (b.userData.count || 0) - (a.userData.count || 0));
-      const camDir = camera.position.clone().normalize();
       const tanHalf = Math.tan(camera.fov * Math.PI / 360);
       const placed = [];
       const PAD = 3;
       for (const l of labels) {
         let show = false;
-        if (l.position.clone().normalize().dot(camDir) > 0.12) {
+        if (l.position.dot(camera.position) > 1.02) {     // in front of the horizon
           _v3.copy(l.position).project(camera);
           const x = (_v3.x + 1) / 2 * innerWidth, y = (1 - _v3.y) / 2 * innerHeight;
           const dist = camera.position.distanceTo(l.position);
           const h = l.scale.y / (2 * dist * tanHalf) * innerHeight;
           const w = h * (l.scale.x / l.scale.y);
-          const box = [x - w / 2 - PAD, y - h / 2 - PAD, x + w / 2 + PAD, y + h / 2 + PAD];
+          const cy = y - (0.5 - l.center.y) * h;   // the label is drawn above its anchor
+          const box = [x - w / 2 - PAD, cy - h / 2 - PAD, x + w / 2 + PAD, cy + h / 2 + PAD];
           show = !placed.some(b => box[0] < b[2] && box[2] > b[0] && box[1] < b[3] && box[3] > b[1]);
           if (show) placed.push(box);
         }
@@ -14246,15 +14326,13 @@ PELICAN-9
     const clock = new THREE.Clock();
     function animate() {
       const t = clock.getElapsedTime();
-      shellMats.forEach(({ mat }, i) => {
-        const k = Math.sin(t * 0.7 + i * 0.9) * 0.5 + 0.5;
-        mat.opacity = 0.04 + 0.05 * k;
-      });
-      for (const sig of signalEntries) {
-        if (!sig.sprite.visible) continue;
-        const k = 0.88 + 0.12 * Math.sin(t * 2.2 + sig.sprite.position.x * 3);
-        sig.sprite.scale.setScalar(sig.sprite.userData.baseScale * k);
-      }
+      updateSignalDots(t);
+      // Orbit and zoom gently near the surface; fetch the finer coastlines there.
+      const camDist = camera.position.length();
+      const nearK = Math.min(1, (camDist - 1) / 1.6);
+      controls.rotateSpeed = 0.55 * Math.max(0.08, nearK);
+      controls.zoomSpeed = 1.6 * Math.max(0.25, nearK);
+      if (hiResBasemap === 'ready' && camDist < 1.9 && innerWidth >= 800) loadHiResBasemap();
       for (const qe of quakeEntries) {
         const k = 0.85 + 0.18 * Math.sin(t * 2.8 + qe.sprite.position.x * 2);
         qe.sprite.scale.setScalar(qe.sprite.userData.baseScale * k);
@@ -14292,7 +14370,7 @@ PELICAN-9
           const u = child.userData;
           if (!u?.screenSize) continue;
           const d = camPos.distanceTo(child.position);
-          const k = Math.max(0.30, Math.min(4.0, d / REF));
+          const k = Math.max(0.05, Math.min(4.0, d / REF));
           if (u.baseScale != null && typeof u.baseScale === 'number') {
             child.scale.setScalar(u.baseScale * k);
           } else if (u.baseScale && u.baseScale.x != null) {
