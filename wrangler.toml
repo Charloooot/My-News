@@ -26,6 +26,9 @@ crons = ["*/15 * * * *", "7,22,37,52 * * * *", "11,41 * * * *"]
 
 # Merged news feed store (created with `wrangler kv namespace create NEWS`).
 # Remove this block to fall back to the edge cache (works, but per-region).
+[ai]
+binding = "AI"   # English headlines for foreign-language articles (see news-collector.js)
+
 [[kv_namespaces]]
 binding = "NEWS"
 id = "9849728f8081480f8fd5cb189b48186e"

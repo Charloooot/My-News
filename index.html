@@ -130,16 +130,16 @@
   .defcon-pill.lvl-2 .dot { color: var(--orange); background: var(--orange); }
   .defcon-pill.lvl-1 .dot { color: var(--red);    background: var(--red); animation-duration: 0.7s; }
 
-  .lang-toggle, .view-toggle {
+  .view-toggle {
     display: flex; border: 1px solid var(--line2);
     background: rgba(5,11,24,0.6);
   }
-  .lang-toggle button, .view-toggle button {
+  .view-toggle button {
     padding: 6px 10px;
     font-size: 11px; letter-spacing: 0.14em;
     color: var(--dim);
   }
-  .lang-toggle button.on, .view-toggle button.on {
+  .view-toggle button.on {
     background: rgba(0,240,255,0.16);
     color: var(--paper);
   }
@@ -370,10 +370,6 @@
   .feed-item .meta .tag.alert { color: var(--red); border-color: rgba(255,48,92,0.5); background: rgba(255,48,92,0.1); }
   .feed-item .src .via { opacity: 0.6; }
   .feed-item .title { color: var(--paper); }
-  .feed-item .title.translated { color: var(--cyan); }
-  .feed-item .title .o {
-    display: block; color: var(--dim); font-size: 10px; margin-top: 3px; opacity: 0.7;
-  }
   .feed-item .src { color: var(--dim); font-size: 10px; margin-top: 4px; }
 
   .telemetry { padding: 14px 16px; font-size: 11px; }
@@ -1269,7 +1265,6 @@
   .reader-content .kicker .chip.diplo { color: var(--magenta); border-color: rgba(255,112,255,0.4); background: rgba(255,112,255,0.08); }
   .reader-content .kicker .chip.markets { color: var(--green); border-color: rgba(63,255,142,0.4); background: rgba(63,255,142,0.08); }
   .reader-content h1 { font-size: 22px; line-height: 1.35; font-weight: 700; color: var(--paper); margin-bottom: 8px; }
-  .reader-content h1 .o { display: block; color: var(--dim); font-size: 14px; font-weight: 400; margin-top: 6px; opacity: 0.7; }
   .reader-content .by { font-size: 11px; color: var(--dim); letter-spacing: 0.1em; margin-bottom: 22px; }
   .reader-content .by b { color: var(--cyan); }
   .reader-content .hero {
@@ -1610,10 +1605,6 @@
         <span class="dot"></span>
         <span>DEFCON</span>
         <span class="lvl" id="defconLvl">5</span>
-      </div>
-      <div class="lang-toggle" id="langToggle">
-        <button data-lang="en" class="on">EN</button>
-        <button data-lang="fr">FR</button>
       </div>
     </div>
   </header>
@@ -8523,7 +8514,6 @@ PELICAN-9
     // ════════════════════════════════════════════════════════════════
     const state = {
       tab: 'wire',
-      lang: 'en',
       countryFilter: '',
       activeScopes: new Set(['local','regional','international','global']),
       activeSeverities: new Set(['critical','elevated','moderate']),
@@ -8543,7 +8533,6 @@ PELICAN-9
       selectedOutbreak: null,
       lineFilters: { continent: 'ALL', severity: 'ALL', topic: 'ALL' },
       viewMode: 'globe',
-      tCache: new Map(),
       openArticles: [],        // [{id, ...articleData, related}]
       activeArticleId: null,
       lastAlertedSym: new Map(), // sym -> timestamp
@@ -10422,7 +10411,7 @@ PELICAN-9
     // are capitalised, so "turkey" / "china" / "chad" as common words don't hit.
     // Leaders' names are deliberately left out — they go stale.
     const GEO_TERMS = {
-      'United States': 'American|Americans|U.S.|US|USA|White House|Pentagon|Capitol Hill|New Mexico|Puerto Rico|Alaska|Hawaii|California|Texas|Florida|New York City|Wall Street',
+      'United States': 'American|Americans|U.S.|US|USA|White House|Pentagon|Capitol Hill|New Mexico|Puerto Rico|Alaska|Hawaii|California|Texas|Florida|New York City|Wall Street|Manhattan|Brooklyn|Michigan|Ohio|Indiana|Kentucky|Pennsylvania|Arizona|Nevada|Wisconsin|Minnesota|Illinois|Colorado|Tennessee|Louisiana|Alabama|Oklahoma|Missouri|Iowa|Oregon|Utah|Maine|North Carolina|South Carolina|Massachusetts|New Jersey|GOP|Senate race|House Democratic|House Democrats|Senate Republicans|Trump|Midterms|Midterm|midterms|midterm|united states',
       'United Kingdom': 'UK|U.K.|Britain|British|Briton|Britons|England|Scotland|Wales|Scottish|Welsh|Northern Ireland|Downing Street|Westminster',
       'Canada': 'Canadian|Canadians|Toronto|Montreal|Vancouver|Quebec|Alberta',
       'Mexico': 'Mexican|Mexicans|Guadalajara|Monterrey|Tijuana|Sinaloa',
@@ -10499,7 +10488,7 @@ PELICAN-9
     // on Gaza" happens in Gaza, "Russian drones hit Kharkiv" in Ukraine.
     const GEO_ACTOR = new Set(['American', 'Americans', 'U.S.', 'USA', 'British', 'Russian', 'Russians', 'Chinese', 'Israeli',
       'Israelis', 'Iranian', 'Turkish', 'Saudi', 'Indian', 'Pakistani', 'Ukrainian', 'Emirati', 'Qatari', 'Egyptian', 'Japanese',
-      'Kremlin', 'Pentagon', 'White House', 'IDF', 'IRGC', 'Hezbollah', 'Hamas', 'Houthi', 'Houthis']);
+      'Trump', 'Midterms', 'Midterm', 'midterms', 'midterm', 'Kremlin', 'Pentagon', 'White House', 'IDF', 'IRGC', 'Hezbollah', 'Hamas', 'Houthi', 'Houthis']);
     // Context overrides for weak terms: "Georgia Senate race" is the US state,
     // "turkey prices before Thanksgiving" is a bird. `to: null` drops the hit.
     const GEO_CONTEXT = {
@@ -10508,6 +10497,72 @@ PELICAN-9
       'Jordan':  { to: null, when: /\b(NBA|Nike|sneakers?|Air Jordan|Bulls)\b/ },
       'Chad':    { to: null, when: /\b(Chad (?!Republic)[A-Z][a-z]+)\b/ },
     };
+
+    // The same places in the feed's other languages. `*` = stem, for inflected
+    // languages (Трамп → Трампа). `~` = usually the actor, not the place.
+    // Vietnamese "Mỹ" and Serbo-Croat "SAD" are left out: without accents and case
+    // they collide with English "My" and "SAD". Korean bare "이란" is also a particle.
+    const GEO_I18N = {
+      'United States': '美国|美國|美军|美軍|美方|美股|米国|米軍|미국|백악관|~特朗普|~川普|~트럼프|~トランプ|ΗΠΑ|~Τραμπ|США|САЩ|САД|~Трамп*|Білий дім|Белый дом|الولايات المتحدة|أمريكا|أميركا|واشنطن|~ترامب|~ترمب|امریکہ|~ٹرمپ|अमेरिका|~ट्रंप|ABD|EEUU|EE.UU.|EE UU|Estados Unidos|EUA|Stati Uniti|Usa|Vereinigte Staaten|Verenigde Staten|États-Unis|Etats-Unis|Amerika Serikat|Hoa Kỳ|Tổng thống Mỹ|bầu cử Mỹ|Quân đội Mỹ|SUA',
+      'Russia': '俄罗斯|俄羅斯|俄军|俄軍|俄方|ロシア|러시아|Ρωσι*|Росси*|Росі*|Русиј*|Русия|~Кремл*|~Песков*|روسيا|रूस|Rusia|Rusya|Rusland|Russland|Ryssland|Russie|Rússia|Rosj*|Rusij*|Nga',
+      'Ukraine': '乌克兰|烏克蘭|ウクライナ|우크라이나|Ουκραν*|Украин*|Україн*|Украјин*|Украйн*|أوكرانيا|یوکرین|यूक्रेन|Ucrania|Ucraina|Ucrânia|Ukrayna|Oekraïne|Ukrain*|Ukrajin*',
+      'China': '中国|中國|北京|중국|시진핑|Κίνα|Κίνας|Китай|Китая|Китае|Китаї|Кину|Кине|الصين|चीन|Çin|Cina|Tiongkok|Trung Quốc|Chine|Chiny|Kina|Kiina',
+      'Taiwan': '台湾|台灣|대만|Ταϊβάν|Тайван*|تايوان|Tayvan|Taiwán|Đài Loan',
+      'Japan': '日本|東京|일본|Ιαπωνί*|Япони*|Јапан*|اليابان|जापान|Japón|Japonya|Giappone|Japão|Jepang|Nhật Bản|Japon',
+      'South Korea': '韩国|韓國|韩方|韓国|한국|서울|Νότια Κορέα|Южн* Коре*|كوريا الجنوبية|Corea del Sur|Corea del Sud|Coreia do Sul|Güney Kore|Südkorea|Zuid-Korea|Corée du Sud|Korea Selatan|Hàn Quốc',
+      'North Korea': '朝鲜|北韩|北韓|北朝鮮|북한|Βόρεια Κορέα|КНДР|Северн* Коре*|Північн* Коре*|كوريا الشمالية|Corea del Norte|Corea del Nord|Coreia do Norte|Kuzey Kore|Nordkorea|Noord-Korea|Corée du Nord|Korea Utara|Triều Tiên',
+      'Iran': '伊朗|イラン|테헤란|호르무즈|Ιράν|Κεσμ|Иран*|Іран*|إيران|ایران|ईरान|Irán|İran|Teheran',
+      'Israel': '以色列|イスラエル|이스라엘|Ισραήλ|Израил*|Ізраїл*|إسرائيل|اسرائیل|इज़राइल|इजरायल|İsrail|Izrael*|Israël',
+      'Palestine': '加沙|加薩|ガザ|가자지구|Γάζα|Газ* сектор*|сектор* Газ*|غزة|Gazze*|Franja de Gaza|Striscia di Gaza',
+      'Syria': '叙利亚|敘利亞|시리아|Συρία|Сири*|Сирі*|سوريا|Siria|Suriye|Syrie|Syrien',
+      'Lebanon': '黎巴嫩|レバノン|레바논|Λίβανο|Ливан*|Ліван*|لبنان|Líbano|Libano|Lübnan|Liban',
+      'Iraq': '伊拉克|イラク|이라크|Ιράκ|Ирак*|Ірак*|العراق|Irak',
+      'Saudi Arabia': '沙特|サウジ|사우디|Σαουδική Αραβία|Саудовск* Арави*|السعودية|Arabia Saudí|Arabia Saudita|Arábia Saudita|Suudi Arabistan|Arab Saudi',
+      'Turkey': '土耳其|トルコ|튀르키예|터키|Τουρκί*|Турци*|Турсь*|تركيا|Turquía|Turchia|Turquia|Turquie|Türkiye|Türkei|Turki',
+      'Greece': '希腊|希臘|ギリシャ|그리스|Ελλάδα|Ελλάδας|Греци*|Yunanistan|Grecia|Grécia|Griechenland|Griekenland|Grèce|Yunani',
+      'Cyprus': '塞浦路斯|Κύπρο|Κύπρος|Кипр*|Kıbrıs|Chipre|Zypern',
+      'France': '法国|法國|フランス|프랑스|Γαλλί*|Франци*|Франці*|Француск*|Париз*|Париж*|فرنسا|फ्रांस|Francia|França|Fransa|Frankreich|Frankrijk|Frankrig|Frankrike|Francja|Prancis|Francusk*|Pháp',
+      'Germany': '德国|德國|ドイツ|독일|Γερμανί*|Германи*|Німеччин*|Немачк*|ألمانيا|جرمنی|जर्मनी|Alemania|Germania|Alemanha|Almanya|Deutschland|Duitsland|Tyskland|Niemcy|Niemiec|Jerman|Allemagne|Njemačk*',
+      'United Kingdom': '英国|英國|イギリス|영국|Βρετανί*|Британи*|Британі*|Велик* Британ*|بريطانيا|برطانیہ|ब्रिटेन|Reino Unido|Regno Unito|İngiltere|Großbritannien|Groot-Brittannië|Royaume-Uni|Inggris|Anh Quốc',
+      'Italy': '意大利|義大利|イタリア|이탈리아|Ιταλί*|Итали*|Італі*|إيطاليا|Italia|Itália|İtalya|Italien|Italië|Italie|Włochy',
+      'Spain': '西班牙|スペイン|스페인|Ισπανί*|Испани*|Іспані*|إسبانيا|España|Spagna|Espanha|İspanya|Spanien|Spanje|Espagne|Hiszpani*|Spanyol|Tây Ban Nha',
+      'Poland': '波兰|波蘭|폴란드|Πολωνί*|Польш*|Польщ*|Polonia|Polônia|Polonya|Polen|Pologne|Polsk*',
+      'India': '印度|Ινδί*|Индия|Индии|Индию|Індії|Індія|بھارت|भारत|Hindistan',
+      'Pakistan': '巴基斯坦|パキスタン|파키스탄|Пакистан*|Пакистані*|باكستان|پاکستان|पाकिस्तान|Pakistán|Paquistão',
+      'Indonesia': '印度尼西亚|印尼|インドネシア|인도네시아|Индонези*|إندونيسيا|Endonezya',
+      'Egypt': '埃及|エジプト|이집트|Αίγυπτο|Египет*|Египт*|Єгипт*|القاهرة|المصري|Egipto|Egitto|Egito|Mısır|Ägypten|Égypte|Mesir',
+      'Serbia': 'Србиј*|Srbij*|Сербі*|Серби*|Sırbistan|Serbien|Serbie',
+      'Vietnam': '越南|ベトナム|베트남|Вьетнам*|Việt Nam',
+      'Brazil': '巴西人|巴西的|巴西总统|巴西總統|巴西队|巴西隊|在巴西|ブラジル|브라질|Βραζιλί*|Бразили*|Бразилі*|Brasil|Brezilya|Brasilien|Brésil',
+    };
+    // A lone hanja in Korean headlines (美중간선거). Inside a Chinese word they mean something else.
+    const GEO_HANJA = { '美': 'United States', '北': 'North Korea' };
+    const LOOSE_SCRIPT = /[\p{Script=Han}\p{Script=Hangul}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Arabic}]/u;
+
+    // Languages of an outlet's home audience. A Ukrainian-language page hosted in
+    // the US, or an English edition from Qatar, tells nothing about where the
+    // story happened. Languages not listed here are accepted.
+    const LANG_HOMES = {
+      English: 'United States|United Kingdom|Ireland|Canada|Australia|New Zealand|India|Pakistan|Nigeria|South Africa|Kenya|Ghana|Uganda|Tanzania|Zimbabwe|Philippines|Singapore|Malaysia|Jamaica|Malta',
+      French: 'France|Belgium|Switzerland|Canada|Luxembourg|Senegal|Ivory Coast|Mali|Burkina Faso|Niger|Cameroon|Democratic Republic of the Congo|Morocco|Algeria|Tunisia|Madagascar|Haiti',
+      Spanish: 'Spain|Mexico|Argentina|Colombia|Chile|Peru|Venezuela|Ecuador|Bolivia|Paraguay|Uruguay|Cuba|Dominican Republic|Guatemala|Honduras|El Salvador|Nicaragua|Costa Rica|Panama|Puerto Rico',
+      Portuguese: 'Portugal|Brazil|Angola|Mozambique', German: 'Germany|Austria|Switzerland|Luxembourg',
+      Italian: 'Italy|Switzerland', Dutch: 'Netherlands|Belgium', Danish: 'Denmark', Swedish: 'Sweden|Finland', Finnish: 'Finland',
+      Polish: 'Poland', Czech: 'Czech Republic', Hungarian: 'Hungary', Romanian: 'Romania|Moldova', Bulgarian: 'Bulgaria',
+      Greek: 'Greece|Cyprus', Turkish: 'Turkey|Cyprus', Russian: 'Russia|Belarus|Kazakhstan|Kyrgyzstan|Uzbekistan|Armenia|Georgia|Moldova|Ukraine|Latvia|Estonia',
+      Ukrainian: 'Ukraine', Serbian: 'Serbia|Bosnia and Herzegovina|Montenegro', Croatian: 'Croatia|Bosnia and Herzegovina', Bosnian: 'Bosnia and Herzegovina|Serbia|Montenegro',
+      Chinese: 'China|Taiwan|Hong Kong|Macau|Singapore|Malaysia', Korean: 'South Korea|North Korea', Japanese: 'Japan', Vietnamese: 'Vietnam',
+      Indonesian: 'Indonesia', Hindi: 'India', Urdu: 'Pakistan|India', Hebrew: 'Israel',
+      Arabic: 'Egypt|Saudi Arabia|United Arab Emirates|Qatar|Kuwait|Bahrain|Oman|Yemen|Iraq|Syria|Lebanon|Jordan|Palestine|Israel|Libya|Tunisia|Algeria|Morocco|Sudan|Mauritania',
+    };
+    // World desks: the outlet's home says nothing about where a story is.
+    const WORLD_OUTLETS = /(^|\.)(bbc\.co\.uk|bbc\.com|theguardian\.com|aljazeera\.com|france24\.com|euronews\.com|rfi\.fr|dw\.com|reuters\.com|apnews\.com|cnn\.com|news\.sky\.com|news\.un\.org|reliefweb\.int|allafrica\.com|voanews\.com|scmp\.com)$/;
+    function outletLikelyLocal(a, country) {
+      if (/^demo\./.test(a.domain || '')) return true;
+      if (WORLD_OUTLETS.test(a.domain || '')) return false;
+      const homes = LANG_HOMES[a.language];
+      return !homes || homes.split('|').includes(country);
+    }
 
     // Country names as other datasets spell them (ReliefWeb, GDACS, ACLED, UN).
     Object.assign(ALIASES, {
@@ -10540,9 +10595,30 @@ PELICAN-9
       for (const [country, [city]] of Object.entries(CAPITALS)) if (city !== country) add(city, country, city);
       for (const [country, terms] of Object.entries(GEO_TERMS)) for (const t of terms.split('|')) add(t, country);
       for (const [alias, country] of Object.entries(ALIASES)) if (CENTROIDS[country]) add(alias, country);
+      // Three ways to match: whole word (default), stem (word start only, for
+      // inflected languages), anywhere (scripts written without word boundaries,
+      // or with particles attached to the word).
+      const stems = [], loose = [];
+      for (const [country, terms] of Object.entries(GEO_I18N)) {
+        for (const raw of terms.split('|')) {
+          const actor = raw.startsWith('~'), stem = raw.endsWith('*');
+          const k = deaccent(raw.replace(/^~|\*$/g, ''));
+          if (termMap.has(k)) continue;
+          termMap.set(k, { country, city: null, w: actor ? 0.6 : 1 });
+          if (LOOSE_SCRIPT.test(raw)) loose.push(k);
+          else if (stem) stems.push(k);
+        }
+      }
+      for (const [k, country] of Object.entries(GEO_HANJA)) termMap.set(k, { country, city: null, w: 1 });
       const esc = (t) => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-      const alts = [...termMap.keys()].sort((a, b) => b.length - a.length).map(esc);
-      const re = new RegExp(`(?<![\\p{L}\\p{N}])(?:${alts.join('|')})(?![\\p{L}\\p{N}])`, 'gu');
+      const longestFirst = (list) => [...list].sort((a, b) => b.length - a.length).map(esc).join('|');
+      const special = new Set([...stems, ...loose, ...Object.keys(GEO_HANJA)]);
+      const whole = longestFirst([...termMap.keys()].filter(k => !special.has(k)));
+      const re = new RegExp(
+        `(?<![\\p{L}\\p{N}])(?:${whole})(?![\\p{L}\\p{N}])` +
+        `|(?<![\\p{L}\\p{N}])(?:${longestFirst(stems)})` +
+        `|${longestFirst(loose)}` +
+        `|(?<![\\p{Script=Han}\\p{N}])(?:${longestFirst(Object.keys(GEO_HANJA))})(?![\\p{Script=Han}])`, 'gu');
       return { re, termMap };
     }
 
@@ -10566,6 +10642,7 @@ PELICAN-9
         }
       };
       scan(a.title, 3);
+      scan(a.titleOrig, 3);   // place names survive better in the original than in machine translation
       scan(a.desc, 1);
       // Structured sources (ReliefWeb, GDACS, ACLED, Guardian tags) know the place.
       const hinted = a.countryHint && lookup(a.countryHint)?.name;
@@ -10577,13 +10654,21 @@ PELICAN-9
         const all = [...score.entries()].sort((x, y) => y[1] - x[1]).map(([c]) => c);
         return { country: best, city: cities.get(best) || null, via: best === hinted ? 'hint' : 'text', all };
       }
+      // No place named: the outlet's country is a fair guess only for a local
+      // outlet writing for its home audience. Otherwise leave the story unplaced.
       const src = lookup(a.sourcecountry)?.name || null;
-      return { country: src, city: null, via: 'source', all: src ? [src] : [] };
+      if (src && outletLikelyLocal(a, src)) return { country: src, city: null, via: 'source', all: [src] };
+      return { country: null, city: null, via: 'none', all: [] };
     }
 
     // The country an article is ABOUT (falls back to the outlet's country).
     function articleCountry(a) {
-      return a?._geo?.country || lookup(a?.sourcecountry)?.name || null;
+      return a?._geo ? a._geo.country : (lookup(a?.sourcecountry)?.name || null);
+    }
+
+    // Shown where a place is expected; an unplaced story gets no country at all.
+    function articlePlaceLabel(a) {
+      return a._country || articleCountry(a) || (a._geo ? 'WORLD' : a.sourcecountry) || '—';
     }
 
     // ════════════════════════════════════════════════════════════════
@@ -10679,12 +10764,18 @@ PELICAN-9
         .trim();
     }
 
+    // Text is shown in French or English only; other languages need the Worker's
+    // English translation of the headline.
+    function isDisplayLanguage(a) {
+      return !a.language || a.language === 'English' || a.language === 'French' || a.translated === true;
+    }
+
     function ingestArticles(all, cached, { dedupe = true } = {}) {
       // Same headline from several outlets is no longer dropped: clustering
       // folds it into one story whose size = how many outlets carry it. The
       // demo set skips clustering — its generic headlines are deliberately
       // reused across countries.
-      const unique = all.filter(a => a && a.title && !isJunkArticle(a));
+      const unique = all.filter(a => a && a.title && !isJunkArticle(a) && isDisplayLanguage(a));
 
       // 1. Where is each article about?  2. Which articles are the same story?
       for (const a of unique) a._geo = locateArticle(a);
@@ -10710,8 +10801,8 @@ PELICAN-9
         g.articles.push(lead);
       }
       // Inside each country: widest-carried stories first, then stories in the
-      // UI's languages (EN/FR) ahead of untranslated ones, then newest.
-      const uiLang = (a) => (!a.language || a.language === 'English' || a.language === 'French') ? 0 : 1;
+      // press written in French or English ahead of machine translations, then newest.
+      const uiLang = (a) => a.translated ? 1 : 0;
       const ts = (a) => parseGdeltDate(a.seendate)?.getTime() || 0;
       for (const g of groups.values()) {
         g.articles.sort((x, y) => (y._story.sources - x._story.sources) || (uiLang(x) - uiLang(y)) || (ts(y) - ts(x)));
@@ -10724,7 +10815,7 @@ PELICAN-9
       state.articles = leads;
       state.newsStats = {
         articles: unique.length, stories: stories.length,
-        located: unique.filter(a => a._geo.via !== 'source').length,
+        located: unique.filter(a => a._geo.via === 'text' || a._geo.via === 'hint').length,
         outlets: new Set(unique.map(a => a.domain).filter(Boolean)).size,
       };
       try { updateSeverityCounts(); } catch {}
@@ -11043,51 +11134,6 @@ PELICAN-9
       }
     }
 
-    // ════════════════════════════════════════════════════════════════
-    //  TRANSLATION (MyMemory)
-    // ════════════════════════════════════════════════════════════════
-    async function translate(text, target, source = 'en') {
-      if (!text || target === 'en') return text;
-      const key = target + '|' + text;
-      if (state.tCache.has(key)) return state.tCache.get(key);
-      // MyMemory's free tier is a hard daily char quota; once it's gone every
-      // call just echoes the input. Stop hammering it and tell the user why FR
-      // text stopped translating instead of failing silently.
-      if (state.translateQuotaHit) return text;
-      try {
-        // MyMemory has no "auto" source — it rejects langpair=auto|fr with an
-        // error string that would otherwise get rendered as the "translation".
-        // Use a real 2-letter ISO source (default en, the app's base language).
-        const src = (source || 'en').slice(0, 2).toLowerCase();
-        const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${src}|${target}`;
-        const r = await fetch(url);
-        if (!r.ok) throw new Error('http ' + r.status);
-        const j = await r.json();
-        const status = j.responseStatus;
-        const detail = (j.responseDetails || '') + '';
-        const out = j.responseData?.translatedText || '';
-        // Quota / rate-limit → tell the user once, then stop trying.
-        if (status === 403 || status === 429 || /MYMEMORY WARNING|QUOTA|USED ALL/i.test(detail)) {
-          if (!state.translateQuotaHit) {
-            state.translateQuotaHit = true;
-            setStatus('translation quota reached · showing original text', 'warn');
-          }
-          state.tCache.set(key, text);
-          return text;
-        }
-        // Any other non-200, or an error echoed into translatedText (e.g.
-        // "INVALID SOURCE LANGUAGE"), → fall back to the original, never display it.
-        if (status !== 200 || !out || /INVALID|LANGPAIR|MYMEMORY/i.test(out)) {
-          state.tCache.set(key, text);
-          return text;
-        }
-        state.tCache.set(key, out);
-        return out;
-      } catch (err) {
-        state.tCache.set(key, text);
-        return text;
-      }
-    }
 
     // ════════════════════════════════════════════════════════════════
     //  UI: COUNTRY LIST
@@ -11941,7 +11987,7 @@ PELICAN-9
       const tagsHtml = (a.tags || []).map(t => `<span class="tag ${t}">${t.toUpperCase()}</span>`).join('');
       // Place = what the story is about; the outlet's country only as a hint.
       const place = a._geo?.city && a._geo.country === (a._country || a._geo.country)
-        ? `${a._geo.city} · ${a._geo.country}` : (a._country || articleCountry(a) || a.sourcecountry);
+        ? `${a._geo.city} · ${a._geo.country}` : articlePlaceLabel(a);
       const st = a._story;
       const storyHtml = st && st.sources > 1
         ? `<span class="tag story${st.sources >= 4 ? ' big' : ''}" title="${st.size} articles from ${st.sources} outlets">${st.sources} SOURCES</span>` : '';
@@ -11999,7 +12045,6 @@ PELICAN-9
         return renderFeedItem(a, layer);
       }).join('');
       bindFeedItemClicks(items);
-      if (state.lang === 'fr') translateVisibleFeed();
     }
 
     // ── THE LINE — chronological article timeline
@@ -12124,7 +12169,7 @@ PELICAN-9
 
       lineTrack.innerHTML = items.map(({ a, date }, i) => {
         const sev = classifySeverity(a);
-        const country = articleCountry(a) || a.sourcecountry || '—';
+        const country = articlePlaceLabel(a);
         const sevLabel = sev === 'critical' ? 'CRITICAL' : sev === 'elevated' ? 'ELEVATED' : 'MODERATE';
         const tagsHtml = (a.tags || []).map(t => `<span class="chip ${t}">${t.toUpperCase()}</span>`).join('');
         return `
@@ -12148,7 +12193,7 @@ PELICAN-9
         el.addEventListener('click', () => {
           const i = Number(el.dataset.i);
           const article = items[i]?.a;
-          if (article) openArticle({ ...article, _country: articleCountry(article) || article.sourcecountry });
+          if (article) openArticle({ ...article, _country: articleCountry(article) || undefined });
         });
       }
     }
@@ -12163,28 +12208,6 @@ PELICAN-9
           openArticle(a);
         });
       });
-    }
-
-    async function translateVisibleFeed() {
-      const items = feedListEl.querySelectorAll('.feed-item .title');
-      for (const el of items) {
-        const original = el.dataset.original || el.textContent;
-        el.dataset.original = original;
-        const tr = await translate(original, 'fr');
-        if (tr && tr !== original) {
-          el.classList.add('translated');
-          el.innerHTML = escapeHtml(tr) + `<span class="o">${escapeHtml(original)}</span>`;
-        }
-      }
-    }
-    function restoreOriginalFeed() {
-      for (const el of feedListEl.querySelectorAll('.feed-item .title')) {
-        const original = el.dataset.original;
-        if (original) {
-          el.classList.remove('translated');
-          el.textContent = original;
-        }
-      }
     }
 
     // Unified natural-hazards feed: USGS earthquakes + NASA EONET events, merged
@@ -12810,23 +12833,6 @@ PELICAN-9
     });
     document.getElementById('tabs').addEventListener('click', (e) => {
       const t = e.target.closest('.tab'); if (t) setTab(t.dataset.tab);
-    });
-
-    // ════════════════════════════════════════════════════════════════
-    //  LANGUAGE TOGGLE
-    // ════════════════════════════════════════════════════════════════
-    document.getElementById('langToggle').addEventListener('click', (e) => {
-      const b = e.target.closest('button'); if (!b) return;
-      state.lang = b.dataset.lang;
-      for (const x of document.querySelectorAll('#langToggle button')) {
-        x.classList.toggle('on', x.dataset.lang === state.lang);
-      }
-      if (state.tab === 'wire') {
-        if (state.lang === 'fr') translateVisibleFeed();
-        else restoreOriginalFeed();
-      }
-      // Also refresh open article if any
-      if (state.activeArticleId) renderReader();
     });
 
     // ════════════════════════════════════════════════════════════════
@@ -13634,16 +13640,10 @@ PELICAN-9
       }).join('') + `<button class="reader-close-big" id="readerCloseBig">CLOSE ×</button>`;
 
       const tagsHtml =
-        `<span class="chip">${escapeHtml(active._country || articleCountry(active) || active.sourcecountry || '—')}</span>` +
+        `<span class="chip">${escapeHtml(articlePlaceLabel(active))}</span>` +
         (active.tags || []).map(t => `<span class="chip ${t}">${t.toUpperCase()}</span>`).join('');
 
-      let titleHtml = `<h1>${escapeHtml(active.title || '')}</h1>`;
-      if (state.lang === 'fr') {
-        const tr = await translate(active.title || '', 'fr');
-        if (tr && tr !== active.title) {
-          titleHtml = `<h1 style="color:var(--cyan)">${escapeHtml(tr)}<span class="o">${escapeHtml(active.title)}</span></h1>`;
-        }
-      }
+      const titleHtml = `<h1>${escapeHtml(active.title || '')}</h1>`;
 
       const heroImg = cssImageUrl(active.socialimage);
       const heroHtml = heroImg
@@ -13691,7 +13691,7 @@ PELICAN-9
       readerContent.innerHTML = `
         <div class="kicker">${tagsHtml}</div>
         ${titleHtml}
-        <div class="by">SOURCE · <b>${escapeHtml(active.domain || '—')}</b> · ${escapeHtml(active.language || '')} · ${when}</div>
+        <div class="by">SOURCE · <b>${escapeHtml(active.domain || '—')}</b> · ${active.translated ? 'translated from ' : ''}${escapeHtml(active.language || '')} · ${when}</div>
         ${heroHtml}
         <div class="summary">
           <span class="sk">${active.desc ? 'SUMMARY' : 'SIGNAL'}${active._story?.sources > 1 ? ` · CARRIED BY ${active._story.sources} OUTLETS` : ''}</span>
@@ -13716,8 +13716,13 @@ PELICAN-9
         });
       }
 
+      // Article bodies are not translated: never show them in the original language.
+      if (!isDemo && active.translated) {
+        const el = document.getElementById(ftxId);
+        if (el) el.innerHTML = `<div class="empty">Headline machine-translated from ${escapeHtml(active.language)}. The full text is only available in that language, at the publisher.</div>`;
+      }
       // Kick off async full-text extraction
-      if (!isDemo) {
+      if (!isDemo && !active.translated) {
         const targetId = ftxId;
         const targetUrl = active.url;
         fetchArticleFullText(targetUrl).then(content => {
@@ -13728,21 +13733,7 @@ PELICAN-9
             el.innerHTML = `<div class="empty">Couldn't extract article text. Use the link above to open the publisher's site.</div>`;
             return;
           }
-          // Translate body text if FR active
-          if (state.lang === 'fr') {
-            el.innerHTML = `<div class="loading">translating…</div>`;
-            // Truncate for translation API limits — send only the first 1500 chars
-            const chunk = content.slice(0, 1500);
-            translate(chunk, 'fr').then(tr => {
-              if (!document.getElementById(targetId)) return;
-              const remaining = content.length > 1500 ? '\n\n' + content.slice(1500) : '';
-              el.innerHTML = mdToHTML((tr || chunk) + remaining);
-            }).catch(() => {
-              el.innerHTML = mdToHTML(content);
-            });
-          } else {
-            el.innerHTML = mdToHTML(content);
-          }
+          el.innerHTML = mdToHTML(content);
         }).catch(() => {
           const el = document.getElementById(targetId);
           if (el) el.innerHTML = `<div class="empty">Extraction failed. Use the link above.</div>`;
