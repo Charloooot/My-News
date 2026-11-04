@@ -427,6 +427,13 @@ async function handleSatcat() {
   return resp;
 }
 
+function json(data, status = 200) {
+  return new Response(JSON.stringify(data), {
+    status,
+    headers: { 'Content-Type': 'application/json', ...CORS },
+  });
+}
+
 function withCors(resp) {
   const h = new Headers(resp.headers);
   for (const [k, v] of Object.entries(CORS)) h.set(k, v);
