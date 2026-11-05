@@ -267,6 +267,16 @@
   .search input::placeholder { color: var(--dim); }
   .search .x { color: var(--dim); font-size: 12px; padding: 0 4px; }
   .search .x:hover { color: var(--red); }
+  .wire-search { border-bottom: 1px solid var(--line); }
+  .wire-search[hidden], .wire-suggest[hidden], .wire-search .x[hidden] { display: none; }
+  .wire-search input { min-width: 0; }
+  .wire-search input::-webkit-search-cancel-button { display: none; }
+  .wire-suggest { max-height: 220px; overflow-y: auto; border-bottom: 1px solid var(--line2); background: rgba(0,240,255,0.03); }
+  .wire-suggest button { display: flex; justify-content: space-between; gap: 10px; width: 100%; padding: 7px 12px; font-size: 12px; color: var(--paper); text-align: left; }
+  .wire-suggest button small { color: var(--dim); font-size: 11px; margin-left: 6px; }
+  .wire-suggest button .n { color: var(--cyan); font-variant-numeric: tabular-nums; }
+  .wire-suggest button:hover, .wire-suggest button.on { background: rgba(0,240,255,0.14); }
+  .wire-suggest .none { padding: 8px 12px; font-size: 11px; color: var(--dim); }
 
   .scroll-list {
     overflow-y: auto;
@@ -1619,6 +1629,8 @@
     .right-rail { top: auto; bottom: 64px; left: 8px; right: 8px; width: auto; max-height: 40vh; }
     body.has-ticker .right-rail { top: auto; max-height: 36vh; }
     .right-rail .feed-list { max-height: calc(40vh - 80px); }
+    .right-rail:has(.wire-search:not([hidden])) .feed-list { max-height: calc(40vh - 116px); }
+    .wire-suggest { max-height: 130px; }
     .rot-toggle { position: fixed; top: calc(var(--top-h, 120px) + 6px); right: 8px; padding: 5px 8px; }
     .rot-toggle .rot-lbl { display: none; }
 
@@ -1742,6 +1754,12 @@
     </button>
     <div class="panel feed">
       <div class="panel-h"><span id="rightTitle">THE WIRE <b>// LIVE</b></span><span id="rightSub">GDELT · 24h</span></div>
+      <div class="search wire-search" id="wireSearch">
+        <input id="wireCountryInput" type="search" placeholder="Rechercher un pays…" autocomplete="off" spellcheck="false"
+          role="combobox" aria-label="Rechercher un pays dans The Wire" aria-autocomplete="list" aria-expanded="false" aria-controls="wireSuggest" />
+        <button class="x" id="wireCountryClear" title="Revenir au monde" aria-label="Revenir au monde" hidden>×</button>
+      </div>
+      <div class="wire-suggest" id="wireSuggest" role="listbox" aria-label="Pays" hidden></div>
       <div class="feed-list" id="feedList"></div>
     </div>
   </aside>
@@ -9159,7 +9177,7 @@ PELICAN-9
       if (!f) { if (state.drillDownCountry) exitDrillDown(); return; }
       const matches = [];
       for (const name of state.countries.keys()) {
-        if (name.toLowerCase().includes(f)) matches.push(name);
+        if (countryMatches(name, f)) matches.push(name);
       }
       if (matches.length === 1 && MAJOR_CITIES[matches[0]]) enterDrillDown(matches[0]);
       else if (state.drillDownCountry && !matches.includes(state.drillDownCountry)) exitDrillDown();
@@ -11038,7 +11056,7 @@ PELICAN-9
       const out = await loadNews({ force: true });
       renderCountryList();
       applyFilters();
-      renderFeedWire(null);
+      renderFeedWire(state.selectedCountry);
       if (state.tab === 'line') renderLine();
       updateCount();
       drawMap();
@@ -11060,7 +11078,7 @@ PELICAN-9
         await loadNews({ refresh: true });
         renderCountryList();
         applyFilters();
-        renderFeedWire(null);
+        renderFeedWire(state.selectedCountry);
         if (state.tab === 'line') renderLine();
         updateCount();
         drawMap();
@@ -11228,6 +11246,35 @@ PELICAN-9
     // ════════════════════════════════════════════════════════════════
     //  UI: COUNTRY LIST
     // ════════════════════════════════════════════════════════════════
+    // Country search accepts English or French names, with or without accents.
+    const COUNTRY_FR_OVERRIDES = {
+      'Czech Republic': 'Tchéquie', 'Bosnia and Herzegovina': 'Bosnie-Herzégovine', 'Turkey': 'Turquie', 'Hong Kong': 'Hong Kong',
+      'Palestine': 'Palestine', 'Myanmar': 'Birmanie', 'Democratic Republic of the Congo': 'République démocratique du Congo',
+      'Republic of the Congo': 'République du Congo', 'Ivory Coast': "Côte d'Ivoire",
+    };
+    // Matched whole, so "us" does not find Russia or Australia.
+    const COUNTRY_ALIASES = {
+      'United States': ['usa', 'us', 'amerique'], 'United Kingdom': ['uk', 'angleterre', 'grande bretagne'], 'United Arab Emirates': ['uae', 'eau'],
+      'Democratic Republic of the Congo': ['rdc', 'drc'], 'Netherlands': ['hollande'], 'Czech Republic': ['republique tcheque'], 'Myanmar': ['myanmar'],
+    };
+    const countrySearchKey = (s) => deaccent(s).toLowerCase().replace(/[-'’.]/g, ' ').replace(/\s+/g, ' ').trim();
+    const COUNTRY_FR_NAMES = (() => {
+      const out = new Map();
+      try {
+        const en = new Intl.DisplayNames(['en'], { type: 'region' }), fr = new Intl.DisplayNames(['fr'], { type: 'region' });
+        for (let a = 65; a < 91; a++) for (let b = 65; b < 91; b++) {
+          const code = String.fromCharCode(a, b), name = en.of(code);
+          if (name && name !== code) out.set(name, fr.of(code));
+        }
+      } catch {}   // no Intl.DisplayNames: English names and the overrides still work
+      for (const [k, v] of Object.entries(COUNTRY_FR_OVERRIDES)) out.set(k, v);
+      return out;
+    })();
+    const countryMatches = (name, query) => {
+      const q = countrySearchKey(query);
+      if (!q) return true;
+      return countrySearchKey(name).includes(q) || countrySearchKey(COUNTRY_FR_NAMES.get(name) || '').includes(q) || (COUNTRY_ALIASES[name] || []).includes(q);
+    };
     const countryListEl = document.getElementById('countryList');
     const searchEl = document.getElementById('countrySearch');
     // Leaves the country/city view: clears selection + filter, exits the
@@ -11263,7 +11310,7 @@ PELICAN-9
     function renderCountryList() {
       const filter = state.countryFilter;
       const rows = [...state.countries.values()]
-        .filter(c => !filter || c.name.toLowerCase().includes(filter))
+        .filter(c => !filter || countryMatches(c.name, filter))
         .sort((a, b) => b.count - a.count);
       if (!rows.length) {
         countryListEl.innerHTML = '<div class="country-row empty">no matches</div>';
@@ -11274,22 +11321,96 @@ PELICAN-9
           <span>${c.name}</span><span class="n">${c.count}</span>
         </div>`).join('');
       for (const el of countryListEl.querySelectorAll('.country-row[data-country]')) {
-        el.addEventListener('click', () => {
-          const name = el.dataset.country;
-          state.selectedCountry = name;
-          controls.autoRotate = false;
-          clearTimeout(resumeT);
-          renderCountryList();
-          focusCountry(name);
-          if (state.tab === 'wire') renderFeedWire(name);
-          if (MAJOR_CITIES[name]) enterDrillDown(name);
-          highlightSelectedCountryBorders(name);
-          applyFilters();
-          if (state.tab === 'outbreaks') renderFeedOutbreaks();
-          applyOutbreakVisibility();
-          drawMap();
-        });
+        el.addEventListener('click', () => selectCountry(el.dataset.country));
       }
+    }
+    function selectCountry(name) {
+      state.selectedCountry = name;
+      controls.autoRotate = false;
+      clearTimeout(resumeT);
+      renderCountryList();
+      focusCountry(name);
+      if (state.tab === 'wire') renderFeedWire(name);
+      if (MAJOR_CITIES[name]) enterDrillDown(name);
+      highlightSelectedCountryBorders(name);
+      applyFilters();
+      if (state.tab === 'outbreaks') renderFeedOutbreaks();
+      applyOutbreakVisibility();
+      drawMap();
+    }
+
+    // ── THE WIRE: country search above the feed
+    const wireInput = document.getElementById('wireCountryInput');
+    const wireSuggest = document.getElementById('wireSuggest');
+    const wireClear = document.getElementById('wireCountryClear');
+    let wireActive = -1;
+    function closeWireSuggest() {
+      wireSuggest.hidden = true; wireActive = -1;
+      wireInput.setAttribute('aria-expanded', 'false');
+      wireInput.removeAttribute('aria-activedescendant');
+    }
+    function renderWireSuggest() {
+      // Right after selecting, the box holds the chosen name: offer everything again.
+      const q = wireInput.value === state.selectedCountry ? '' : wireInput.value;
+      const key = countrySearchKey(q);
+      // An exact alias wins: "uk" must offer the United Kingdom before Ukraine.
+      const rank = (c) => (COUNTRY_ALIASES[c.name] || []).includes(key) ? 0
+        : (countrySearchKey(c.name).startsWith(key) || countrySearchKey(COUNTRY_FR_NAMES.get(c.name) || '').startsWith(key)) ? 1 : 2;
+      const rows = [...state.countries.values()].filter(c => countryMatches(c.name, q))
+        .sort((a, b) => (key ? rank(a) - rank(b) : 0) || b.count - a.count).slice(0, 8);
+      wireActive = rows.length && key ? 0 : -1;
+      wireSuggest.innerHTML = rows.length ? rows.map((c, i) => {
+        const fr = COUNTRY_FR_NAMES.get(c.name);
+        return `<button type="button" id="wireOpt${i}" role="option" data-country="${escapeHtml(c.name)}" class="${i === wireActive ? 'on' : ''}" aria-selected="${i === wireActive}">
+          <span>${escapeHtml(c.name)}${fr && fr !== c.name ? `<small>${escapeHtml(fr)}</small>` : ''}</span><span class="n">${c.count}</span></button>`;
+      }).join('') : `<div class="none">Aucun article pour « ${escapeHtml(q.trim())} » dans les dernières 24 h.</div>`;
+      wireSuggest.hidden = false;
+      wireInput.setAttribute('aria-expanded', 'true');
+      if (wireActive >= 0) wireInput.setAttribute('aria-activedescendant', 'wireOpt' + wireActive); else wireInput.removeAttribute('aria-activedescendant');
+    }
+    function moveWireActive(step) {
+      const opts = [...wireSuggest.querySelectorAll('button')];
+      if (!opts.length) return;
+      wireActive = (wireActive + step + opts.length) % opts.length;
+      opts.forEach((o, i) => { o.classList.toggle('on', i === wireActive); o.setAttribute('aria-selected', i === wireActive); });
+      opts[wireActive].scrollIntoView({ block: 'nearest' });
+      wireInput.setAttribute('aria-activedescendant', opts[wireActive].id);
+    }
+    function pickWireCountry(name) {
+      closeWireSuggest();
+      wireInput.blur();
+      selectCountry(name);
+    }
+    wireInput.addEventListener('focus', () => { wireInput.select(); renderWireSuggest(); });
+    wireInput.addEventListener('input', () => { wireClear.hidden = !wireInput.value && !state.selectedCountry; renderWireSuggest(); });
+    wireInput.addEventListener('blur', closeWireSuggest);
+    wireInput.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+        e.preventDefault();
+        if (wireSuggest.hidden) renderWireSuggest();
+        moveWireActive(e.key === 'ArrowDown' ? 1 : -1);
+      } else if (e.key === 'Enter') {
+        const opt = wireSuggest.querySelectorAll('button')[Math.max(wireActive, 0)];
+        if (opt && !wireSuggest.hidden) { e.preventDefault(); pickWireCountry(opt.dataset.country); }
+      } else if (e.key === 'Escape') {
+        wireInput.value = state.selectedCountry || '';
+        closeWireSuggest();
+        wireInput.blur();
+      }
+    });
+    // mousedown, not click: the input's blur would close the list before the click lands.
+    wireSuggest.addEventListener('mousedown', (e) => {
+      e.preventDefault();
+      const opt = e.target.closest('button[data-country]');
+      if (opt) pickWireCountry(opt.dataset.country);
+    });
+    wireClear.addEventListener('click', () => {
+      if (state.selectedCountry) exitCountryFocus(true);
+      else { wireInput.value = ''; wireClear.hidden = true; closeWireSuggest(); }
+    });
+    function syncWireSearch(country) {
+      if (document.activeElement !== wireInput) wireInput.value = country || '';
+      wireClear.hidden = !country;
     }
 
     function applyFilters() {
@@ -11301,7 +11422,7 @@ PELICAN-9
       for (const sig of signalEntries) {
         const sev = sig.sprite.userData?.severity || 'moderate';
         const sevOK = state.activeSeverities.has(sev);
-        const filterOK = !f || sig.country.toLowerCase().includes(f);
+        const filterOK = !f || countryMatches(sig.country, f);
         const selOK = !sel || sig.country === sel;
         const on = sevOK && filterOK && selOK && (state.tab === 'wire' || state.tab === 'defcon');
         sig.sprite.visible = on;
@@ -12109,11 +12230,13 @@ PELICAN-9
       rightTitle.innerHTML = filterCountry ? `<button class="feed-back" id="feedBack" title="Retour à la vue monde" aria-label="Retour à la vue monde">←</button>${escapeHtml(filterCountry)} <b>// FEED</b>` : 'THE WIRE <b>// LIVE</b>';
       document.getElementById('feedBack')?.addEventListener('click', () => exitCountryFocus(true));
       rightSub.textContent = `${state.newsSourceLabel || 'GDELT'} · 24h`;
+      syncWireSearch(filterCountry);
 
       let items;
-      if (filterCountry && state.countries.has(filterCountry)) {
+      if (filterCountry) {
+        // After a refresh the country may have no story left: say so, no world feed under its name.
         const c = state.countries.get(filterCountry);
-        items = c.articles.slice(0, 40).map(a => ({ ...a, _country: filterCountry, _count: c.count }));
+        items = (c?.articles || []).slice(0, 40).map(a => ({ ...a, _country: filterCountry, _count: c.count }));
       } else {
         const sorted = [...state.countries.values()].sort((a, b) => b.count - a.count);
         items = [];
@@ -12883,6 +13006,8 @@ PELICAN-9
       if (name === 'outbreaks' && !outbreakMarkers.length) buildOutbreaksLayer();
 
       layerPanel.style.display         = (name === 'wire') ? '' : 'none';
+      document.getElementById('wireSearch').hidden = name !== 'wire';
+      if (name !== 'wire') closeWireSuggest();
       document.getElementById('conflictPanel').style.display      = (name === 'conflicts') ? '' : 'none';
       document.getElementById('constellationPanel').style.display = (name === 'orbit') ? '' : 'none';
       document.getElementById('ownerPanel').style.display         = (name === 'orbit') ? '' : 'none';
@@ -14626,7 +14751,7 @@ PELICAN-9
         },
       });
       for (const [name, c] of state.countries.entries()) {
-        if (f && !name.toLowerCase().includes(f)) continue;
+        if (f && !countryMatches(name, f)) continue;
         if (sel && name !== sel) continue;
         const cap = capitalFor(name);
         if (!cap) continue;
