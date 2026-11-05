@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>WRLD // MONITOR</title>
+<title>CHRLS's News</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="" />
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" integrity="sha384-pmjIAcz2bAn0xukfxADbZIb3t8oRT9Sv0rvO+BR5Csr6Dhqq+nZs59P0pPKQJkEV" crossorigin="" />
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" integrity="sha384-wgw+aLYNQ7dlhK47ZPK7FRACiq7ROZwgFNg0m04avm4CaXS+Z9Y7nMu8yNjBKYC+" crossorigin="" />
@@ -71,7 +71,6 @@
   .topbar > * { pointer-events: auto; }
   .brand {
     font-size: 13px; font-weight: 700; letter-spacing: 0.16em;
-    text-transform: uppercase;
     text-shadow: 0 0 10px rgba(0,240,255,0.55);
   }
   .brand b { color: var(--cyan); }
@@ -1670,7 +1669,7 @@
 
   <!-- ============ TOP BAR ============ -->
   <header class="topbar">
-    <div class="brand">WRLD <b>//</b> MONITOR</div>
+    <div class="brand">CHRLS's <b>News</b></div>
     <button class="rail-toggle" id="railToggle" aria-label="Show countries panel" aria-expanded="false">☰ COUNTRIES</button>
     <div class="view-toggle" id="viewToggle">
       <button data-view="globe" class="on">GLOBE</button>
@@ -11716,7 +11715,7 @@ PELICAN-9
 
           ${(d.related || []).length ? `<h2>HISTORICAL PRECEDENTS</h2>${relatedHtml}` : ''}
 
-          <h2>RELATED IN WRLD</h2>
+          <h2>RELATED IN CHRLS's News</h2>
           ${intel.related}
         </div>`;
       feedListEl.innerHTML = html;
@@ -11815,7 +11814,7 @@ PELICAN-9
       if (g && gN >= 10) return { days, vals: days.map(k => g[k] || 0), src: 'GDELT · global media volume', short: 'GDELT' };
       if (h) {
         const first = days.findIndex(k => h[k] != null);
-        if (first >= 0) return { days: days.slice(first), vals: days.slice(first).map(k => h[k] || 0), src: 'WRLD feed · articles per day', short: 'feed' };
+        if (first >= 0) return { days: days.slice(first), vals: days.slice(first).map(k => h[k] || 0), src: "CHRLS's News feed · articles per day", short: 'feed' };
       }
       return null;
     }
