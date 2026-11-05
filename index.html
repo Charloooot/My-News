@@ -267,16 +267,6 @@
   .search input::placeholder { color: var(--dim); }
   .search .x { color: var(--dim); font-size: 12px; padding: 0 4px; }
   .search .x:hover { color: var(--red); }
-  .wire-search { border-bottom: 1px solid var(--line); }
-  .wire-search[hidden], .wire-suggest[hidden], .wire-search .x[hidden] { display: none; }
-  .wire-search input { min-width: 0; }
-  .wire-search input::-webkit-search-cancel-button { display: none; }
-  .wire-suggest { max-height: 220px; overflow-y: auto; border-bottom: 1px solid var(--line2); background: rgba(0,240,255,0.03); }
-  .wire-suggest button { display: flex; justify-content: space-between; gap: 10px; width: 100%; padding: 7px 12px; font-size: 12px; color: var(--paper); text-align: left; }
-  .wire-suggest button small { color: var(--dim); font-size: 11px; margin-left: 6px; }
-  .wire-suggest button .n { color: var(--cyan); font-variant-numeric: tabular-nums; }
-  .wire-suggest button:hover, .wire-suggest button.on { background: rgba(0,240,255,0.14); }
-  .wire-suggest .none { padding: 8px 12px; font-size: 11px; color: var(--dim); }
 
   .scroll-list {
     overflow-y: auto;
@@ -1149,6 +1139,22 @@
     font-size: 10px;
     margin-bottom: 8px;
   }
+  #lineFilterRows { display: contents; }
+  .line-country { position: relative; flex: 0 1 340px; min-width: 0; display: flex; align-items: center; gap: 8px;
+    padding: 5px 10px; border: 1px solid var(--line2); background: rgba(0,240,255,0.04); }
+  .line-country input { flex: 1; min-width: 0; font-size: 12px; color: var(--paper); letter-spacing: 0.04em; }
+  .line-country input::placeholder { color: var(--dim); }
+  .line-country input::-webkit-search-cancel-button { display: none; }
+  .line-country .x { color: var(--dim); font-size: 13px; padding: 0 2px; }
+  .line-country .x:hover { color: var(--red); }
+  .line-country .x[hidden], .line-suggest[hidden] { display: none; }
+  .line-suggest { position: absolute; top: 100%; left: -1px; right: -1px; z-index: 5; max-height: 260px; overflow-y: auto;
+    border: 1px solid var(--line2); background: var(--ink2); box-shadow: 0 8px 24px rgba(0,0,0,0.6); }
+  .line-suggest button { display: flex; justify-content: space-between; gap: 10px; width: 100%; padding: 7px 10px; font-size: 12px; color: var(--paper); text-align: left; }
+  .line-suggest button small { color: var(--dim); font-size: 11px; margin-left: 6px; }
+  .line-suggest button .n { color: var(--cyan); font-variant-numeric: tabular-nums; }
+  .line-suggest button:hover, .line-suggest button.on { background: rgba(0,240,255,0.14); }
+  .line-suggest .none { padding: 8px 10px; font-size: 11px; color: var(--dim); }
   .line-filter-row {
     display: flex; gap: 6px; align-items: center;
     flex-wrap: wrap;
@@ -1629,8 +1635,6 @@
     .right-rail { top: auto; bottom: 64px; left: 8px; right: 8px; width: auto; max-height: 40vh; }
     body.has-ticker .right-rail { top: auto; max-height: 36vh; }
     .right-rail .feed-list { max-height: calc(40vh - 80px); }
-    .right-rail:has(.wire-search:not([hidden])) .feed-list { max-height: calc(40vh - 116px); }
-    .wire-suggest { max-height: 130px; }
     .rot-toggle { position: fixed; top: calc(var(--top-h, 120px) + 6px); right: 8px; padding: 5px 8px; }
     .rot-toggle .rot-lbl { display: none; }
 
@@ -1754,12 +1758,6 @@
     </button>
     <div class="panel feed">
       <div class="panel-h"><span id="rightTitle">THE WIRE <b>// LIVE</b></span><span id="rightSub">GDELT · 24h</span></div>
-      <div class="search wire-search" id="wireSearch">
-        <input id="wireCountryInput" type="search" placeholder="Rechercher un pays…" autocomplete="off" spellcheck="false"
-          role="combobox" aria-label="Rechercher un pays dans The Wire" aria-autocomplete="list" aria-expanded="false" aria-controls="wireSuggest" />
-        <button class="x" id="wireCountryClear" title="Revenir au monde" aria-label="Revenir au monde" hidden>×</button>
-      </div>
-      <div class="wire-suggest" id="wireSuggest" role="listbox" aria-label="Pays" hidden></div>
       <div class="feed-list" id="feedList"></div>
     </div>
   </aside>
@@ -1770,7 +1768,18 @@
       <div class="line-title">THE LINE <b>// CHRONOLOGICAL FEED</b></div>
       <div class="line-counts" id="lineCounts">— articles</div>
     </div>
-    <div class="line-filters" id="lineFilters"></div>
+    <div class="line-filters" id="lineFilters">
+      <div class="line-filter-row">
+        <label class="line-filter-label" for="lineCountryInput">COUNTRY</label>
+        <div class="line-country">
+          <input id="lineCountryInput" type="search" placeholder="Search a country (English or French)…" autocomplete="off" spellcheck="false"
+            role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="lineSuggest" />
+          <button class="x" id="lineCountryClear" title="All countries" aria-label="All countries" hidden>×</button>
+          <div class="line-suggest" id="lineSuggest" role="listbox" aria-label="Countries" hidden></div>
+        </div>
+      </div>
+      <div id="lineFilterRows"></div>
+    </div>
     <div class="line-track" id="lineTrack"></div>
   </div>
 
@@ -8639,7 +8648,7 @@ PELICAN-9
       selectedConflict: null,
       selectedMarketCountry: null,
       selectedOutbreak: null,
-      lineFilters: { continent: 'ALL', severity: 'ALL', topic: 'ALL' },
+      lineFilters: { country: 'ALL', continent: 'ALL', severity: 'ALL', topic: 'ALL' },
       viewMode: 'globe',
       openArticles: [],        // [{id, ...articleData, related}]
       activeArticleId: null,
@@ -11339,79 +11348,79 @@ PELICAN-9
       drawMap();
     }
 
-    // ── THE WIRE: country search above the feed
-    const wireInput = document.getElementById('wireCountryInput');
-    const wireSuggest = document.getElementById('wireSuggest');
-    const wireClear = document.getElementById('wireCountryClear');
-    let wireActive = -1;
-    function closeWireSuggest() {
-      wireSuggest.hidden = true; wireActive = -1;
-      wireInput.setAttribute('aria-expanded', 'false');
-      wireInput.removeAttribute('aria-activedescendant');
+    // ── THE LINE: country search above the timeline
+    const lineInput = document.getElementById('lineCountryInput');
+    const lineSuggest = document.getElementById('lineSuggest');
+    const lineClear = document.getElementById('lineCountryClear');
+    let lineActive = -1;
+    const selectedLineCountry = () => state.lineFilters.country === 'ALL' ? '' : state.lineFilters.country;
+    function closeLineSuggest() {
+      lineSuggest.hidden = true; lineActive = -1;
+      lineInput.setAttribute('aria-expanded', 'false');
+      lineInput.removeAttribute('aria-activedescendant');
     }
-    function renderWireSuggest() {
+    function renderLineSuggest() {
       // Right after selecting, the box holds the chosen name: offer everything again.
-      const q = wireInput.value === state.selectedCountry ? '' : wireInput.value;
+      const q = lineInput.value === selectedLineCountry() ? '' : lineInput.value;
       const key = countrySearchKey(q);
+      // Counted the way the timeline filters, so the number matches what picking it shows.
+      const counts = new Map();
+      for (const a of state.articles) { const c = articleCountry(a); if (c) counts.set(c, (counts.get(c) || 0) + 1); }
       // An exact alias wins: "uk" must offer the United Kingdom before Ukraine.
-      const rank = (c) => (COUNTRY_ALIASES[c.name] || []).includes(key) ? 0
-        : (countrySearchKey(c.name).startsWith(key) || countrySearchKey(COUNTRY_FR_NAMES.get(c.name) || '').startsWith(key)) ? 1 : 2;
-      const rows = [...state.countries.values()].filter(c => countryMatches(c.name, q))
-        .sort((a, b) => (key ? rank(a) - rank(b) : 0) || b.count - a.count).slice(0, 8);
-      wireActive = rows.length && key ? 0 : -1;
-      wireSuggest.innerHTML = rows.length ? rows.map((c, i) => {
-        const fr = COUNTRY_FR_NAMES.get(c.name);
-        return `<button type="button" id="wireOpt${i}" role="option" data-country="${escapeHtml(c.name)}" class="${i === wireActive ? 'on' : ''}" aria-selected="${i === wireActive}">
-          <span>${escapeHtml(c.name)}${fr && fr !== c.name ? `<small>${escapeHtml(fr)}</small>` : ''}</span><span class="n">${c.count}</span></button>`;
-      }).join('') : `<div class="none">Aucun article pour « ${escapeHtml(q.trim())} » dans les dernières 24 h.</div>`;
-      wireSuggest.hidden = false;
-      wireInput.setAttribute('aria-expanded', 'true');
-      if (wireActive >= 0) wireInput.setAttribute('aria-activedescendant', 'wireOpt' + wireActive); else wireInput.removeAttribute('aria-activedescendant');
+      const rank = (name) => (COUNTRY_ALIASES[name] || []).includes(key) ? 0
+        : (countrySearchKey(name).startsWith(key) || countrySearchKey(COUNTRY_FR_NAMES.get(name) || '').startsWith(key)) ? 1 : 2;
+      const rows = [...counts.keys()].filter(name => countryMatches(name, q))
+        .sort((a, b) => (key ? rank(a) - rank(b) : 0) || counts.get(b) - counts.get(a)).slice(0, 8);
+      lineActive = rows.length && key ? 0 : -1;
+      lineSuggest.innerHTML = rows.length ? rows.map((name, i) => {
+        const fr = COUNTRY_FR_NAMES.get(name);
+        return `<button type="button" id="lineOpt${i}" role="option" data-country="${escapeHtml(name)}" class="${i === lineActive ? 'on' : ''}" aria-selected="${i === lineActive}">
+          <span>${escapeHtml(name)}${fr && fr !== name ? `<small>${escapeHtml(fr)}</small>` : ''}</span><span class="n">${counts.get(name)}</span></button>`;
+      }).join('') : `<div class="none">No article for “${escapeHtml(q.trim())}” in the feed.</div>`;
+      lineSuggest.hidden = false;
+      lineInput.setAttribute('aria-expanded', 'true');
+      if (lineActive >= 0) lineInput.setAttribute('aria-activedescendant', 'lineOpt' + lineActive); else lineInput.removeAttribute('aria-activedescendant');
     }
-    function moveWireActive(step) {
-      const opts = [...wireSuggest.querySelectorAll('button')];
+    function moveLineActive(step) {
+      const opts = [...lineSuggest.querySelectorAll('button')];
       if (!opts.length) return;
-      wireActive = (wireActive + step + opts.length) % opts.length;
-      opts.forEach((o, i) => { o.classList.toggle('on', i === wireActive); o.setAttribute('aria-selected', i === wireActive); });
-      opts[wireActive].scrollIntoView({ block: 'nearest' });
-      wireInput.setAttribute('aria-activedescendant', opts[wireActive].id);
+      lineActive = (lineActive + step + opts.length) % opts.length;
+      opts.forEach((o, i) => { o.classList.toggle('on', i === lineActive); o.setAttribute('aria-selected', i === lineActive); });
+      opts[lineActive].scrollIntoView({ block: 'nearest' });
+      lineInput.setAttribute('aria-activedescendant', opts[lineActive].id);
     }
-    function pickWireCountry(name) {
-      closeWireSuggest();
-      wireInput.blur();
-      selectCountry(name);
+    function setLineCountry(name) {
+      state.lineFilters.country = name || 'ALL';
+      lineInput.value = name || '';
+      lineClear.hidden = !name;
+      closeLineSuggest();
+      renderLine();
+      document.getElementById('lineStage').scrollTo({ top: 0 });
     }
-    wireInput.addEventListener('focus', () => { wireInput.select(); renderWireSuggest(); });
-    wireInput.addEventListener('input', () => { wireClear.hidden = !wireInput.value && !state.selectedCountry; renderWireSuggest(); });
-    wireInput.addEventListener('blur', closeWireSuggest);
-    wireInput.addEventListener('keydown', (e) => {
+    lineInput.addEventListener('focus', () => { lineInput.select(); renderLineSuggest(); });
+    lineInput.addEventListener('input', () => { lineClear.hidden = !lineInput.value && !selectedLineCountry(); renderLineSuggest(); });
+    lineInput.addEventListener('blur', () => { lineInput.value = selectedLineCountry(); lineClear.hidden = !lineInput.value; closeLineSuggest(); });
+    lineInput.addEventListener('keydown', (e) => {
       if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
         e.preventDefault();
-        if (wireSuggest.hidden) renderWireSuggest();
-        moveWireActive(e.key === 'ArrowDown' ? 1 : -1);
+        if (lineSuggest.hidden) renderLineSuggest();
+        moveLineActive(e.key === 'ArrowDown' ? 1 : -1);
       } else if (e.key === 'Enter') {
-        const opt = wireSuggest.querySelectorAll('button')[Math.max(wireActive, 0)];
-        if (opt && !wireSuggest.hidden) { e.preventDefault(); pickWireCountry(opt.dataset.country); }
+        const opt = lineSuggest.querySelectorAll('button')[Math.max(lineActive, 0)];
+        if (opt && !lineSuggest.hidden) { e.preventDefault(); setLineCountry(opt.dataset.country); lineInput.blur(); }
       } else if (e.key === 'Escape') {
-        wireInput.value = state.selectedCountry || '';
-        closeWireSuggest();
-        wireInput.blur();
+        e.preventDefault();   // a search input would otherwise empty itself after the blur restored it
+        lineInput.blur();
       }
     });
     // mousedown, not click: the input's blur would close the list before the click lands.
-    wireSuggest.addEventListener('mousedown', (e) => {
+    lineSuggest.addEventListener('mousedown', (e) => {
       e.preventDefault();
       const opt = e.target.closest('button[data-country]');
-      if (opt) pickWireCountry(opt.dataset.country);
+      if (opt) { setLineCountry(opt.dataset.country); lineInput.blur(); }
     });
-    wireClear.addEventListener('click', () => {
-      if (state.selectedCountry) exitCountryFocus(true);
-      else { wireInput.value = ''; wireClear.hidden = true; closeWireSuggest(); }
-    });
-    function syncWireSearch(country) {
-      if (document.activeElement !== wireInput) wireInput.value = country || '';
-      wireClear.hidden = !country;
-    }
+    lineClear.addEventListener('mousedown', (e) => e.preventDefault());
+    lineClear.addEventListener('click', () => { setLineCountry(null); lineInput.blur(); });
 
     function applyFilters() {
       const f = state.countryFilter;
@@ -12230,7 +12239,6 @@ PELICAN-9
       rightTitle.innerHTML = filterCountry ? `<button class="feed-back" id="feedBack" title="Retour à la vue monde" aria-label="Retour à la vue monde">←</button>${escapeHtml(filterCountry)} <b>// FEED</b>` : 'THE WIRE <b>// LIVE</b>';
       document.getElementById('feedBack')?.addEventListener('click', () => exitCountryFocus(true));
       rightSub.textContent = `${state.newsSourceLabel || 'GDELT'} · 24h`;
-      syncWireSearch(filterCountry);
 
       let items;
       if (filterCountry) {
@@ -12316,7 +12324,8 @@ PELICAN-9
       const html = row('CONTINENT', 'continent', continents)
                  + row('SEVERITY',  'severity',  severities)
                  + row('TOPIC',     'topic',     topics);
-      const filtersEl = document.getElementById('lineFilters');
+      // Rows only: the country box above them must survive a re-render.
+      const filtersEl = document.getElementById('lineFilterRows');
       filtersEl.innerHTML = html;
       for (const btn of filtersEl.querySelectorAll('.line-filter-btn')) {
         btn.addEventListener('click', () => {
@@ -12328,6 +12337,7 @@ PELICAN-9
 
     function articlePassesLineFilters(a) {
       const f = state.lineFilters;
+      if (f.country !== 'ALL' && articleCountry(a) !== f.country) return false;
       if (f.continent !== 'ALL') {
         const country = articleCountry(a);
         if (CONTINENTS[country] !== f.continent) return false;
@@ -13006,8 +13016,6 @@ PELICAN-9
       if (name === 'outbreaks' && !outbreakMarkers.length) buildOutbreaksLayer();
 
       layerPanel.style.display         = (name === 'wire') ? '' : 'none';
-      document.getElementById('wireSearch').hidden = name !== 'wire';
-      if (name !== 'wire') closeWireSuggest();
       document.getElementById('conflictPanel').style.display      = (name === 'conflicts') ? '' : 'none';
       document.getElementById('constellationPanel').style.display = (name === 'orbit') ? '' : 'none';
       document.getElementById('ownerPanel').style.display         = (name === 'orbit') ? '' : 'none';
