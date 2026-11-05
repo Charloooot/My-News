@@ -922,7 +922,7 @@
   .hot-chip span { margin-left: 6px; color: var(--red); }
   .conflict-note { padding: 12px; font-size: 10px; color: var(--dim); line-height: 1.5; }
 
-  /* ============== DESKS (FRANCE · IMPACT) ============== */
+  /* ============== DESKS (POLITICS · IMPACT) ============== */
   .desk-stage {
     position: fixed; inset: 78px 0 96px 0; z-index: 6; display: none; overflow-y: auto;
     padding: 0 48px 40px; user-select: text;
@@ -982,7 +982,51 @@
   .desk-sources { display: flex; flex-wrap: wrap; gap: 6px 12px; font-size: 10px; color: var(--dim); }
   .desk-sources span:not(.bad)::first-letter { color: var(--green); } .desk-sources .bad { color: var(--orange); }
 
-  /* France: fiches personnalités (mirrors the CONFLICTS .cdetail panel) */
+  /* Politics: country switch and voting-trend bars */
+  #politicsStage { --pol: var(--blue); }
+  #politicsStage[data-country="us"] { --pol: var(--red); }
+  #politicsStage .desk-title b { color: var(--pol); }
+  .pol-switch { display: flex; gap: 6px; }
+  .pol-switch button { padding: 8px 20px; font-size: 12px; font-weight: 700; letter-spacing: 0.16em; border: 1px solid var(--pc); color: var(--pc); }
+  .pol-switch button:hover { background: color-mix(in srgb, var(--pc) 18%, transparent); }
+  .pol-switch button.on { background: var(--pc); color: #fff; }
+  .pol-switch button:focus-visible { outline: 2px solid var(--paper); outline-offset: 2px; }
+  .pol-trend { border: 1px solid var(--line); border-top: 2px solid var(--pol); background: rgba(5,11,24,0.7); padding: 12px 14px; margin-bottom: 18px; }
+  .pol-trend:empty { display: none; }
+  .pol-trend .desk-empty { padding: 6px 0; }
+  .pol-trend-head { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 4px 16px; margin-bottom: 10px; }
+  .pol-trend-head h4 { font-size: 11px; letter-spacing: 0.16em; color: var(--paper); font-weight: 600; }
+  .pol-trend-head h4 b { color: var(--pol); font-weight: 600; }
+  .pol-trend-head span { font-size: 11px; color: var(--dim); }
+  .pol-bar { position: relative; display: flex; gap: 2px; height: 28px; }
+  .pol-seg { min-width: 2px; border-radius: 4px; display: flex; align-items: center; padding-left: 6px; overflow: hidden; container-type: inline-size; }
+  .pol-seg span { font-size: 11px; font-weight: 700; color: #fff; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  /* A block too narrow for its number prints none: the value stays in the tooltip and table. */
+  @container (max-width: 40px) { .pol-seg span { display: none; } }
+  .pol-marker { position: absolute; top: -4px; bottom: -4px; width: 2px; margin-left: -1px; background: var(--paper); box-shadow: 0 0 0 1px var(--ink2); }
+  .pol-axis { display: flex; justify-content: space-between; font-size: 9px; letter-spacing: 0.1em; color: var(--dim); margin-top: 4px; }
+  .pol-legend { display: flex; flex-wrap: wrap; gap: 4px 12px; margin-top: 8px; font-size: 11px; color: var(--paper); }
+  .pol-legend span { display: inline-flex; align-items: center; gap: 5px; }
+  .pol-legend i { width: 10px; height: 10px; border-radius: 2px; flex: none; }
+  .pol-foot { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: 8px 20px; margin-top: 10px; font-size: 11px; color: var(--dim); }
+  .pol-moves b { color: var(--paper); font-variant-numeric: tabular-nums; }
+  .pol-moves em { font-style: normal; margin: 0 8px; opacity: 0.5; }
+  .pol-moves small { font-size: 10px; margin-left: 8px; }
+  .pol-details summary { cursor: pointer; color: var(--paper); }
+  .pol-details[open] { flex-basis: 100%; }
+  .pol-details table { border-collapse: collapse; margin: 8px 0; font-size: 11px; color: var(--paper); }
+  .pol-details th { text-align: right; padding: 3px 10px; color: var(--dim); font-weight: 400; border-bottom: 1px solid var(--line); }
+  .pol-details td { text-align: right; padding: 3px 10px; font-variant-numeric: tabular-nums; }
+  .pol-details th:first-child, .pol-details td:first-child { text-align: left; padding-left: 0; }
+  .pol-details p { line-height: 1.5; max-width: 760px; }
+  .pol-details a, .pol-src { color: var(--cyan2); }
+  .pol-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 24px; }
+  .pol-cell-head { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 2px 10px; margin-bottom: 7px; font-size: 11px; color: var(--dim); }
+  .pol-cell-head b { font-size: 12px; color: var(--paper); }
+  .pol-cell-note { font-size: 10px; color: var(--dim); margin-top: 5px; }
+  .pol-src { display: inline-block; font-size: 10px; margin-top: 6px; }
+  @media (max-width: 900px) { .pol-grid { grid-template-columns: minmax(0, 1fr); } }
+  /* Politics: profiles (mirrors the CONFLICTS .cdetail panel) */
   .fr-views { display: flex; border: 1px solid var(--line2); margin-left: auto; }
   .fr-views button { padding: 6px 14px; font-size: 10px; letter-spacing: 0.14em; color: var(--dim); white-space: nowrap; }
   .fr-views button:hover { color: var(--paper); }
@@ -1619,7 +1663,7 @@
     <nav class="tabs" id="tabs">
       <button class="tab active" data-tab="wire"><span class="num">01</span>WIRE</button>
       <button class="tab" data-tab="line"><span class="num">02</span>THE LINE</button>
-      <button class="tab new" data-tab="france"><span class="num">03</span>FRANCE</button>
+      <button class="tab new" data-tab="politics"><span class="num">03</span>POLITICS</button>
       <button class="tab" data-tab="conflicts"><span class="num">04</span>CONFLICTS</button>
       <button class="tab new" data-tab="markets"><span class="num">05</span>MARKETS</button>
       <button class="tab" data-tab="outbreaks"><span class="num">06</span>OUTBREAKS</button>
@@ -1723,16 +1767,21 @@
   <!-- ============ CAMERA VIDEO WALL ============ -->
   <div class="cam-wall" id="camWall" role="dialog" aria-label="Camera video wall"></div>
 
-  <!-- ============ DESK STAGES (FRANCE · IMPACT) ============ -->
-  <div class="desk-stage" id="franceStage">
+  <!-- ============ DESK STAGES (POLITICS · IMPACT) ============ -->
+  <div class="desk-stage" id="politicsStage" data-country="fr">
     <div class="desk-head">
-      <div class="desk-title">POLITIQUE <b>// FRANCE</b><span class="desk-sub">10 rédactions nationales · 48 h · regroupées par sujet</span></div>
-      <div class="fr-views" id="frViews" role="tablist" aria-label="Vues France">
+      <div class="pol-switch" id="polSwitch" role="tablist" aria-label="Country">
+        <button data-pc="fr" class="on" role="tab" aria-selected="true" style="--pc:var(--blue)">FRANCE</button>
+        <button data-pc="us" role="tab" aria-selected="false" style="--pc:var(--red)">USA</button>
+      </div>
+      <div class="desk-title" id="polTitle">POLITIQUE <b>// FRANCE</b><span class="desk-sub">10 rédactions nationales · 48 h · regroupées par sujet</span></div>
+      <div class="fr-views" id="polViews" role="tablist" aria-label="Vues France">
         <button data-fv="news" class="on">ACTUALITÉ</button><button data-fv="fiches">FICHES · PERSONNALITÉS</button>
       </div>
-      <div class="desk-meta" id="franceMeta">—</div>
+      <div class="desk-meta" id="polMeta">—</div>
     </div>
-    <div id="franceBody"></div>
+    <section class="pol-trend" id="polTrend" aria-label="Voting trends"></section>
+    <div id="polBody"></div>
   </div>
   <nav class="mkt-nav" id="mktNav" aria-label="Markets views">
     <button data-mv="globe">WORLD · LIVE</button>
@@ -12808,10 +12857,10 @@ PELICAN-9
       // MARKETS = one tab, three views: the live globe (crypto/forex/polymarket),
       // NEWS IMPACT and LONG TERM (both full-screen desks).
       const mv = name === 'markets' ? (state.mktView || 'globe') : null;
-      const isDesk = name === 'france' || (mv && mv !== 'globe');
+      const isDesk = name === 'politics' || (mv && mv !== 'globe');
       document.body.classList.toggle('desk-mode', !!isDesk);
       document.body.classList.toggle('mkt-tab', name === 'markets');
-      document.getElementById('franceStage').classList.toggle('on', name === 'france');
+      document.getElementById('politicsStage').classList.toggle('on', name === 'politics');
       document.getElementById('impactStage').classList.toggle('on', mv === 'impact');
       document.getElementById('longStage').classList.toggle('on', mv === 'long');
       document.getElementById('countryStage').classList.toggle('on', mv === 'country');
@@ -12864,7 +12913,7 @@ PELICAN-9
           break;
         case 'outbreaks': renderFeedOutbreaks(); break;
         case 'defcon': renderFeedDefcon(); break;
-        case 'france': renderFranceDesk(); break;
+        case 'politics': renderPoliticsDesk(); break;
       }
       updateCount();
       // Snap back to Europe on every tab change (unless entering inspection)
@@ -14820,7 +14869,7 @@ PELICAN-9
     });
 
     // ════════════════════════════════════════════════════════════════
-    //  DESKS — full-screen reading tabs (FRANCE politics, IMPACT markets)
+    //  DESKS — full-screen reading tabs (POLITICS, IMPACT markets)
     // ════════════════════════════════════════════════════════════════
     // French stop-words join the English ones so story clustering works on
     // French headlines too ("le", "des", "après"… would otherwise match).
@@ -14829,11 +14878,15 @@ PELICAN-9
     const deskState = {
       fr: { data: null, loadedAt: 0, loading: null, stories: [], filter: { theme: null, party: null, person: null, q: '' },
         view: 'news', fiche: { id: null, q: '', party: null } },
+      us: { data: null, loadedAt: 0, loading: null, stories: [], filter: { theme: null, party: null, person: null, q: '' },
+        view: 'news', fiche: { id: null, q: '', party: null } },
+      polCountry: 'fr',
+      polls: { data: null, loadedAt: 0, loading: null, failed: false },
       biz: { data: null, loadedAt: 0, loading: null, stories: [] },
       impact: { quotes: new Map(), loadedAt: 0, loading: null, rows: [], filter: { region: 'ALL', strong: false } },
     };
 
-    // Loads one of the Worker's desk feeds ('fr' → /fr, 'biz' → /biz),
+    // Loads one of the Worker's desk feeds ('fr' → /fr, 'us' → /us, 'biz' → /biz),
     // clusters it into stories and keeps it 10 min.
     async function loadDeskFeed(key, force = false) {
       const st = deskState[key];
@@ -14846,7 +14899,8 @@ PELICAN-9
           if (!r.ok) throw new Error('http ' + r.status);
           const j = await r.json();
           const arts = (j.articles || []).filter(a => a && a.title && a.url && !isJunkArticle(a));
-          for (const a of arts) a._geo = key === 'fr' ? { country: 'France', city: null, via: 'hint', all: ['France'] } : locateArticle(a);
+          const deskCountry = { fr: 'France', us: 'United States' }[key];
+          for (const a of arts) a._geo = deskCountry ? { country: deskCountry, city: null, via: 'hint', all: [deskCountry] } : locateArticle(a);
           st.data = j; st.loadedAt = Date.now();
           st.stories = clusterStories(arts).map(s => {
             s.lead._story = { id: s.id, size: s.size, sources: s.sources, first: s.first, last: s.last,
@@ -14900,8 +14954,8 @@ PELICAN-9
     // Accented capitals allowed (Éric, Mélenchon); stop-list checks run on the
     // de-accented form so the list can be written without accents.
     const FR_NAME_TOKEN = /^\p{Lu}\p{Ll}+(?:-\p{Lu}\p{Ll}+)?$/u;
-    const isNameWord = (w) => FR_NAME_TOKEN.test(w) && !FR_CAP_STOP.has(deaccent(w));
-    function frPeople(stories) {
+    const isNameWord = (w, stop) => FR_NAME_TOKEN.test(w) && !stop.has(deaccent(w));
+    function frPeople(stories, stop = FR_CAP_STOP) {
       const counts = new Map();
       // Journalists' bylines ("Par Anne-Charlotte Dusseaulx") are not news.
       const bylines = new Set();
@@ -14914,9 +14968,9 @@ PELICAN-9
           for (let i = 0; i < words.length - 1; i++) {
             const a = words[i], b = words[i + 1], c = words[i + 2];
             let name = null;
-            if (isNameWord(a)) {
+            if (isNameWord(a, stop)) {
               if ((b === 'Le' || b === 'La' || b === 'De') && c && FR_NAME_TOKEN.test(c)) name = `${a} ${b} ${c}`;
-              else if (isNameWord(b)) name = `${a} ${b}`;
+              else if (isNameWord(b, stop)) name = `${a} ${b}`;
             }
             if (name && !seen.has(name)) { seen.add(name); counts.set(name, (counts.get(name) || 0) + 1); }
           }
@@ -15380,165 +15434,663 @@ PELICAN-9
         ],
         figures: ['Claude Guéant', 'Brice Hortefeux', 'Carla Bruni-Sarkozy'] },
     ];
-    // Stories in the French desk feed that mention a profile.
-    const frFicheStories = (p) => (deskState.fr.stories || []).filter(s => p.kw.test(s._dtext ??= deaccent(s.text)));
+    // ── USA: profiles (same shape as FR_FICHES) ─────────────────────
+    // kind keeps the French keys because they are the CSS classes of .controv.
+    const US_FICHES_AS_OF = 'Nov. 2026';
+    const US_FICHES = [
+      { id: 'trump', name: 'Donald Trump', party: 'GOP', partyLabel: 'Republican', kw: /\bTrump\b/,
+        role: 'President of the United States (2017–2021, since 2025)', born: 'June 14, 1946 · Queens, New York', training: 'Wharton School, University of Pennsylvania (BS, 1968)',
+        summary: 'Real-estate developer and TV personality who reshaped the Republican Party, won the presidency twice and returned to office in 2025 after losing in 2020.',
+        background: "Heir to a New York property business and star of The Apprentice, Donald Trump won the 2016 election as an outsider. Impeached twice in his first term, he refused to concede the 2020 election, a dispute that ended with the January 6, 2021 attack on the Capitol. He became the first former president convicted of a felony in 2024, then won that year's election. His second term has centred on tariffs, immigration enforcement and a broad expansion of executive power.",
+        timeline: [
+          ['1971', 'Takes charge of the family real-estate business'],
+          ['2004', 'Launches The Apprentice on NBC'],
+          ['2016-11-08', 'Elected president, defeating Hillary Clinton'],
+          ['2019-12', 'First impeachment (Ukraine); acquitted by the Senate in February 2020'],
+          ['2020-11', 'Loses to Joe Biden and contests the result'],
+          ['2021-01', 'Second impeachment after the Capitol attack; acquitted in February'],
+          ['2024-05-30', 'Convicted on 34 felony counts in New York'],
+          ['2024-07-13', 'Survives an assassination attempt in Butler, Pennsylvania'],
+          ['2024-11-05', 'Elected to a second term, defeating Kamala Harris'],
+          ['2025-04', 'Announces sweeping "Liberation Day" tariffs'],
+          ['2026-11-03', 'Republicans lose control of Congress in the midterms'],
+        ],
+        controversies: [
+          { title: 'New York hush-money case', year: '2024', kind: 'judiciaire', status: 'Convicted; unconditional discharge (Jan. 2025); appeal under way',
+            summary: 'Convicted of falsifying business records over a payment to Stormy Daniels before the 2016 election. He received no jail time or fine and denies wrongdoing.' },
+          { title: 'E. Jean Carroll civil verdicts', year: '2023–2024', kind: 'judiciaire', status: 'Found liable ($5M and $83.3M); both upheld on appeal, further appeals pursued',
+            summary: 'Civil juries found him liable for sexual abuse and defamation. He denies the allegations.' },
+          { title: 'January 6 and classified-documents prosecutions', year: '2023–2024', kind: 'judiciaire', status: 'Dismissed: documents case in July 2024, election case after his November 2024 win',
+            summary: 'Two federal indictments, brought by special counsel Jack Smith, ended without trial. A related Georgia election case was dismissed in November 2025.' },
+          { title: 'New York civil fraud case', year: '2024', kind: 'judiciaire', status: 'Liability upheld, but the penalty of about $500M was voided on appeal (Aug. 2025)',
+            summary: 'A judge found that he and his company inflated asset values to obtain better loan and insurance terms.' },
+          { title: 'Epstein files', year: '2025', kind: 'politique', status: 'Disclosure law signed in November 2025; document releases contested',
+            summary: 'Pressure from both parties, including his own base, forced the release of federal files on Jeffrey Epstein, with whom he once socialised. He denies any wrongdoing.' },
+        ],
+        figures: ['JD Vance', 'Marco Rubio', 'Susie Wiles', 'Stephen Miller', 'Elon Musk'] },
+      { id: 'vance', name: 'JD Vance', party: 'GOP', partyLabel: 'Republican', kw: /\b(JD|J\.D\.) Vance\b|\bVance\b/,
+        role: 'Vice President (since 2025)', born: 'August 2, 1984 · Middletown, Ohio', training: 'Ohio State University, Yale Law School; US Marine Corps veteran',
+        summary: 'Memoirist and venture capitalist turned senator, now the leading heir to the MAGA movement.',
+        background: 'Author of the bestselling Hillbilly Elegy, JD Vance went from sharp Trump critic in 2016 to close ally, winning an Ohio Senate seat in 2022 with Trump\'s endorsement. He has become the administration\'s main ideological voice, notably on Europe and industrial policy.',
+        timeline: [
+          ['2016', 'Publishes Hillbilly Elegy'],
+          ['2022-11', 'Elected US senator for Ohio'],
+          ['2024-07', 'Named Trump\'s running mate'],
+          ['2025-01-20', 'Sworn in as vice president'],
+          ['2025-02', 'Munich Security Conference speech attacks European governments'],
+        ],
+        controversies: [
+          { title: 'Springfield claims', year: '2024', kind: 'politique', status: 'Local officials found no evidence for the claims',
+            summary: 'Amplified the false claim that Haitian immigrants in Springfield, Ohio, were eating pets.' },
+        ],
+        figures: ['Donald Trump', 'Peter Thiel', 'Marco Rubio'] },
+      { id: 'rubio', name: 'Marco Rubio', party: 'GOP', partyLabel: 'Republican', kw: /\bRubio\b/,
+        role: 'Secretary of State (since 2025), also acting National Security Adviser', born: 'May 28, 1971 · Miami, Florida', training: 'University of Florida, University of Miami School of Law',
+        summary: 'Former Florida senator and 2016 Trump rival who became the administration\'s top diplomat.',
+        background: 'The son of Cuban immigrants, Marco Rubio rose through the Florida House to the US Senate in 2010 as a Tea Party favourite. A foreign-policy hawk, he was confirmed as Secretary of State without opposition in 2025 and later also took on the national security portfolio.',
+        timeline: [
+          ['2006', 'Speaker of the Florida House'],
+          ['2010-11', 'Elected to the US Senate'],
+          ['2016-03', 'Ends presidential campaign after losing Florida to Trump'],
+          ['2025-01', 'Confirmed Secretary of State 99–0'],
+          ['2025-05', 'Becomes acting National Security Adviser'],
+        ],
+        controversies: [
+          { title: 'Dismantling of USAID', year: '2025', kind: 'politique', status: 'Most programmes cut; litigation followed',
+            summary: 'Oversaw the shutdown of most US foreign aid programmes, folding what remained of USAID into the State Department.' },
+        ],
+        figures: ['Donald Trump', 'JD Vance', 'Pete Hegseth'] },
+      { id: 'hegseth', name: 'Pete Hegseth', party: 'GOP', partyLabel: 'Republican', kw: /\bHegseth\b/,
+        role: 'Secretary of Defense, styled Secretary of War (since 2025)', born: 'June 6, 1980 · Minneapolis, Minnesota', training: 'Princeton, Harvard Kennedy School; Army National Guard veteran',
+        summary: 'Former Fox News host and army veteran leading the Pentagon.',
+        background: 'An infantry officer who served in Iraq and Afghanistan, Pete Hegseth led veterans\' advocacy groups before co-hosting Fox & Friends Weekend. His nomination was among the most contested of the second Trump term.',
+        timeline: [
+          ['2017', 'Co-host of Fox & Friends Weekend'],
+          ['2025-01-24', 'Confirmed 51–50 on the vice president\'s tie-breaking vote'],
+          ['2025-09', 'Pentagon adopts "Department of War" as a secondary name'],
+        ],
+        controversies: [
+          { title: '"Signalgate"', year: '2025', kind: 'politique', status: 'Inspector general criticised his use of Signal (Dec. 2025)',
+            summary: 'Details of strikes on Yemen were shared in a Signal group chat that included a journalist by mistake.' },
+          { title: 'Strikes on alleged drug boats', year: '2025', kind: 'politique', status: 'Congressional scrutiny; legality disputed',
+            summary: 'Lethal US strikes on vessels in the Caribbean and Pacific raised legal questions, especially a follow-up strike on survivors.' },
+        ],
+        figures: ['Donald Trump', 'Marco Rubio'] },
+      { id: 'rfk', name: 'Robert F. Kennedy Jr.', party: 'IND', partyLabel: 'Independent · member of the Trump cabinet', kw: /\b(RFK|Kennedy Jr)\b/,
+        role: 'Secretary of Health and Human Services (since 2025)', born: 'January 17, 1954 · Washington, D.C.', training: 'Harvard, London School of Economics, University of Virginia School of Law',
+        summary: 'Environmental lawyer and vaccine sceptic from the Kennedy family who joined Trump\'s coalition under the "Make America Healthy Again" banner.',
+        background: 'Son of Robert F. Kennedy, he built a career as an environmental lawyer before becoming a leading critic of vaccines. He ran for president in 2024, first as a Democrat and then as an independent, before endorsing Trump.',
+        timeline: [
+          ['2023-04', 'Launches presidential campaign'],
+          ['2024-08', 'Suspends campaign and endorses Trump'],
+          ['2025-02', 'Confirmed as Health Secretary 52–48'],
+          ['2025-06', 'Replaces the CDC\'s vaccine advisory committee'],
+        ],
+        controversies: [
+          { title: 'Vaccine policy', year: '2025', kind: 'politique', status: 'Ongoing; opposed by major medical associations',
+            summary: 'His overhaul of vaccine advice, and the removal of CDC director Susan Monarez in August 2025, drew resignations and protests from public-health officials.' },
+        ],
+        figures: ['Donald Trump', 'Casey Means'] },
+      { id: 'johnson', name: 'Mike Johnson', party: 'GOP', partyLabel: 'Republican', kw: /\b(Mike Johnson|Speaker Johnson)\b/,
+        role: 'Speaker of the House (since 2023), Louisiana', born: 'January 30, 1972 · Shreveport, Louisiana', training: 'Louisiana State University (BS, JD)',
+        summary: 'Constitutional lawyer and little-known backbencher elevated to Speaker after Kevin McCarthy\'s ouster, now leading a party that has lost its majority.',
+        background: 'A social conservative elected in 2016, Mike Johnson became Speaker in October 2023 after three weeks of paralysis in the House. His narrow majority passed Trump\'s 2025 tax and spending law. The 2026 midterms ended Republican control of the chamber.',
+        timeline: [
+          ['2017-01', 'Enters the US House'],
+          ['2023-10-25', 'Elected Speaker'],
+          ['2025-07', 'Passes the "One Big Beautiful Bill"'],
+          ['2026-11-03', 'Republicans lose the House majority'],
+        ],
+        controversies: [
+          { title: 'Challenge to the 2020 results', year: '2020', kind: 'politique', status: 'Supreme Court rejected the suit',
+            summary: 'Organised congressional support for a Texas lawsuit seeking to overturn results in four states.' },
+        ],
+        figures: ['Donald Trump', 'John Thune', 'Hakeem Jeffries'] },
+      { id: 'thune', name: 'John Thune', party: 'GOP', partyLabel: 'Republican', kw: /\bThune\b/,
+        role: 'Senate Majority Leader (since 2025), South Dakota', born: 'January 7, 1961 · Pierre, South Dakota', training: 'Biola University, University of South Dakota (MBA)',
+        summary: 'Institutionalist Republican who succeeded Mitch McConnell as leader of Senate Republicans.',
+        background: 'John Thune made his name by defeating Senate Democratic leader Tom Daschle in 2004. A traditional conservative, he has defended the filibuster despite pressure from Donald Trump. The 2026 elections cost Republicans their Senate majority.',
+        timeline: [
+          ['1997-01', 'Enters the US House'],
+          ['2004-11', 'Defeats Tom Daschle for a Senate seat'],
+          ['2025-01-03', 'Becomes Majority Leader'],
+          ['2026-11-03', 'Republicans lose the Senate majority'],
+        ],
+        controversies: [],
+        figures: ['Mitch McConnell', 'Chuck Schumer', 'Mike Johnson'] },
+      { id: 'jeffries', name: 'Hakeem Jeffries', party: 'DEM', partyLabel: 'Democratic', kw: /\bJeffries\b/,
+        role: 'House Democratic Leader (since 2023), New York', born: 'August 4, 1970 · Brooklyn, New York', training: 'Binghamton University, Georgetown (MPP), NYU School of Law',
+        summary: 'The first Black leader of a party in Congress, in line to become Speaker after the 2026 midterms.',
+        background: 'A corporate lawyer and New York state assemblyman, Hakeem Jeffries entered Congress in 2013 and succeeded Nancy Pelosi as Democratic leader. The party\'s 2026 House win puts him in position for the Speakership in January 2027.',
+        timeline: [
+          ['2007-01', 'Enters the New York State Assembly'],
+          ['2013-01', 'Enters the US House'],
+          ['2023-01', 'Becomes House Democratic Leader'],
+          ['2026-11-03', 'Democrats win the House majority'],
+        ],
+        controversies: [],
+        figures: ['Nancy Pelosi', 'Chuck Schumer', 'Mike Johnson'] },
+      { id: 'schumer', name: 'Chuck Schumer', party: 'DEM', partyLabel: 'Democratic', kw: /\bSchumer\b/,
+        role: 'Senate Democratic Leader (since 2017), New York', born: 'November 23, 1950 · Brooklyn, New York', training: 'Harvard College, Harvard Law School',
+        summary: 'Veteran dealmaker leading Senate Democrats and facing pressure from the party\'s younger wing.',
+        background: 'In elected office since 1975, Chuck Schumer has served in the Senate since 1999. As Majority Leader from 2021 to 2025, he passed major climate, infrastructure and semiconductor laws.',
+        timeline: [
+          ['1981-01', 'Enters the US House'],
+          ['1999-01', 'Enters the US Senate'],
+          ['2017-01', 'Becomes Democratic leader'],
+          ['2021-01', 'Becomes Majority Leader'],
+          ['2026-11-03', 'Democrats win the Senate majority'],
+        ],
+        controversies: [
+          { title: 'March 2025 funding vote', year: '2025', kind: 'politique', status: 'Prompted calls from within the party for new leadership',
+            summary: 'His decision to help advance a Republican funding bill angered many Democrats, who wanted to confront the administration.' },
+        ],
+        figures: ['Hakeem Jeffries', 'John Thune'] },
+      { id: 'harris', name: 'Kamala Harris', party: 'DEM', partyLabel: 'Democratic', kw: /\bKamala\b|\bHarris\b/,
+        role: 'Former Vice President (2021–2025), 2024 presidential nominee', born: 'October 20, 1964 · Oakland, California', training: 'Howard University, UC Hastings College of the Law',
+        summary: 'First woman to serve as vice president, she replaced Joe Biden at the top of the 2024 ticket and lost to Donald Trump.',
+        background: 'San Francisco district attorney, then California attorney general and senator, Kamala Harris became the Democratic nominee after Biden withdrew in July 2024. She published a campaign memoir, 107 Days, in 2025.',
+        timeline: [
+          ['2004-01', 'District attorney of San Francisco'],
+          ['2011-01', 'Attorney General of California'],
+          ['2017-01', 'US senator'],
+          ['2021-01-20', 'Sworn in as vice president'],
+          ['2024-07-21', 'Becomes candidate after Biden withdraws'],
+          ['2024-11-05', 'Loses the presidential election'],
+        ],
+        controversies: [
+          { title: 'Handling of Biden\'s age', year: '2024', kind: 'politique', status: 'Debated within the party',
+            summary: 'Critics argue that the administration, including its vice president, concealed concerns about the president\'s fitness.' },
+        ],
+        figures: ['Joe Biden', 'Tim Walz', 'Gavin Newsom'] },
+      { id: 'newsom', name: 'Gavin Newsom', party: 'DEM', partyLabel: 'Democratic', kw: /\bNewsom\b/,
+        role: 'Governor of California (since 2019)', born: 'October 10, 1967 · San Francisco, California', training: 'Santa Clara University',
+        summary: 'California governor and combative Trump opponent, widely seen as a 2028 contender.',
+        background: 'A businessman turned San Francisco mayor, Gavin Newsom drew national notice in 2004 by issuing same-sex marriage licences. He survived a 2021 recall and led California\'s Proposition 50, passed in November 2025, to redraw the state\'s congressional map.',
+        timeline: [
+          ['2004-01', 'Mayor of San Francisco'],
+          ['2011-01', 'Lieutenant Governor of California'],
+          ['2019-01', 'Governor of California'],
+          ['2021-09', 'Defeats a recall election'],
+          ['2025-11', 'Voters approve Proposition 50 on redistricting'],
+        ],
+        controversies: [
+          { title: 'French Laundry dinner', year: '2020', kind: 'politique', status: 'He apologised',
+            summary: 'Attended a dinner at a luxury restaurant while urging Californians to avoid gatherings during the pandemic, fuelling the recall effort.' },
+        ],
+        figures: ['Kamala Harris', 'Donald Trump'] },
+      { id: 'aoc', name: 'Alexandria Ocasio-Cortez', party: 'DEM', partyLabel: 'Democratic · Democratic Socialists of America', kw: /\b(Ocasio-Cortez|AOC)\b/,
+        role: 'US Representative for New York (since 2019)', born: 'October 13, 1989 · The Bronx, New York', training: 'Boston University',
+        summary: 'Leading figure of the Democratic left, known for her 2018 upset and her mass-mobilisation style.',
+        background: 'A former organiser and bartender, she unseated senior Democrat Joe Crowley in the 2018 primary, at 28. She co-sponsored the Green New Deal resolution and toured the country with Bernie Sanders in 2025 on their "Fighting Oligarchy" tour.',
+        timeline: [
+          ['2018-06-26', 'Defeats Joe Crowley in the primary'],
+          ['2019-01', 'Enters the US House'],
+          ['2019-02', 'Introduces the Green New Deal resolution'],
+          ['2025', '"Fighting Oligarchy" tour with Bernie Sanders'],
+        ],
+        controversies: [
+          { title: 'Met Gala gifts', year: '2021', kind: 'politique', status: 'House Ethics found impermissible gifts; she repaid the costs',
+            summary: 'The House Ethics Committee reviewed the costs of her attendance at the 2021 Met Gala.' },
+        ],
+        figures: ['Bernie Sanders', 'Zohran Mamdani', 'Hakeem Jeffries'] },
+      { id: 'sanders', name: 'Bernie Sanders', party: 'IND', partyLabel: 'Independent, caucuses with Democrats', kw: /\bBernie Sanders\b/,
+        role: 'US Senator for Vermont (since 2007)', born: 'September 8, 1941 · Brooklyn, New York', training: 'University of Chicago',
+        summary: 'Longest-serving independent in congressional history and the American left\'s best-known figure.',
+        background: 'Mayor of Burlington in the 1980s, then congressman, Bernie Sanders ran for the Democratic presidential nomination in 2016 and 2020 on universal healthcare and taxing the wealthy, reshaping the party\'s agenda.',
+        timeline: [
+          ['1981', 'Mayor of Burlington, Vermont'],
+          ['1991-01', 'Enters the US House'],
+          ['2007-01', 'Enters the US Senate'],
+          ['2016', 'Runs a strong primary campaign against Hillary Clinton'],
+          ['2020-04', 'Ends second presidential campaign'],
+        ],
+        controversies: [],
+        figures: ['Alexandria Ocasio-Cortez', 'Zohran Mamdani'] },
+      { id: 'mamdani', name: 'Zohran Mamdani', party: 'DEM', partyLabel: 'Democratic · Democratic Socialists of America', kw: /\bMamdani\b/,
+        role: 'Mayor of New York City (since 2026)', born: 'October 18, 1991 · Kampala, Uganda', training: 'Bowdoin College',
+        summary: 'Democratic socialist who went from state assemblyman to New York mayor on a cost-of-living platform.',
+        background: 'A housing counsellor elected to the New York State Assembly in 2020, Zohran Mamdani beat Andrew Cuomo in the June 2025 primary and again in the November general election, becoming the city\'s first Muslim mayor.',
+        timeline: [
+          ['2021-01', 'Enters the New York State Assembly'],
+          ['2025-06-24', 'Wins the Democratic mayoral primary'],
+          ['2025-11-04', 'Elected mayor'],
+          ['2026-01-01', 'Takes office'],
+        ],
+        controversies: [
+          { title: 'Remarks on Israel', year: '2025', kind: 'politique', status: 'He later said he would discourage the phrase "globalize the intifada"',
+            summary: 'His positions on Israel and his initial refusal to condemn the slogan drew criticism from Jewish groups and leading Democrats.' },
+        ],
+        figures: ['Alexandria Ocasio-Cortez', 'Bernie Sanders', 'Andrew Cuomo'] },
+      { id: 'desantis', name: 'Ron DeSantis', party: 'GOP', partyLabel: 'Republican', kw: /\bDeSantis\b/,
+        role: 'Governor of Florida (since 2019)', born: 'September 14, 1978 · Jacksonville, Florida', training: 'Yale, Harvard Law School; US Navy JAG officer',
+        summary: 'Conservative governor and failed 2024 presidential candidate, known for his culture-war record.',
+        background: 'A congressman who won the governorship with Trump\'s backing in 2018, Ron DeSantis won re-election by 19 points in 2022. His 2024 presidential bid ended after the Iowa caucuses, and he endorsed Trump.',
+        timeline: [
+          ['2013-01', 'Enters the US House'],
+          ['2019-01', 'Governor of Florida'],
+          ['2022-11', 'Re-elected by 19 points'],
+          ['2024-01', 'Ends presidential campaign'],
+        ],
+        controversies: [
+          { title: 'Martha\'s Vineyard flights', year: '2022', kind: 'politique', status: 'Lawsuits followed',
+            summary: 'Florida flew about 50 Venezuelan migrants from Texas to Massachusetts without warning local officials.' },
+          { title: 'Dispute with Disney', year: '2022–2024', kind: 'politique', status: 'Settled in 2024',
+            summary: 'Removed Disney\'s self-governing status after the company opposed a Florida education law.' },
+        ],
+        figures: ['Donald Trump', 'Casey DeSantis'] },
+      { id: 'buttigieg', name: 'Pete Buttigieg', party: 'DEM', partyLabel: 'Democratic', kw: /\bButtigieg\b/,
+        role: 'Former Secretary of Transportation (2021–2025)', born: 'January 19, 1982 · South Bend, Indiana', training: 'Harvard, University of Oxford (Rhodes Scholar); US Navy Reserve veteran',
+        summary: 'Former small-city mayor and cabinet member, seen as a 2028 Democratic contender.',
+        background: 'Mayor of South Bend at 29, Pete Buttigieg came first in the delegate count in the 2020 Iowa caucuses, as the first openly gay major candidate for president. He then joined Joe Biden\'s cabinet.',
+        timeline: [
+          ['2012-01', 'Mayor of South Bend'],
+          ['2020-02', 'Narrowly leads the Iowa delegate count'],
+          ['2021-02', 'Confirmed Transportation Secretary'],
+          ['2025-03', 'Declines to run for the Senate in Michigan'],
+        ],
+        controversies: [
+          { title: 'East Palestine derailment response', year: '2023', kind: 'politique', status: 'Criticised; he later said he should have spoken up sooner',
+            summary: 'Faced criticism for the pace of his response to a toxic train derailment in Ohio.' },
+        ],
+        figures: ['Joe Biden', 'Kamala Harris'] },
+      { id: 'musk', name: 'Elon Musk', party: 'IND', partyLabel: 'No party · major Republican donor', kw: /\bMusk\b/,
+        role: 'CEO of Tesla and SpaceX, owner of X; former head of DOGE', born: 'June 28, 1971 · Pretoria, South Africa', training: 'University of Pennsylvania',
+        summary: 'World\'s richest person, the biggest donor of the 2024 campaign, and the short-lived head of the federal cost-cutting effort.',
+        background: 'After spending more than $250 million to elect Donald Trump, Elon Musk led the Department of Government Efficiency in early 2025, cutting agencies and staff. He left in May 2025 and clashed publicly with Trump over the budget law, before the two partly reconciled.',
+        timeline: [
+          ['2002', 'Founds SpaceX'],
+          ['2008', 'Becomes CEO of Tesla'],
+          ['2022-10', 'Buys Twitter, later renamed X'],
+          ['2025-01', 'Leads DOGE'],
+          ['2025-05', 'Leaves the administration'],
+          ['2025-07', 'Announces an "America Party"'],
+        ],
+        controversies: [
+          { title: 'SEC cases', year: '2018, 2025', kind: 'judiciaire', status: '2018 case settled for $20M; 2025 suit over his Twitter stake disclosure open at last update',
+            summary: 'Settled over tweets about taking Tesla private; sued over the late disclosure of his Twitter stake. He denies wrongdoing in the latter.' },
+          { title: 'DOGE cuts', year: '2025', kind: 'politique', status: 'Multiple court challenges',
+            summary: 'Mass layoffs and access to federal data systems prompted lawsuits and protests.' },
+        ],
+        figures: ['Donald Trump', 'JD Vance'] },
+    ];
 
-    function renderFrFiches() {
-      const el = document.getElementById('franceBody');
-      const head = document.getElementById('franceMeta');
-      const st = deskState.fr;
+    // ── POLITICS: one desk, one configuration per country ───────────
+    const US_PARTIES = [
+      ['GOP', 'Republicans', /\b(Republicans?|GOP)\b/],
+      ['DEM', 'Democrats', /\b(Democrats?|Democratic Party|DNC)\b/],
+      ['MAGA', 'MAGA movement', /\bMAGA\b/],
+      ['PROG', 'Progressives', /\b(progressives?|Democratic Socialists|DSA)\b/i],
+      ['FC', 'Freedom Caucus', /\bFreedom Caucus\b/],
+      ['IND', 'Independents', /\b(independents?|third[- ]party)\b/i],
+    ];
+    const US_THEMES = [
+      ['Elections', /\b(elections?|midterms?|ballots?|voters?|polls?|campaign\w*|primar(?:y|ies)|redistricting|gerrymander\w*|2028)\b/i],
+      ['Congress', /\b(Congress|Senate|House|Speaker|filibuster|shutdown|appropriations?|impeach\w*)\b/],
+      ['White House', /\b(White House|executive orders?|cabinet|Oval Office|president's)\b/i],
+      ['Courts · Justice', /\b(Supreme Court|court|judges?|DOJ|Justice Department|indict\w*|lawsuits?|FBI|attorney general)\b/i],
+      ['Immigration', /\b(immigra\w*|ICE|border|deport\w*|migrants?|asylum)\b/],
+      ['Economy', /\b(tariffs?|economy|inflation|jobs|taxes|budget|deficit|Fed|Federal Reserve|prices)\b/],
+      ['Health', /\b(health\w*|Medicaid|Medicare|Obamacare|ACA|vaccines?|CDC|abortion)\b/i],
+      ['World', /\b(Ukraine|Russia|China|Iran|Israel|Gaza|Venezuela|NATO|foreign policy)\b/],
+    ];
+    // Capitalised words that start non-person bigrams ("White House", "New York").
+    const US_CAP_STOP = new Set(('White House Senate Congress Supreme Court Department Justice State States United America American Americans New York Los Angeles San North South East West ' +
+      'Democrats Democrat Democratic Republicans Republican President Vice Speaker Secretary Sen Rep Gov Governor Mayor Judge Attorney General Federal Reserve National Guard Security ' +
+      'Homeland Pentagon Capitol Oval Office Fox News Washington Post Times Politico Hill Press Associated Trump Administration Party Freedom Caucus Election Day Midterm Midterms Big Beautiful Bill ' +
+      'The This That These Those What When Where Why How Who After Before From With Here Live Updates Watch Opinion Analysis Breaking Monday Tuesday Wednesday Thursday Friday Saturday Sunday ' +
+      'Decision Desk Minority Majority Leader Whip January February March April May June July August September October November December District Columbia Texas California Florida Ohio Virginia Carolina Dakota Jersey Hampshire Mexico').split(' '));
+
+    const POL = {
+      fr: {
+        key: 'fr', country: 'France', locale: 'fr-FR', parties: FR_PARTIES, themes: FR_THEMES, stop: FR_CAP_STOP,
+        fiches: FR_FICHES, asOf: FR_FICHES_AS_OF, partyColor: FR_PARTY_COLOR,
+        t: {
+          title: 'POLITIQUE', name: 'FRANCE', sub: '10 rédactions nationales · 48 h · regroupées par sujet',
+          news: 'ACTUALITÉ', ficheTab: 'FICHES · PERSONNALITÉS', viewsLabel: 'Vues France',
+          noProxy: 'Ce bureau a besoin du Worker (API_PROXY) : il agrège 10 rédactions côté serveur.',
+          loading: 'Chargement des rédactions françaises…', down: 'Flux indisponible pour le moment.', retry: 'Réessayer',
+          topics: 'sujets', topic: 'sujet', articles: 'articles', outlets: 'rédactions', updated: 'màj',
+          search: 'Rechercher (ex : budget, Retailleau, 49.3)…', clearAll: 'Tout effacer', allThemes: 'Tous les thèmes', noMatch: 'Aucun sujet ne correspond à ces filtres.',
+          barometer: 'Baromètre des partis', barometerSub: 'sujets qui les citent · 48 h', cite: (n, l) => `${n} sujets citent ${l}`,
+          fichesPanel: 'Fiches personnalités', fichesSub: 'parcours · controverses · affaires', allFiches: 'Toutes les fiches →',
+          people: 'Personnalités citées', peopleSub: '≥ 2 sujets', outletsPanel: 'Rédactions', outletsReach: (n) => `${n} RÉDACTIONS`,
+          also: 'aussi', ago: (a) => 'il y a ' + a.replace('m', ' min').replace('h', ' h').replace('d', ' j'),
+          fichesMeta: (n, asOf, c) => `<b>${n}</b> fiches · données ${asOf}${c != null ? ` · couverture <b>${c}</b> sujets / 48 h` : ''}`,
+          noLive: 'Couverture en direct indisponible (Worker non configuré).', noStory: 'Aucun sujet ne le/la cite dans les dernières 48 h.',
+          fRole: 'Fonction', fParty: 'Parti', fBorn: 'Naissance', fTraining: 'Formation', legal: 'JUDICIAIRE', political: 'POLITIQUE',
+          noControv: 'Aucune affaire ni controverse majeure documentée.', ficheSearch: 'Rechercher une personnalité…', all: 'Tous', noFiche: 'Aucune fiche.',
+          nStories: (n) => `<b>${n}</b> sujets 48 h`, cases: 'affaires', kicker: 'FICHE PERSONNALITÉ', identity: 'IDENTITÉ', live: 'EN DIRECT · 48 H',
+          career: 'PARCOURS · ÉTAPES MAJEURES', curated: 'curé', profile: 'PROFIL', controv: 'CONTROVERSES & AFFAIRES',
+          controvCount: (n, j) => `${n} · dont ${j} judiciaire${j > 1 ? 's' : ''}`,
+          note: (d) => `Présomption d'innocence : toute procédure non définitivement jugée ne préjuge pas de la culpabilité. Statuts à jour ${d} — vérifier l'évolution dans la couverture en direct.`,
+          circle: 'ENTOURAGE · ALLIÉS · RIVAUX',
+        },
+      },
+      us: {
+        key: 'us', country: 'United States', locale: 'en-US', parties: US_PARTIES, themes: US_THEMES, stop: US_CAP_STOP,
+        fiches: US_FICHES, asOf: US_FICHES_AS_OF, partyColor: { GOP: '#ff5a5f', DEM: '#4d9aff', IND: '#c9a0ff' },
+        t: {
+          title: 'POLITICS', name: 'USA', sub: '10 national newsrooms · 48 h · grouped by story',
+          news: 'NEWS', ficheTab: 'PROFILES', viewsLabel: 'USA views',
+          noProxy: 'This desk needs the Worker (API_PROXY): it aggregates 10 newsrooms server-side.',
+          loading: 'Loading US newsrooms…', down: 'Feed unavailable right now.', retry: 'Retry',
+          topics: 'stories', topic: 'story', articles: 'articles', outlets: 'newsrooms', updated: 'updated',
+          search: 'Search (e.g. tariffs, Jeffries, shutdown)…', clearAll: 'Clear all', allThemes: 'All themes', noMatch: 'No story matches these filters.',
+          barometer: 'Party barometer', barometerSub: 'stories mentioning them · 48 h', cite: (n, l) => `${n} stories mention ${l}`,
+          fichesPanel: 'Profiles', fichesSub: 'career · controversies · cases', allFiches: 'All profiles →',
+          people: 'People in the news', peopleSub: '≥ 2 stories', outletsPanel: 'Newsrooms', outletsReach: (n) => `${n} NEWSROOMS`,
+          also: 'also', ago: (a) => a.replace('m', ' min').replace('h', ' h').replace('d', ' d') + ' ago',
+          fichesMeta: (n, asOf, c) => `<b>${n}</b> profiles · data ${asOf}${c != null ? ` · coverage <b>${c}</b> stories / 48 h` : ''}`,
+          noLive: 'Live coverage unavailable (Worker not configured).', noStory: 'Not mentioned in any story in the last 48 h.',
+          fRole: 'Office', fParty: 'Party', fBorn: 'Born', fTraining: 'Education', legal: 'LEGAL', political: 'POLITICAL',
+          noControv: 'No major documented case or controversy.', ficheSearch: 'Search for a person…', all: 'All', noFiche: 'No profile.',
+          nStories: (n) => `<b>${n}</b> stories 48 h`, cases: 'cases', kicker: 'PROFILE', identity: 'IDENTITY', live: 'LIVE · 48 H',
+          career: 'CAREER · KEY MILESTONES', curated: 'curated', profile: 'BACKGROUND', controv: 'CONTROVERSIES & CASES',
+          controvCount: (n, j) => `${n} · ${j} legal`,
+          note: (d) => `Presumption of innocence applies to any case not finally decided. Statuses as of ${d}; check the live coverage for later developments.`,
+          circle: 'CIRCLE · ALLIES · RIVALS',
+        },
+      },
+    };
+    const polCfg = () => POL[deskState.polCountry];
+    const polSt = () => deskState[deskState.polCountry];
+
+    // ── POLITICS: voting-trend bars (Worker /polls) ─────────────────
+    // Colour follows the candidate, never the rank. Validated against the desk
+    // surface for adjacent left-to-right pairs (dataviz validate_palette.js).
+    const FR_CANDIDATE_COLOR = {
+      'Jean-Luc Mélenchon': '#e0364f', 'Raphaël Glucksmann': '#cf5ad0', 'Marine Tondelier': '#12a07a', 'Gabriel Attal': '#b08600',
+      'Édouard Philippe': '#7a6ee8', 'David Lisnard': '#c2563a', 'Bruno Retailleau': '#1798b8', 'Marine Le Pen': '#3a60e8', 'Éric Zemmour': '#b3702a',
+    };
+    // Left-to-right order of the French bar; off-list candidates fold into « Autres ».
+    const FR_SPECTRUM = Object.keys(FR_CANDIDATE_COLOR);
+    const OTHER_COLOR = '#5b6678';
+    const POLL_MIN_SHOW = 2.5;    // % under which a candidate folds into « Autres »
+    const DEM = '#3b82f6', REP = '#ef4444', IND_COLOR = '#7a6ee8', APPROVE = '#1798b8', DISAPPROVE = '#c2563a';
+
+    async function loadPolls(force = false) {
+      const st = deskState.polls;
+      if (!API_PROXY) return null;
+      if (!force && st.data && Date.now() - st.loadedAt < 10 * 60e3) return st.data;
+      if (st.loading) return st.loading;
+      st.loading = (async () => {
+        try {
+          const r = await fetch(`${API_PROXY}/polls`, { cache: 'no-store' });
+          if (!r.ok) throw new Error('http ' + r.status);
+          st.data = await r.json(); st.loadedAt = Date.now(); st.failed = false;
+          return st.data;
+        } catch (e) { console.warn('polls', e); st.failed = true; return null; }
+        finally { st.loading = null; }
+      })();
+      return st.loading;
+    }
+    const lastName = (n) => n.replace(/^(?:\p{Lu}[\p{L}'’.]*-?\p{L}*\s+)(?=\p{Lu})/u, '');
+    // parts: [{ label, value, color, display, tip }]; widths are shares of the sum.
+    function segBar(parts, name, marker) {
+      const shown = parts.filter(p => p.value > 0);
+      const aria = name + ' : ' + shown.map(p => `${p.label} ${p.display}`).join(', ');
+      return `<div class="pol-bar" role="img" aria-label="${escapeHtml(aria)}">
+        ${shown.map(p => `<div class="pol-seg" style="flex:${p.value} 1 0;background:${p.color}" title="${escapeHtml(p.tip || `${p.label} · ${p.display}`)}"><span>${escapeHtml(p.display)}</span></div>`).join('')}
+        ${marker ? `<i class="pol-marker" style="left:${(marker.at * 100).toFixed(2)}%" title="${escapeHtml(marker.label)}"></i>` : ''}
+      </div>`;
+    }
+    const polLegend = (parts) => `<div class="pol-legend">${parts.filter(p => p.value > 0).map(p => `<span><i style="background:${p.color}"></i>${escapeHtml(p.label)}</span>`).join('')}</div>`;
+
+    function frPollHtml(d) {
+      const n1 = (x) => x.toLocaleString('fr-FR', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+      const signed = (x) => (x > 0 ? '+' : x < 0 ? '−' : '') + n1(Math.abs(x));
+      const main = FR_SPECTRUM.map(n => d.candidates.find(c => c.name === n)).filter(c => c && c.pct >= POLL_MIN_SHOW);
+      const rest = d.candidates.filter(c => !main.includes(c));
+      const parts = main.map(c => ({ label: lastName(c.name), value: c.pct, color: FR_CANDIDATE_COLOR[c.name], display: `${n1(c.pct)} %`,
+        tip: `${c.name} · ${n1(c.pct)} % · testé dans ${c.polls}/${d.pollCount} sondages${c.delta != null ? ` · ${signed(c.delta)} pt sur 30 j` : ''}` }));
+      const other = Math.round(rest.reduce((a, c) => a + c.pct, 0) * 10) / 10;
+      if (other > 0) parts.push({ label: 'Autres', value: other, color: OTHER_COLOR, display: `${n1(other)} %`, tip: `${rest.map(c => `${lastName(c.name)} ${n1(c.pct)} %`).join(' · ')}` });
+      const moves = d.candidates.filter(c => c.delta != null && Math.abs(c.delta) >= 0.5).sort((a, b) => b.delta - a.delta);
+      const up = moves.filter(c => c.delta > 0).slice(0, 2), down = moves.filter(c => c.delta < 0).slice(-2).reverse();
+      const fmt = (c) => `${escapeHtml(lastName(c.name))} <b>${signed(c.delta)}</b>`;
+      const movers = [up.length && `▲ ${up.map(fmt).join(' · ')}`, down.length && `▼ ${down.map(fmt).join(' · ')}`].filter(Boolean).join('<em>|</em>');
+      const when = new Date(d.latestFieldwork + 'T12:00:00Z').toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' });
+      const rows = [...d.candidates].sort((a, b) => b.pct - a.pct).map(c => `<tr><td>${escapeHtml(c.name)}</td><td>${n1(c.pct)} %</td><td>${c.delta != null ? signed(c.delta) : '—'}</td><td>${c.polls}/${d.pollCount}</td></tr>`).join('');
+      return `<div class="pol-trend-head">
+          <h4>INTENTIONS DE VOTE <b>// 1er tour présidentielle 2027</b></h4>
+          <span>moyenne de ${d.pollCount} sondages sur ${d.windowDays} jours · dernier terrain ${when}</span>
+        </div>
+        ${segBar(parts, 'Intentions de vote au premier tour, de la gauche à la droite')}
+        <div class="pol-axis"><span>◄ gauche</span><span>droite ►</span></div>
+        ${polLegend(parts)}
+        <div class="pol-foot">${movers ? `<span class="pol-moves">${movers}<small>sur 30 j</small></span>` : ''}
+          <details class="pol-details"><summary>Détail et méthode</summary>
+            <table><thead><tr><th>Candidat</th><th>Moyenne</th><th>30 j</th><th>Testé</th></tr></thead><tbody>${rows}</tbody></table>
+            <p>Scénario principal de chaque sondage, chaque sondage pèse autant. Un candidat est moyenné sur les seuls sondages qui le testent : le total peut donc dépasser 100 %, et les largeurs de la barre sont ramenées à 100 %. La tendance n'apparaît qu'à partir de 3 sondages de chaque côté. Dernières enquêtes : ${d.recent.map(r => escapeHtml(r.firm)).join(', ')}. Ce sont des intentions de vote, pas une prévision. <a href="${escapeHtml(d.source)}" target="_blank" rel="noopener">Source : Wikipédia, d'après les instituts</a>.</p>
+          </details></div>`;
+    }
+    function usChamberBar(name, c) {
+      const parts = [{ label: 'Democrats', value: c.dem, color: DEM, display: String(c.dem), tip: `Democrats · ${c.dem} seats called` }];
+      if (c.other) parts.push({ label: 'Independents (caucus with Dems)', value: c.other, color: IND_COLOR, display: String(c.other), tip: `Independents caucusing with Democrats · ${c.other}` });
+      if (c.tbd) parts.push({ label: 'Not called', value: c.tbd, color: OTHER_COLOR, display: String(c.tbd), tip: `Not called yet · ${c.tbd}` });
+      parts.push({ label: 'Republicans', value: c.rep, color: REP, display: String(c.rep), tip: `Republicans · ${c.rep} seats called` });
+      const left = c.dem + c.other;
+      const verdict = left >= c.majority ? 'Democratic majority' : c.rep >= c.majority ? 'Republican majority' : 'Majority not decided';
+      return `<div class="pol-cell"><div class="pol-cell-head"><b>${name}</b><span>${verdict}${c.tbd ? ` · ${c.tbd} not called` : ''}</span></div>
+        ${segBar(parts, `${name} seats`, { at: c.majority / c.total, label: `Majority: ${c.majority} of ${c.total}` })}
+        <div class="pol-cell-note">Marker: ${c.majority} seats for a majority</div>${polLegend(parts)}</div>`;
+    }
+    function usShareBar(name, note, a, b, source) {
+      const rest = Math.max(0, Math.round((100 - a.value - b.value) * 10) / 10);
+      const parts = [a, b, { label: 'Other / unsure', value: rest, color: OTHER_COLOR }].map(p => ({ ...p, display: `${p.value}%` }));
+      return `<div class="pol-cell"><div class="pol-cell-head"><b>${name}</b><span>${note}</span></div>${segBar(parts, name)}${polLegend(parts)}<a class="pol-src" href="${escapeHtml(source)}" target="_blank" rel="noopener">Wikipedia, from the aggregators</a></div>`;
+    }
+    function usPollHtml(d) {
+      const g = d.genericBallot, ap = d.approval;
+      const gap = Math.round(Math.abs(g.dem - g.rep) * 10) / 10;
+      return `<div class="pol-trend-head">
+          <h4>VOTE TRENDS <b>// 2026 midterms</b></h4>
+          <span>results as called${d.house.updated ? ` · ${escapeHtml(d.house.updated)}` : ''} · provisional until certified</span>
+        </div>
+        <div class="pol-grid">
+          ${usChamberBar('House', d.house)}
+          ${usChamberBar('Senate', d.senate)}
+          ${usShareBar('Generic ballot', `final polling average · ${g.dem >= g.rep ? 'D' : 'R'}+${gap} · ${escapeHtml(g.updated)}`,
+            { label: 'Democrats', value: g.dem, color: DEM }, { label: 'Republicans', value: g.rep, color: REP }, g.source)}
+          ${usShareBar('Trump approval', `average of ${ap.aggregators.length} aggregators · ${escapeHtml(ap.asOf)}`,
+            { label: 'Approve', value: ap.approve, color: APPROVE }, { label: 'Disapprove', value: ap.disapprove, color: DISAPPROVE }, ap.source)}
+        </div>`;
+    }
+    function renderPolTrend() {
+      const el = document.getElementById('polTrend');
+      const c = deskState.polCountry, st = deskState.polls;
+      const d = st.data?.[c];
+      let html;
+      if (!API_PROXY) html = '';
+      else if (d) html = c === 'fr' ? frPollHtml(d) : usPollHtml(d);
+      else if (st.failed || st.data) html = `<div class="desk-empty">${c === 'fr' ? 'Intentions de vote indisponibles pour le moment.' : 'Voting data unavailable right now.'}</div>`;
+      else html = `<div class="desk-empty">${c === 'fr' ? 'Chargement des intentions de vote…' : 'Loading voting data…'}</div>`;
+      // Filters re-render the desk constantly: only touch the DOM on change,
+      // so an open "details" panel stays open.
+      if (el.dataset.html !== html) { el.innerHTML = html; el.dataset.html = html; }
+      if (!st.data && !st.failed && !st.loading) loadPolls().then(renderPolTrend);
+    }
+
+    // Stories in a country's desk feed that mention a profile.
+    const ficheStories = (p, st = polSt()) => (st.stories || []).filter(s => p.kw.test(s._dtext ??= deaccent(s.text)));
+
+    function renderPolFiches() {
+      const el = document.getElementById('polBody');
+      const head = document.getElementById('polMeta');
+      const cfg = polCfg(), T = cfg.t, FICHES = cfg.fiches, st = polSt();
       // Profiles work without the feed; it only adds live coverage.
-      if (!st.data && API_PROXY && !st._ficheTried) { st._ficheTried = true; loadFranceFeed().then(() => { if (st.view === 'fiches') renderFrFiches(); }); }
+      if (!st.data && API_PROXY && !st._ficheTried) { st._ficheTried = true; loadDeskFeed(cfg.key).then(() => { if (polSt() === st && st.view === 'fiches') renderPolFiches(); }); }
       const f = st.fiche;
       const q = deaccent(f.q.trim().toLowerCase());
-      const rows = FR_FICHES.map(p => ({ p, n: frFicheStories(p).length }));
+      const rows = FICHES.map(p => ({ p, n: ficheStories(p).length }));
       const list = rows.filter(({ p }) => (!f.party || p.party === f.party) &&
         (!q || deaccent((p.name + ' ' + p.role + ' ' + p.partyLabel).toLowerCase()).includes(q)));
-      list.sort((a, b) => (b.n - a.n) || a.p.name.localeCompare(b.p.name, 'fr'));
-      const sel = FR_FICHES.find(p => p.id === f.id) || list[0]?.p || FR_FICHES[0];
-      head.innerHTML = `<b>${FR_FICHES.length}</b> fiches · données ${FR_FICHES_AS_OF}${st.data ? ` · couverture <b>${st.stories.length}</b> sujets / 48 h` : ''}`;
+      list.sort((a, b) => (b.n - a.n) || a.p.name.localeCompare(b.p.name, cfg.locale));
+      const sel = FICHES.find(p => p.id === f.id) || list[0]?.p || FICHES[0];
+      head.innerHTML = T.fichesMeta(FICHES.length, cfg.asOf, st.data ? st.stories.length : null);
 
-      const parties = [...new Set(FR_FICHES.map(p => p.party))];
-      const pcol = (id) => FR_PARTY_COLOR[id] || 'var(--cyan)';
+      const parties = [...new Set(FICHES.map(p => p.party))];
+      const pcol = (id) => cfg.partyColor[id] || 'var(--cyan)';
       const ptag = (p) => `<span class="desk-tag" style="color:${pcol(p.party)};border-color:${pcol(p.party)}80">${escapeHtml(p.party)}</span>`;
 
-      const stories = frFicheStories(sel).sort((x, y) => (y.sources - x.sources) || ((y.last || 0) - (x.last || 0))).slice(0, 10);
-      const newsHtml = !API_PROXY ? '<div class="empty">Couverture en direct indisponible (Worker non configuré).</div>'
-        : !st.data ? '<div class="empty">Chargement des rédactions françaises…</div>'
+      const stories = ficheStories(sel).sort((x, y) => (y.sources - x.sources) || ((y.last || 0) - (x.last || 0))).slice(0, 10);
+      const newsHtml = !API_PROXY ? `<div class="empty">${T.noLive}</div>`
+        : !st.data ? `<div class="empty">${T.loading}</div>`
         : stories.length ? stories.map(s => `<div class="loc fiche-news" data-sid="${s.id}" role="button" tabindex="0">
             <div class="lname">${escapeHtml(s.lead.title)}</div>
-            <div class="lrole">${escapeHtml(s.lead.domain || '')}${s.sources > 1 ? ` · ${s.sources} rédactions` : ''}${articleAge(s.lead) ? ` · il y a ${articleAge(s.lead)}` : ''}</div></div>`).join('')
-        : '<div class="empty">Aucun sujet ne le/la cite dans les dernières 48 h.</div>';
+            <div class="lrole">${escapeHtml(s.lead.domain || '')}${s.sources > 1 ? ` · ${s.sources} ${T.outlets}` : ''}${articleAge(s.lead) ? ` · ${T.ago(articleAge(s.lead))}` : ''}</div></div>`).join('')
+        : `<div class="empty">${T.noStory}</div>`;
 
-      const stats = [['Fonction', sel.role], ['Parti', sel.partyLabel], ['Naissance', sel.born], ['Formation', sel.training]].filter(x => x[1]);
+      const stats = [[T.fRole, sel.role], [T.fParty, sel.partyLabel], [T.fBorn, sel.born], [T.fTraining, sel.training]].filter(x => x[1]);
       const judicial = sel.controversies.filter(c => c.kind === 'judiciaire').length;
       const controvHtml = sel.controversies.length ? sel.controversies.map(c => `
           <div class="controv ${c.kind}">
-            <div class="ctop"><span class="ckind">${c.kind === 'judiciaire' ? 'JUDICIAIRE' : 'POLITIQUE'}</span><span class="cyear">${escapeHtml(c.year)}</span></div>
+            <div class="ctop"><span class="ckind">${c.kind === 'judiciaire' ? T.legal : T.political}</span><span class="cyear">${escapeHtml(c.year)}</span></div>
             <div class="rname">${escapeHtml(c.title)}</div>
             <div class="rsum">${escapeHtml(c.summary)}</div>
             <div class="cstatus">${escapeHtml(c.status)}</div>
           </div>`).join('')
-        : '<div class="empty">Aucune affaire ni controverse majeure documentée.</div>';
+        : `<div class="empty">${T.noControv}</div>`;
 
       el.innerHTML = `
         <div class="fiche-grid">
           <aside class="fiche-side">
-            <input class="desk-search" id="ficheSearch" placeholder="Rechercher une personnalité…" value="${escapeHtml(f.q)}" />
+            <input class="desk-search" id="ficheSearch" placeholder="${T.ficheSearch}" value="${escapeHtml(f.q)}" />
             <div class="desk-chips fiche-parties">
-              <button class="desk-chip${!f.party ? ' on' : ''}" data-fp="">Tous</button>
+              <button class="desk-chip${!f.party ? ' on' : ''}" data-fp="">${T.all}</button>
               ${parties.map(id => `<button class="desk-chip${f.party === id ? ' on' : ''}" data-fp="${id}" style="${f.party === id ? '' : `color:${pcol(id)}`}">${id}</button>`).join('')}
             </div>
             <div class="fiche-list">
               ${list.map(({ p, n }) => `<button class="fiche-row${p === sel ? ' on' : ''}" data-fid="${p.id}" style="--pc:${pcol(p.party)}">
                 <span class="fname">${escapeHtml(p.name)}</span>${ptag(p)}
                 <span class="frole">${escapeHtml(p.role)}</span>
-                <span class="fstats">${n ? `<b>${n}</b> sujets 48 h` : '—'}${p.controversies.some(c => c.kind === 'judiciaire') ? ' · <i>affaires</i>' : ''}</span>
-              </button>`).join('') || '<div class="desk-empty">Aucune fiche.</div>'}
+                <span class="fstats">${n ? T.nStories(n) : '—'}${p.controversies.some(c => c.kind === 'judiciaire') ? ` · <i>${T.cases}</i>` : ''}</span>
+              </button>`).join('') || `<div class="desk-empty">${T.noFiche}</div>`}
             </div>
           </aside>
           <main class="fiche-main">
             <div class="fiche-hero" style="--pc:${pcol(sel.party)}">
-              <div class="kicker">FICHE PERSONNALITÉ ${ptag(sel)}</div>
+              <div class="kicker">${T.kicker} ${ptag(sel)}</div>
               <h2>${escapeHtml(sel.name)}</h2>
               <div class="frole">${escapeHtml(sel.role)}</div>
             </div>
             <div class="cdetail fiche-detail">
               <div class="summary" style="border-left-color:${pcol(sel.party)}">${escapeHtml(sel.summary)}</div>
 
-              <h2>IDENTITÉ</h2>
+              <h2>${T.identity}</h2>
               ${stats.map(([k, v]) => `<div class="stat"><span class="k">${k}</span><span class="v">${escapeHtml(v)}</span></div>`).join('')}
 
-              <h2>EN DIRECT · 48 H <span style="color:var(--dim);letter-spacing:0.04em">${stories.length} ${stories.length === 1 ? 'sujet' : 'sujets'}</span></h2>
+              <h2>${T.live} <span style="color:var(--dim);letter-spacing:0.04em">${stories.length} ${stories.length === 1 ? T.topic : T.topics}</span></h2>
               <div class="news-list">${newsHtml}</div>
 
-              <h2>PARCOURS · ÉTAPES MAJEURES <span style="color:var(--dim);letter-spacing:0.04em">curé · ${FR_FICHES_AS_OF}</span></h2>
+              <h2>${T.career} <span style="color:var(--dim);letter-spacing:0.04em">${T.curated} · ${cfg.asOf}</span></h2>
               <div class="timeline">${sel.timeline.map(([date, what]) => `<div class="ev"><div class="date">${escapeHtml(date)}</div><div class="what">${escapeHtml(what)}</div></div>`).join('')}</div>
 
-              <h2>PROFIL</h2>
+              <h2>${T.profile}</h2>
               <div class="background">${escapeHtml(sel.background)}</div>
 
-              <h2>CONTROVERSES & AFFAIRES <span style="color:var(--dim);letter-spacing:0.04em">${sel.controversies.length} · dont ${judicial} judiciaire${judicial > 1 ? 's' : ''}</span></h2>
+              <h2>${T.controv} <span style="color:var(--dim);letter-spacing:0.04em">${T.controvCount(sel.controversies.length, judicial)}</span></h2>
               ${controvHtml}
-              <div class="fiche-note">Présomption d'innocence : toute procédure non définitivement jugée ne préjuge pas de la culpabilité. Statuts à jour ${FR_FICHES_AS_OF} — vérifier l'évolution dans la couverture en direct.</div>
+              <div class="fiche-note">${T.note(cfg.asOf)}</div>
 
-              ${sel.figures?.length ? `<h2>ENTOURAGE · ALLIÉS · RIVAUX</h2><div class="figures">${sel.figures.map(x => `<span class="figure">${escapeHtml(x)}</span>`).join('')}</div>` : ''}
+              ${sel.figures?.length ? `<h2>${T.circle}</h2><div class="figures">${sel.figures.map(x => `<span class="figure">${escapeHtml(x)}</span>`).join('')}</div>` : ''}
             </div>
           </main>
         </div>`;
 
       el.querySelectorAll('[data-fid]').forEach(b => b.addEventListener('click', () => {
-        f.id = b.dataset.fid; renderFrFiches();
+        f.id = b.dataset.fid; renderPolFiches();
         // Narrow screens stack list above the fiche: jump to the fiche itself.
         if (window.innerWidth <= 900) document.querySelector('.fiche-main')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        else document.getElementById('franceStage').scrollTo({ top: 0, behavior: 'smooth' });
+        else document.getElementById('politicsStage').scrollTo({ top: 0, behavior: 'smooth' });
       }));
-      el.querySelectorAll('[data-fp]').forEach(b => b.addEventListener('click', () => { f.party = b.dataset.fp || null; renderFrFiches(); }));
+      el.querySelectorAll('[data-fp]').forEach(b => b.addEventListener('click', () => { f.party = b.dataset.fp || null; renderPolFiches(); }));
       const search = document.getElementById('ficheSearch');
       let t; search.addEventListener('input', () => { clearTimeout(t); t = setTimeout(() => {
-        f.q = search.value; renderFrFiches();
+        f.q = search.value; renderPolFiches();
         const s = document.getElementById('ficheSearch'); s.focus(); s.setSelectionRange(s.value.length, s.value.length);
       }, 200); });
       el.querySelectorAll('.fiche-news').forEach(row => {
-        const open = () => { const s = st.stories.find(x => x.id === row.dataset.sid); if (s) openArticle({ ...s.lead, _country: 'France' }); };
+        const open = () => { const s = st.stories.find(x => x.id === row.dataset.sid); if (s) openArticle({ ...s.lead, _country: cfg.country }); };
         row.addEventListener('click', open);
         row.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); } });
       });
     }
-    function setFranceView(view, ficheId) {
-      const st = deskState.fr;
+    function setPoliticsView(view, ficheId) {
+      const st = polSt();
       st.view = view;
       if (ficheId) st.fiche.id = ficheId;
-      document.querySelectorAll('#frViews [data-fv]').forEach(b => b.classList.toggle('on', b.dataset.fv === view));
-      document.getElementById('franceStage').scrollTo({ top: 0 });
-      renderFranceDesk();
+      document.querySelectorAll('#polViews [data-fv]').forEach(b => b.classList.toggle('on', b.dataset.fv === view));
+      document.getElementById('politicsStage').scrollTo({ top: 0 });
+      renderPoliticsDesk();
     }
-    document.querySelectorAll('#frViews [data-fv]').forEach(b => b.addEventListener('click', () => setFranceView(b.dataset.fv)));
+    document.querySelectorAll('#polViews [data-fv]').forEach(b => b.addEventListener('click', () => setPoliticsView(b.dataset.fv)));
+    function setPoliticsCountry(country) {
+      deskState.polCountry = country;
+      const cfg = polCfg(), T = cfg.t, st = polSt();
+      document.getElementById('politicsStage').dataset.country = country;
+      document.querySelectorAll('#polSwitch [data-pc]').forEach(b => {
+        const on = b.dataset.pc === country;
+        b.classList.toggle('on', on); b.setAttribute('aria-selected', on);
+      });
+      document.getElementById('polTitle').innerHTML = `${T.title} <b>// ${T.name}</b><span class="desk-sub">${T.sub}</span>`;
+      document.getElementById('polViews').setAttribute('aria-label', T.viewsLabel);
+      document.querySelectorAll('#polViews [data-fv]').forEach(b => {
+        b.textContent = b.dataset.fv === 'news' ? T.news : T.ficheTab;
+        b.classList.toggle('on', b.dataset.fv === st.view);
+      });
+      document.getElementById('politicsStage').scrollTo({ top: 0 });
+      renderPoliticsDesk();
+    }
+    document.querySelectorAll('#polSwitch [data-pc]').forEach(b => b.addEventListener('click', () => setPoliticsCountry(b.dataset.pc)));
 
-    async function renderFranceDesk() {
-      if (deskState.fr.view === 'fiches') return renderFrFiches();
-      const el = document.getElementById('franceBody');
-      const head = document.getElementById('franceMeta');
-      const st = deskState.fr;
-      if (!API_PROXY) { el.innerHTML = `<div class="desk-empty">The France desk needs the Worker (API_PROXY) — it aggregates 10 French outlets server-side.</div>`; return; }
-      if (!st.data) { el.innerHTML = `<div class="desk-empty">Chargement des rédactions françaises…</div>`; await loadFranceFeed(); }
-      if (!st.data) { el.innerHTML = `<div class="desk-empty">Flux indisponible pour le moment. <button class="desk-chip" id="frRetry">Réessayer</button></div>`;
-        document.getElementById('frRetry')?.addEventListener('click', () => { loadFranceFeed(true).then(renderFranceDesk); }); return; }
+    async function renderPoliticsDesk() {
+      renderPolTrend();
+      const cfg = polCfg(), T = cfg.t, st = polSt();
+      if (st.view === 'fiches') return renderPolFiches();
+      const el = document.getElementById('polBody');
+      const head = document.getElementById('polMeta');
+      if (!API_PROXY) { el.innerHTML = `<div class="desk-empty">${T.noProxy}</div>`; return; }
+      // The header is shared between countries: never leave the other one's counts in it.
+      if (!st.data) { head.textContent = '—'; el.innerHTML = `<div class="desk-empty">${T.loading}</div>`; await loadDeskFeed(cfg.key); if (polSt() !== st) return; }
+      if (!st.data) { el.innerHTML = `<div class="desk-empty">${T.down} <button class="desk-chip" id="frRetry">${T.retry}</button></div>`;
+        document.getElementById('frRetry')?.addEventListener('click', () => { loadDeskFeed(cfg.key, true).then(renderPoliticsDesk); }); return; }
 
       const f = st.filter;
       const all = st.stories;
       const okSources = Object.values(st.data.sources || {}).filter(x => x.ok).length;
-      head.innerHTML = `<b>${all.length}</b> sujets · <b>${st.data.count}</b> articles · <b>${okSources}</b> rédactions · màj ${new Date(st.data.generated).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}`;
+      head.innerHTML = `<b>${all.length}</b> ${T.topics} · <b>${st.data.count}</b> ${T.articles} · <b>${okSources}</b> ${T.outlets} · ${T.updated} ${new Date(st.data.generated).toLocaleTimeString(cfg.locale, { hour: '2-digit', minute: '2-digit' })}`;
 
       const q = deaccent(f.q.trim().toLowerCase());
       const list = all.filter(s =>
-        (!f.theme || frMatches(s, FR_THEMES.find(t => t[0] === f.theme)[1])) &&
-        (!f.party || frMatches(s, FR_PARTIES.find(p => p[0] === f.party)[2])) &&
+        (!f.theme || frMatches(s, cfg.themes.find(t => t[0] === f.theme)[1])) &&
+        (!f.party || frMatches(s, cfg.parties.find(p => p[0] === f.party)[2])) &&
         (!f.person || s.text.includes(f.person)) &&
         (!q || deaccent(s.text.toLowerCase()).includes(q)));
       list.sort((x, y) => (y.sources - x.sources) || ((y.last || 0) - (x.last || 0)));
 
       // Side panels are computed on the unfiltered set (they ARE the filters).
-      const partyCounts = FR_PARTIES.map(([id, label, re]) => ({ id, label, n: all.filter(s => frMatches(s, re)).length })).filter(p => p.n).sort((a, b) => b.n - a.n);
-      const themeCounts = FR_THEMES.map(([id, re]) => ({ id, n: all.filter(s => frMatches(s, re)).length })).filter(t => t.n).sort((a, b) => b.n - a.n);
-      const people = frPeople(all);
+      const partyCounts = cfg.parties.map(([id, label, re]) => ({ id, label, n: all.filter(s => frMatches(s, re)).length })).filter(p => p.n).sort((a, b) => b.n - a.n);
+      const themeCounts = cfg.themes.map(([id, re]) => ({ id, n: all.filter(s => frMatches(s, re)).length })).filter(t => t.n).sort((a, b) => b.n - a.n);
+      const people = frPeople(all, cfg.stop);
       const maxP = Math.max(1, ...partyCounts.map(p => p.n));
 
       const chip = (kind, id, label, n, on) => `<button class="desk-chip${on ? ' on' : ''}" data-k="${kind}" data-v="${escapeHtml(id)}">${escapeHtml(label)}${n != null ? `<span class="n">${n}</span>` : ''}</button>`;
-      const activeFilters = [f.theme && ['theme', f.theme], f.party && ['party', FR_PARTIES.find(p => p[0] === f.party)[1]], f.person && ['person', f.person]].filter(Boolean);
+      const activeFilters = [f.theme && ['theme', f.theme], f.party && ['party', cfg.parties.find(p => p[0] === f.party)[1]], f.person && ['person', f.person]].filter(Boolean);
 
       const storyCard = (s, lead = false) => {
         const a = s.lead;
         const img = cssImageUrl(a.socialimage);
-        const parties = FR_PARTIES.filter(p => frMatches(s, p[2])).slice(0, 3).map(p => `<span class="desk-tag">${p[0]}</span>`).join('');
-        const theme = FR_THEMES.find(t => frMatches(s, t[1]));
+        const parties = cfg.parties.filter(p => frMatches(s, p[2])).slice(0, 3).map(p => `<span class="desk-tag">${p[0]}</span>`).join('');
+        const theme = cfg.themes.find(t => frMatches(s, t[1]));
         return `<article class="desk-story${lead ? ' lead' : ''}" data-sid="${s.id}" role="button" tabindex="0">
           ${img ? `<div class="img" style="background-image:url('${escapeHtml(img)}')"></div>` : ''}
           <div class="body">
-            <div class="meta">${s.sources > 1 ? `<span class="desk-tag reach">${s.sources} RÉDACTIONS</span>` : ''}${theme ? `<span class="desk-tag theme">${escapeHtml(theme[0])}</span>` : ''}${parties}<span class="ago">${articleAge(a) ? 'il y a ' + articleAge(a).replace('m', ' min').replace('h', ' h').replace('d', ' j') : ''}</span></div>
+            <div class="meta">${s.sources > 1 ? `<span class="desk-tag reach">${T.outletsReach(s.sources)}</span>` : ''}${theme ? `<span class="desk-tag theme">${escapeHtml(theme[0])}</span>` : ''}${parties}<span class="ago">${articleAge(a) ? T.ago(articleAge(a)) : ''}</span></div>
             <h3>${escapeHtml(a.title)}</h3>
             ${a.desc && lead ? `<p>${escapeHtml(a.desc)}</p>` : ''}
-            <div class="src">${escapeHtml(a.domain || '')}${s.sources > 1 ? ` · aussi : ${[...new Set(s.members.filter(m => m !== a).map(m => m.domain))].slice(0, 4).map(escapeHtml).join(', ')}` : ''}</div>
+            <div class="src">${escapeHtml(a.domain || '')}${s.sources > 1 ? ` · ${T.also} : ${[...new Set(s.members.filter(m => m !== a).map(m => m.domain))].slice(0, 4).map(escapeHtml).join(', ')}` : ''}</div>
           </div>
         </article>`;
       };
@@ -15547,32 +16099,32 @@ PELICAN-9
         <div class="desk-grid">
           <main class="desk-main">
             <div class="desk-toolbar">
-              <input class="desk-search" id="frSearch" placeholder="Rechercher (ex : budget, Retailleau, 49.3)…" value="${escapeHtml(f.q)}" />
-              ${activeFilters.length ? activeFilters.map(([k, v]) => `<button class="desk-chip on" data-clear="${k}">${escapeHtml(v)} ✕</button>`).join('') + `<button class="desk-chip" data-clear="all">Tout effacer</button>` : ''}
+              <input class="desk-search" id="frSearch" placeholder="${T.search}" value="${escapeHtml(f.q)}" />
+              ${activeFilters.length ? activeFilters.map(([k, v]) => `<button class="desk-chip on" data-clear="${k}">${escapeHtml(v)} ✕</button>`).join('') + `<button class="desk-chip" data-clear="all">${T.clearAll}</button>` : ''}
             </div>
-            <div class="desk-chips">${chip('theme', '', 'Tous les thèmes', all.length, !f.theme)}${themeCounts.map(t => chip('theme', t.id, t.id, t.n, f.theme === t.id)).join('')}</div>
+            <div class="desk-chips">${chip('theme', '', T.allThemes, all.length, !f.theme)}${themeCounts.map(t => chip('theme', t.id, t.id, t.n, f.theme === t.id)).join('')}</div>
             ${list.length ? storyCard(list[0], true) + `<div class="desk-list">${list.slice(1, 80).map(s => storyCard(s)).join('')}</div>`
-              : `<div class="desk-empty">Aucun sujet ne correspond à ces filtres.</div>`}
+              : `<div class="desk-empty">${T.noMatch}</div>`}
           </main>
           <aside class="desk-side">
             <section class="desk-panel">
-              <h4>Baromètre des partis <span>sujets qui les citent · 48 h</span></h4>
-              ${partyCounts.map(p => `<button class="bar-row${f.party === p.id ? ' on' : ''}" data-k="party" data-v="${p.id}" title="${p.n} sujets citent ${escapeHtml(p.label)}">
+              <h4>${T.barometer} <span>${T.barometerSub}</span></h4>
+              ${partyCounts.map(p => `<button class="bar-row${f.party === p.id ? ' on' : ''}" data-k="party" data-v="${p.id}" title="${T.cite(p.n, escapeHtml(p.label))}">
                 <span class="lbl">${escapeHtml(p.label)}</span><span class="track"><span class="fill" style="width:${(p.n / maxP * 100).toFixed(1)}%"></span></span><span class="val">${p.n}</span></button>`).join('') || '<div class="desk-empty">—</div>'}
             </section>
             <section class="desk-panel">
-              <h4>Fiches personnalités <span>parcours · controverses · affaires</span></h4>
-              <div class="desk-chips">${FR_FICHES.map(p => ({ p, n: frFicheStories(p).length })).sort((a, b) => b.n - a.n).slice(0, 8)
+              <h4>${T.fichesPanel} <span>${T.fichesSub}</span></h4>
+              <div class="desk-chips">${cfg.fiches.map(p => ({ p, n: ficheStories(p).length })).sort((a, b) => b.n - a.n).slice(0, 8)
                 .map(({ p, n }) => `<button class="desk-chip" data-open-fiche="${p.id}">${escapeHtml(p.name)}${n ? `<span class="n">${n}</span>` : ''}</button>`).join('')}
-                <button class="desk-chip" data-open-fiche="">Toutes les fiches →</button></div>
+                <button class="desk-chip" data-open-fiche="">${T.allFiches}</button></div>
             </section>
             <section class="desk-panel">
-              <h4>Personnalités citées <span>≥ 2 sujets</span></h4>
+              <h4>${T.people} <span>${T.peopleSub}</span></h4>
               <div class="desk-chips">${people.map(([name, n]) => chip('person', name, name, n, f.person === name)).join('') || '<div class="desk-empty">—</div>'}</div>
             </section>
             <section class="desk-panel">
-              <h4>Rédactions</h4>
-              <div class="desk-sources">${Object.entries(st.data.sources || {}).map(([k, v]) => `<span class="${v.ok ? '' : 'bad'}" title="${escapeHtml(v.error || '')}">${v.ok ? '●' : '○'} ${escapeHtml(k.replace('fr:', ''))} ${v.count}</span>`).join('')}</div>
+              <h4>${T.outletsPanel}</h4>
+              <div class="desk-sources">${Object.entries(st.data.sources || {}).map(([k, v]) => `<span class="${v.ok ? '' : 'bad'}" title="${escapeHtml(v.error || '')}">${v.ok ? '●' : '○'} ${escapeHtml(k.replace(/^(fr|us):/, ''))} ${v.count}</span>`).join('')}</div>
             </section>
           </aside>
         </div>`;
@@ -15580,18 +16132,18 @@ PELICAN-9
       el.querySelectorAll('[data-k]').forEach(b => b.addEventListener('click', () => {
         const k = b.dataset.k, v = b.dataset.v || null;
         f[k] = (f[k] === v) ? null : v;
-        renderFranceDesk();
+        renderPoliticsDesk();
       }));
-      el.querySelectorAll('[data-open-fiche]').forEach(b => b.addEventListener('click', () => setFranceView('fiches', b.dataset.openFiche || null)));
+      el.querySelectorAll('[data-open-fiche]').forEach(b => b.addEventListener('click', () => setPoliticsView('fiches', b.dataset.openFiche || null)));
       el.querySelectorAll('[data-clear]').forEach(b => b.addEventListener('click', () => {
         const k = b.dataset.clear;
         if (k === 'all') { f.theme = f.party = f.person = null; f.q = ''; } else f[k] = null;
-        renderFranceDesk();
+        renderPoliticsDesk();
       }));
       const search = document.getElementById('frSearch');
-      let t; search.addEventListener('input', () => { clearTimeout(t); t = setTimeout(() => { f.q = search.value; renderFranceDesk().then(() => { const s = document.getElementById('frSearch'); s.focus(); s.setSelectionRange(s.value.length, s.value.length); }); }, 250); });
+      let t; search.addEventListener('input', () => { clearTimeout(t); t = setTimeout(() => { f.q = search.value; renderPoliticsDesk().then(() => { const s = document.getElementById('frSearch'); s.focus(); s.setSelectionRange(s.value.length, s.value.length); }); }, 250); });
       el.querySelectorAll('.desk-story').forEach(card => {
-        const open = () => { const s = all.find(x => x.id === card.dataset.sid); if (s) openArticle({ ...s.lead, _country: 'France' }); };
+        const open = () => { const s = all.find(x => x.id === card.dataset.sid); if (s) openArticle({ ...s.lead, _country: cfg.country }); };
         card.addEventListener('click', open);
         card.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); } });
       });
@@ -16800,10 +17352,10 @@ PELICAN-9
         const NEWS_EVERY = (API_PROXY ? 10 : 20) * 60 * 1000;
         const newsTick = () => { lastNewsRefresh = Date.now(); refreshNewsTick(); };
         everyVisible(newsTick, NEWS_EVERY);
-        // Desks refresh themselves while open: France feed every 10 min,
+        // Desks refresh themselves while open: politics feeds every 5 min,
         // stock prices every 5 min (the Worker caches quotes for 5 min).
         everyVisible(() => {
-          if (state.tab === 'france') loadFranceFeed(true).then(renderFranceDesk);
+          if (state.tab === 'politics') { loadPolls(true).then(renderPolTrend); loadDeskFeed(polCfg().key, true).then(renderPoliticsDesk); }
           if (state.tab === 'markets' && state.mktView === 'impact') loadDeskFeed('biz', true).then(renderImpactDesk);
         }, 5 * 60 * 1000);
         _catchUp.push(() => { if (Date.now() - lastNewsRefresh > NEWS_EVERY) newsTick(); });

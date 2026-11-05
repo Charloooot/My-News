@@ -227,6 +227,30 @@ export async function collectFrance(env = {}, previous = null) {
   return { generated: new Date().toISOString(), tookMs: Date.now() - started, sources: report, count: articles.length, articles };
 }
 
+// ── US politics desk ───────────────────────────────────────────────────────
+// Same shape as the French desk; outlets span the left-right range.
+export const US_FEEDS = [
+  { id: 'npr',       url: 'https://feeds.npr.org/1014/rss.xml' },
+  { id: 'nyt',       url: 'https://rss.nytimes.com/services/xml/rss/nyt/Politics.xml' },
+  { id: 'guardian',  url: 'https://www.theguardian.com/us-news/us-politics/rss' },
+  { id: 'politico',  url: 'https://rss.politico.com/politics-news.xml' },
+  { id: 'thehill',   url: 'https://thehill.com/homenews/feed/' },
+  { id: 'cbs',       url: 'https://www.cbsnews.com/latest/rss/politics' },
+  { id: 'abc',       url: 'https://abcnews.com/abcnews/politicsheadlines' },
+  { id: 'nbc',       url: 'https://feeds.nbcnews.com/nbcnews/public/politics' },
+  { id: 'fox',       url: 'https://moxie.foxnews.com/google-publisher/politics.xml' },
+  { id: 'examiner',  url: 'https://www.washingtonexaminer.com/section/news/feed/' },
+];
+
+export async function collectUsPolitics(env = {}, previous = null) {
+  const started = Date.now();
+  const { track, report } = makeTracker(previous);
+  const lists = await Promise.all(US_FEEDS.map(f =>
+    track('us:' + f.id, () => fetchRss({ ...f, country: 'United States', language: 'English' }))));
+  const articles = mergeArticles(lists.flat(), 48);
+  return { generated: new Date().toISOString(), tookMs: Date.now() - started, sources: report, count: articles.length, articles };
+}
+
 // ── Business desk (feeds the IMPACT tab) ────────────────────────────────────
 // World/politics feeds almost never name companies; these do — markets,
 // tech, and entertainment trade press (box office → Disney, Netflix…).

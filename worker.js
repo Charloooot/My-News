@@ -13,6 +13,9 @@
  *                                           15 min by the Cron Trigger
  *   GET /fr                               → French politics desk (10 national
  *                                           outlets), same cron
+ *   GET /us                               → US politics desk (10 national outlets)
+ *   GET /polls                            → voting intentions and election results
+ *                                           for the POLITICS tab (polls-collector.js)
  *   GET /biz                              → business / tech / entertainment desk
  *                                           (15 outlets) for the IMPACT tab
  *   GET /conflicts                        → conflict intelligence for the CONFLICTS
@@ -51,7 +54,8 @@
  * the same copy; the edge cache is per-colo, so each region rebuilds lazily.
  */
 
-import { collectNews, collectFrance, collectBusiness, fetchQuote, searchCompanies } from './news-collector.js';
+import { collectNews, collectFrance, collectUsPolitics, collectBusiness, fetchQuote, searchCompanies } from './news-collector.js';
+import { collectPolls } from './polls-collector.js';
 import { collectConflicts } from './conflicts-collector.js';
 import { caltransDistrict, nzCameras, spainCameras, icelandCameras, npsWebcams } from './cams.js';
 
@@ -69,6 +73,8 @@ export default {
     try {
       if (url.pathname === '/news')    return await handleFeed(FEEDS.world, env, ctx);
       if (url.pathname === '/fr')      return await handleFeed(FEEDS.fr, env, ctx);
+      if (url.pathname === '/us')      return await handleFeed(FEEDS.us, env, ctx);
+      if (url.pathname === '/polls')   return await handleFeed(FEEDS.polls, env, ctx);
       if (url.pathname === '/biz')     return await handleFeed(FEEDS.biz, env, ctx);
       if (url.pathname === '/conflicts') return await handleFeed(FEEDS.conflicts, env, ctx);
       if (url.pathname === '/quotes')  return await handleQuotes(url, ctx);
@@ -103,7 +109,11 @@ export default {
 const FEEDS = {
   world: { key: 'news:latest', collect: collectNews },
   fr:    { key: 'fr:latest',   collect: collectFrance },
+  us:    { key: 'us:latest',   collect: collectUsPolitics },
   biz:   { key: 'biz:latest',  collect: collectBusiness },
+  // Polls move slowly, but election-week seat counts do not: same 15-min cron,
+  // rebuilt on request only past a day (Wikipedia is asked as rarely as possible).
+  polls: { key: 'polls:latest', collect: collectPolls, freshMs: 60 * 60e3, maxStaleMs: 24 * 3600e3 },
   // Slow-moving and GDELT-throttled: refreshed by its own 30-min cron, never
   // rebuilt in the request path unless it is very old.
   conflicts: { key: 'conflicts:latest', collect: collectConflicts, freshMs: 90 * 60e3, maxStaleMs: 24 * 3600e3 },
@@ -113,6 +123,7 @@ const CRON_PLAN = {
   '*/15 * * * *':       ['world'],
   '7,22,37,52 * * * *': ['fr', 'biz'],
   '11,41 * * * *':      ['conflicts'],
+  '3,18,33,48 * * * *': ['us', 'polls'],
 };
 const FEED_FRESH_MS = 20 * 60 * 1000;    // cron runs every 15 min
 const FEED_MAX_STALE_MS = 6 * 3600e3;    // past this, rebuild before answering
