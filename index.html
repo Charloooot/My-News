@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<meta name="theme-color" content="#02060e" />
 <title>CHRLS's News</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="" />
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" integrity="sha384-pmjIAcz2bAn0xukfxADbZIb3t8oRT9Sv0rvO+BR5Csr6Dhqq+nZs59P0pPKQJkEV" crossorigin="" />
@@ -522,7 +523,7 @@
   body.desk-mode .country-back, body.cam-mode .country-back, body.line-mode .country-back, body.inspecting-conflict .country-back { display: none; }
   .feed-back { color: var(--cyan); margin-right: 8px; padding: 0 4px; font-size: 13px; line-height: 1; }
   .feed-back:hover { color: var(--paper); }
-  @media (max-width: 900px) { .country-back { top: auto; bottom: 110px; } .country-back .k { display: none; } }
+  @media (max-width: 900px), (pointer: coarse) and (max-height: 500px) { .country-back { top: auto; bottom: 110px; } .country-back .k { display: none; } }
   .inspect-banner .back {
     font-size: 11px; letter-spacing: 0.18em;
     color: var(--cyan); padding: 4px 12px;
@@ -794,7 +795,7 @@
   .cty-svg .end, .cty-svg .hov { fill: var(--cyan); stroke: #050b18; stroke-width: 2; } .cty-svg .cross { stroke: var(--dim); }
   .cty-news { max-width: 900px; border: 1px solid var(--line); } .cty-news .feed-item { cursor: pointer; }
   @media (max-width: 1250px) { .lt-grid { grid-template-columns: 1fr; } .lt-detail { position: static; max-height: none; } .cty-grid { grid-template-columns: 1fr; } }
-  @media (max-width: 760px) {
+  @media (max-width: 760px), (pointer: coarse) and (max-height: 500px) {
     .mkt-nav { left: 8px; right: 8px; transform: none; overflow-x: auto; }
     body.mkt-tab .desk-stage { top: calc(var(--top-h, 120px) + 40px); }
     .lt-tiles { grid-template-columns: 1fr 1fr; }
@@ -840,7 +841,7 @@
   .maplibregl-popup.cam-pop .maplibregl-popup-content { background: rgba(5,11,24,0.95); color: var(--paper); border: 1px solid var(--line2); font: 11px ui-monospace, Menlo, monospace; padding: 6px 9px; border-radius: 0; }
   .maplibregl-popup.cam-pop .maplibregl-popup-tip { display: none; }
   .maplibregl-ctrl-attrib { background: rgba(5,11,24,0.7) !important; } .maplibregl-ctrl-attrib a { color: var(--dim) !important; }
-  @media (max-width: 760px) {
+  @media (max-width: 760px), (pointer: coarse) and (max-height: 500px) {
     .cam-stage { inset: calc(var(--top-h, 120px) + 2px) 0 0 0; }
     .cam-side { left: 8px; right: 8px; width: auto; top: 8px; max-height: 40%; padding: 10px; }
     body.cam-open .cam-side { display: none; }
@@ -896,7 +897,7 @@
   .wall-main .wm-actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
   .wall-grid .cam-tile { aspect-ratio: auto; min-height: 0; }
   .wall-grid .cam-tile .live-dot { position: absolute; top: 5px; right: 5px; font-size: 8px; letter-spacing: 0.14em; padding: 1px 5px; color: var(--paper); background: rgba(255,48,92,0.75); }
-  @media (max-width: 900px) {
+  @media (max-width: 900px), (pointer: coarse) and (max-height: 500px) {
     .wall-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: none; grid-auto-rows: minmax(110px, 18vh); overflow-y: auto; }
     .wall-main { grid-column: 1 / -1; grid-row: auto / span 3; }
     .cam-wall-head .wall-hint { display: none; }
@@ -1024,7 +1025,7 @@
   .pol-cell-head b { font-size: 12px; color: var(--paper); }
   .pol-cell-note { font-size: 10px; color: var(--dim); margin-top: 5px; }
   .pol-src { display: inline-block; font-size: 10px; margin-top: 6px; }
-  @media (max-width: 900px) { .pol-grid { grid-template-columns: minmax(0, 1fr); } }
+  @media (max-width: 900px), (pointer: coarse) and (max-height: 500px) { .pol-grid { grid-template-columns: minmax(0, 1fr); } }
   /* Politics: profiles (mirrors the CONFLICTS .cdetail panel) */
   .fr-views { display: flex; border: 1px solid var(--line2); margin-left: auto; }
   .fr-views button { padding: 6px 14px; font-size: 10px; letter-spacing: 0.14em; color: var(--dim); white-space: nowrap; }
@@ -1059,7 +1060,7 @@
   .cdetail .controv .rsum { color: var(--paper); opacity: 0.8; font-size: 11px; line-height: 1.5; margin-top: 3px; }
   .cdetail .controv .cstatus { margin-top: 6px; font-size: 10px; color: var(--cyan); letter-spacing: 0.03em; }
   .cdetail .fiche-note { margin-top: 8px; font-size: 10px; color: var(--dim); line-height: 1.5; font-style: italic; }
-  @media (max-width: 900px) {
+  @media (max-width: 900px), (pointer: coarse) and (max-height: 500px) {
     .fiche-grid { grid-template-columns: 1fr; gap: 16px; }
     .fiche-side { position: static; }
     .fiche-list { max-height: 240px; }
@@ -1615,7 +1616,7 @@
      Globe stays full-screen; the wire becomes a bottom sheet; the country
      panel opens from a ☰ button; tabs scroll sideways. Nothing is removed. */
   .rail-toggle { display: none; }
-  @media (max-width: 760px) {
+  @media (max-width: 760px), (pointer: coarse) and (max-height: 500px) {
     .topbar { flex-wrap: wrap; row-gap: 8px; padding: 10px 12px; }
     .brand { font-size: 11px; letter-spacing: 0.12em; }
     .brand br { display: none; }
@@ -1660,6 +1661,170 @@
     .reader-content .hero.thumb { float: none; margin: 0 0 14px; }
     .alerts { right: 8px; left: 8px; top: auto; bottom: 120px; }
   }
+
+  /* ============== PHONE LAYER ==============
+     Applies only to phones (and very narrow windows): nothing here reaches a
+     normal desktop window. Portrait first, landscape overrides after. */
+  .line-filter-toggle { display: none; }
+  @media (max-width: 760px), (pointer: coarse) and (max-height: 500px) {
+    :root { --bottom-h: calc(42px + env(safe-area-inset-bottom)); --sheet-h: 42vh; --pad-l: max(10px, env(safe-area-inset-left)); --pad-r: max(10px, env(safe-area-inset-right)); }
+    html, body { overscroll-behavior: none; }
+    button, a, input, .tab, .feed-item, .line-item { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+    .desk-stage, .line-stage, .feed-list, .scroll-list, .cam-side, .cam-viewer, .brief-body, .reader-content { overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
+    /* iOS zooms the whole page when a focused field is under 16px. */
+    input, select, textarea { font-size: 16px !important; text-overflow: ellipsis; }
+    input::placeholder { font-size: 12px; }
+
+    /* ---- Header: one compact row, then the tabs ---- */
+    .topbar { padding: calc(8px + env(safe-area-inset-top)) var(--pad-r) 0 var(--pad-l); column-gap: 8px; row-gap: 6px; background: rgba(2,6,14,0.97); }
+    .brand { white-space: nowrap; }
+    .rail-toggle { order: 0; margin-left: 0; width: 36px; height: 30px; padding: 0; align-items: center; justify-content: center; font-size: 14px; }
+    .rt-lbl { display: none; }
+    .view-toggle { margin-left: 0; }
+    .view-toggle button { padding: 7px 8px; font-size: 10px; letter-spacing: 0.08em; }
+    .topbar-right { margin-left: auto; }
+    .defcon-pill { min-height: 30px; padding: 4px 8px; letter-spacing: 0.08em; white-space: nowrap; }
+    .tabs { margin: 0 calc(-1 * var(--pad-r)) 0 calc(-1 * var(--pad-l)); width: calc(100% + var(--pad-l) + var(--pad-r)); flex: none; border-width: 1px 0; padding: 0 4px; scroll-padding: 0 40px; }
+    .tab { padding: 10px 11px; letter-spacing: 0.08em; }
+    .tab.new::after { display: none; }
+    /* These two only drive the globe and map. */
+    body.desk-mode .view-toggle, body.line-mode .view-toggle,
+    body.desk-mode .rail-toggle, body.line-mode .rail-toggle { display: none; }
+
+    /* ---- Ticker and Markets sub-navigation ---- */
+    .ticker { top: var(--top-h, 90px); }
+    .mkt-nav { top: calc(var(--top-h, 90px) + 4px); left: 6px; right: 6px; scrollbar-width: none; }
+    .mkt-nav::-webkit-scrollbar { display: none; }
+    .mkt-nav button { padding: 8px 10px; flex: none; }
+    body.mkt-tab.has-ticker .mkt-nav { top: calc(var(--top-h, 90px) + 31px); }
+    body.mkt-tab .desk-stage { top: calc(var(--top-h, 90px) + 42px); }
+
+    /* ---- Footer readout: one slim strip ---- */
+    .bottom { height: var(--bottom-h); padding: 4px var(--pad-r) calc(4px + env(safe-area-inset-bottom)) var(--pad-l); align-items: center; background: rgba(2,6,14,0.94); }
+    .legend, #hazardLegend { display: none !important; }
+    .readout { width: 100%; display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: 10px; align-items: center; text-align: left; }
+    .readout .count { grid-row: 1 / 3; font-size: 22px; }
+    .readout .label { margin: 0; font-size: 9px; letter-spacing: 0.04em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .readout .status { margin: 2px 0 0; font-size: 9px; letter-spacing: 0.04em; display: flex; gap: 10px; white-space: nowrap; overflow: hidden; }
+    body.desk-mode .bottom, body.line-mode .bottom, body.cam-mode .bottom { display: none; }
+
+    /* ---- Side rail becomes a bottom sheet: tap or swipe its header ---- */
+    .right-rail { top: auto; bottom: calc(var(--bottom-h) + 4px); left: 6px; right: 6px; width: auto; max-height: var(--sheet-h); }
+    body.has-ticker .right-rail, body.inspecting-conflict .right-rail { top: auto; width: auto; max-height: var(--sheet-h); }
+    .right-rail .feed { flex: 0 1 auto; min-height: 0; }
+    .right-rail .feed-list { flex: 1 1 auto; min-height: 0; max-height: none; }
+    .right-rail .feed > .panel-h { position: relative; padding: 14px 12px 8px; gap: 12px; cursor: pointer; touch-action: none; }
+    .right-rail .feed > .panel-h::before { content: ""; position: absolute; top: 5px; left: 50%; width: 36px; height: 3px; margin-left: -18px; border-radius: 2px; background: var(--line2); }
+    .right-rail .feed > .panel-h > span { white-space: nowrap; }
+    .right-rail .feed > .panel-h > span:last-child { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+    body.sheet-min .right-rail .feed-list { display: none; }
+    body.sheet-max .right-rail { top: calc(var(--top-h, 90px) + 6px); max-height: none; }
+    body.sheet-max .right-rail .feed { flex: 1 1 auto; }
+    body.sheet-max.has-ticker .right-rail { top: calc(var(--top-h, 90px) + 70px); }
+
+    .left-rail { top: calc(var(--top-h, 90px) + 6px); bottom: calc(var(--bottom-h) + 6px); left: 6px; right: 6px; max-height: none; overflow-y: auto; }
+    .left-rail > .panel { flex-shrink: 0; }
+    body.has-ticker .left-rail { top: calc(var(--top-h, 90px) + 70px); max-height: none; }
+    .rot-toggle { top: calc(var(--top-h, 90px) + 6px); right: 6px; }
+    body.has-ticker .rot-toggle { top: calc(var(--top-h, 90px) + 70px); }
+    .country-back { top: calc(var(--top-h, 90px) + 6px); bottom: auto; left: 6px; transform: none; padding: 6px 10px; max-width: calc(100vw - 90px); }
+    .tip { left: 8px !important; right: 8px; top: auto !important; bottom: calc(var(--bottom-h) + 8px); transform: none; max-width: none; }
+    /* One alert at a time (newest first): a stack would fill the whole screen. */
+    .alerts { top: calc(var(--top-h, 90px) + 6px); bottom: auto; left: 6px; right: 6px; width: auto; }
+    .alert { padding-block: 6px; pointer-events: none; }
+    .alert:not(:first-child), .alert .why { display: none; }
+    body.sheet-max .country-back { display: none; }
+
+    /* ---- Full-screen stages: no sticky headers eating the screen ---- */
+    .line-stage, .desk-stage { inset: var(--top-h, 90px) 0 0 0; padding: 0 12px calc(24px + env(safe-area-inset-bottom)); }
+    .desk-head { position: static; gap: 10px; padding: 10px 0; margin-bottom: 12px; }
+    .desk-grid, .fiche-grid, .pol-grid, .lt-grid, .cty-grid { grid-template-columns: minmax(0, 1fr); }
+    .desk-main, .desk-side, .fiche-side, .fiche-main { min-width: 0; }
+    .desk-chips { flex-wrap: nowrap; overflow-x: auto; margin-inline: -12px; padding-inline: 12px; scrollbar-width: none; }
+    .desk-chips::-webkit-scrollbar { display: none; }
+    .desk-chip { flex: none; padding: 8px 12px; }
+    .lt-seg { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+    .fr-views button, .pol-switch button { min-height: 34px; }
+
+    .line-head { position: static; display: block; padding: 10px 0 8px; border-bottom: 0; margin: 0; }
+    .line-title { font-size: 12px; letter-spacing: 0.12em; }
+    .line-counts { margin-top: 4px; letter-spacing: 0.06em; }
+    .line-filters { top: 0; margin: 0 -12px 6px; padding: 6px 12px 8px; border-top: 1px solid var(--line); }
+    .line-filters > .line-filter-row { flex-wrap: nowrap; }
+    .line-filters > .line-filter-row > .line-filter-label { display: none; }
+    .line-country { flex: 1 1 auto; min-height: 34px; padding: 3px 10px; }
+    .line-filter-toggle { display: inline-flex; flex: none; align-items: center; height: 34px; padding: 0 10px; font-size: 10px; letter-spacing: 0.1em; color: var(--cyan); border: 1px solid var(--line2); }
+    .line-filter-toggle.active { background: rgba(0,240,255,0.16); color: var(--paper); border-color: var(--cyan); }
+    #lineFilterRows { display: none; }
+    .line-filters.open #lineFilterRows { display: flex; flex-direction: column; gap: 6px; margin-top: 2px; }
+    #lineFilterRows .line-filter-row { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; margin-inline: -12px; padding-inline: 12px; }
+    #lineFilterRows .line-filter-row::-webkit-scrollbar { display: none; }
+    #lineFilterRows .line-filter-label { flex: none; min-width: 0; width: 64px; font-size: 9px; letter-spacing: 0.08em; }
+    .line-filter-btn { flex: none; padding: 8px 10px; }
+    .line-track::before { left: 7px; }
+    .line-item { grid-template-columns: 16px minmax(0, 1fr); gap: 8px; padding: 12px 0; }
+    .line-item .dot::before { left: 1px; width: 12px; height: 12px; }
+    .line-item .ago { grid-column: 2; text-align: left; padding-top: 0; margin-top: -4px; }
+    .line-item .body { font-size: 14px; line-height: 1.45; }
+    .line-item .src { font-size: 10px; }
+
+    /* ---- DEFCON: the sheet below already lists the numbers ---- */
+    .defcon-stage { inset: calc(var(--top-h, 90px) + 42px) 8px auto 8px; }
+    .defcon-stage .card { width: 100%; padding: 10px 12px; }
+    .defcon-stage .card .lbl { font-size: 10px; letter-spacing: 0.16em; }
+    .defcon-stage .card .num { font-size: 72px; margin: 2px 0; }
+    .defcon-stage .card .desc { font-size: 9px; letter-spacing: 0.1em; margin-top: 2px; }
+    .defcon-stage .card .stats { display: none; }
+
+    /* ---- Cameras: map first, sources one tap away ---- */
+    .cam-stage { inset: var(--top-h, 90px) 0 0 0; }
+    .cam-side { top: 6px; left: 6px; right: 6px; padding: 8px 10px; max-height: calc(100% - 76px); }
+    .cam-side-h { margin-bottom: 8px; cursor: pointer; }
+    .cam-side-h::after { content: "▾"; margin-left: 8px; color: var(--cyan); }
+    .cam-side.open .cam-side-h::after { content: "▴"; }
+    .cam-side:not(.open) .cam-side-sub, .cam-side:not(.open) .cam-sources, .cam-side:not(.open) .cam-note { display: none; }
+    .cam-res, .cam-src .tg { padding-block: 9px; }
+    .cam-src .go { padding: 0 12px; }
+    .cam-wallview { top: auto; bottom: 34px; left: 8px; transform: none; white-space: nowrap; padding: 8px 10px; font-size: 9px; letter-spacing: 0.08em; }
+    .cam-viewer { left: 6px; right: 6px; bottom: 6px; }
+    .cam-x { padding: 8px 10px; font-size: 15px; }
+    .cam-wall { padding: calc(10px + env(safe-area-inset-top)) 10px calc(10px + env(safe-area-inset-bottom)); }
+
+    /* ---- Overlays ---- */
+    .brief, .reader { top: calc(6px + env(safe-area-inset-top)); bottom: calc(6px + env(safe-area-inset-bottom)); width: calc(100vw - 12px); }
+    .brief-body, .reader-content { min-height: 0; }
+    .reader-content { padding: 16px 14px 24px; overflow-wrap: anywhere; }
+    .cam-wall button { white-space: nowrap; }
+    .inspect-banner { top: var(--top-h, 90px); left: 6px; right: 6px; width: auto; transform: none; max-width: none; flex-wrap: wrap; gap: 6px 10px; padding: 8px 10px; }
+    body.inspecting-conflict .rot-toggle { display: none; }
+  }
+  @media (max-width: 370px) {
+    .defcon-pill > span:nth-child(2) { display: none; }
+    .brand { font-size: 10px; letter-spacing: 0.06em; }
+  }
+
+  /* Phone held sideways: little height, so rails stay beside the globe. */
+  @media (pointer: coarse) and (max-height: 500px) {
+    :root { --bottom-h: calc(26px + env(safe-area-inset-bottom)); --rail-w: min(340px, 42vw); }
+    .topbar { flex-wrap: nowrap; padding: 4px var(--pad-r) 4px var(--pad-l); }
+    .tabs { order: 0; flex: 1 1 0; width: auto; margin: 0; border-width: 1px; padding: 2px; }
+    .tab { padding: 6px 9px; }
+    .topbar-right { margin-left: 0; }
+    .readout { grid-template-columns: auto auto minmax(0, 1fr); }
+    .readout .count { grid-row: auto; font-size: 14px; }
+    .readout .status { margin: 0; }
+    .right-rail, body.has-ticker .right-rail, body.inspecting-conflict .right-rail, body.sheet-max .right-rail { top: calc(var(--top-h, 42px) + 4px); left: auto; width: var(--rail-w); max-height: calc(100vh - var(--top-h, 42px) - var(--bottom-h) - 12px); }
+    body.has-ticker .right-rail, body.sheet-max.has-ticker .right-rail { top: calc(var(--top-h, 42px) + 66px); max-height: calc(100vh - var(--top-h, 42px) - var(--bottom-h) - 74px); }
+    .rot-toggle, body.has-ticker .rot-toggle { right: calc(var(--rail-w) + 12px); }
+    .left-rail { right: auto; width: var(--rail-w); }
+    .mkt-nav { right: auto; max-width: calc(100vw - 12px); }
+    .defcon-stage { right: calc(var(--rail-w) + 76px); }
+    .defcon-stage .card .num { font-size: 48px; }
+    .cam-side { right: auto; width: min(320px, 44vw); max-height: calc(100% - 12px); }
+    .cam-viewer { left: auto; top: 6px; bottom: 6px; width: min(380px, 50vw); max-height: none; }
+    .brief, .reader { left: 50%; }
+    .inspect-banner { right: calc(var(--rail-w) + 12px); }
+  }
 </style>
 </head>
 <body>
@@ -1670,7 +1835,7 @@
   <!-- ============ TOP BAR ============ -->
   <header class="topbar">
     <div class="brand">CHRLS's <b>News</b></div>
-    <button class="rail-toggle" id="railToggle" aria-label="Show countries panel" aria-expanded="false">☰ COUNTRIES</button>
+    <button class="rail-toggle" id="railToggle" aria-label="Show countries panel" aria-expanded="false">☰<span class="rt-lbl">&nbsp;COUNTRIES</span></button>
     <div class="view-toggle" id="viewToggle">
       <button data-view="globe" class="on">GLOBE</button>
       <button data-view="map">MAP</button>
@@ -1776,6 +1941,7 @@
           <button class="x" id="lineCountryClear" title="All countries" aria-label="All countries" hidden>×</button>
           <div class="line-suggest" id="lineSuggest" role="listbox" aria-label="Countries" hidden></div>
         </div>
+        <button class="line-filter-toggle" id="lineFilterToggle" aria-expanded="false" aria-controls="lineFilterRows">FILTERS</button>
       </div>
       <div id="lineFilterRows"></div>
     </div>
@@ -8657,6 +8823,9 @@ PELICAN-9
     // ════════════════════════════════════════════════════════════════
     //  THREE.JS SCENE
     // ════════════════════════════════════════════════════════════════
+    // Phone layout switch: must match the "PHONE LAYER" media query in the CSS.
+    const phoneMQ = matchMedia('(max-width: 760px), (pointer: coarse) and (max-height: 500px)');
+    const coarsePointer = matchMedia('(pointer: coarse)');
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
     renderer.setSize(innerWidth, innerHeight);
@@ -11333,6 +11502,7 @@ PELICAN-9
       }
     }
     function selectCountry(name) {
+      closePhoneRail();   // phone: reveal the country's stories behind the panel
       state.selectedCountry = name;
       controls.autoRotate = false;
       clearTimeout(resumeT);
@@ -12326,6 +12496,11 @@ PELICAN-9
       // Rows only: the country box above them must survive a re-render.
       const filtersEl = document.getElementById('lineFilterRows');
       filtersEl.innerHTML = html;
+      // Phone: the rows fold behind one button that says how many are in use.
+      const nActive = ['continent', 'severity', 'topic'].filter(k => f[k] !== 'ALL').length;
+      const filterToggle = document.getElementById('lineFilterToggle');
+      filterToggle.textContent = nActive ? `FILTERS · ${nActive}` : 'FILTERS';
+      filterToggle.classList.toggle('active', nActive > 0);
       for (const btn of filtersEl.querySelectorAll('.line-filter-btn')) {
         btn.addEventListener('click', () => {
           state.lineFilters[btn.dataset.cat] = btn.dataset.val;
@@ -12974,6 +13149,8 @@ PELICAN-9
     function setTab(name) {
       const tabChanged = state.tab !== name;
       state.tab = name;
+      if (tabChanged) { closePhoneRail(); setPhoneSheet('mid'); }
+      if (phoneMQ.matches) scrollTabIntoView(name);
       if (state.selectedConflict && name !== 'conflicts') exitConflictInspection();
       // Clear country focus when switching tabs
       if (tabChanged) {
@@ -13151,6 +13328,14 @@ PELICAN-9
       tipEl.style.left = e.clientX + 'px';
       tipEl.style.top = e.clientY + 'px';
     });
+    // Touch has no hover: a tap's tooltip would otherwise stay up for good.
+    let tapTipTimer;
+    addEventListener('mousemove', () => {
+      if (!coarsePointer.matches) return;
+      clearTimeout(tapTipTimer);
+      tapTipTimer = setTimeout(() => mouse.set(-2, -2), 2500);
+    }, { passive: true });
+    addEventListener('pointerdown', (e) => { if (e.pointerType === 'touch') mouse.set(-2, -2); }, { passive: true });
 
     function currentInteractive() {
       const arr = [];
@@ -13276,12 +13461,25 @@ PELICAN-9
       }
     }
 
+    const TAP_OFFSETS = [[0, 0]];
+    for (const r of [12, 22]) for (let i = 0; i < 8; i++) {
+      TAP_OFFSETS.push([Math.round(r * Math.cos(i * Math.PI / 4)), Math.round(r * Math.sin(i * Math.PI / 4))]);
+    }
     renderer.domElement.addEventListener('click', (e) => {
+      raycaster.params.Points = { threshold: 0.025 };
+      // A fingertip is far wider than a dot: on touch, also try around the tap.
+      const interactive = currentInteractive();
+      const offsets = coarsePointer.matches ? TAP_OFFSETS : TAP_OFFSETS.slice(0, 1);
+      let hits = [];
+      for (const [dx, dy] of offsets) {
+        mouse.x = ((e.clientX + dx) / innerWidth) * 2 - 1;
+        mouse.y = -((e.clientY + dy) / innerHeight) * 2 + 1;
+        raycaster.setFromCamera(mouse, camera);
+        hits = raycaster.intersectObjects(interactive, false);
+        if (hits.length) break;
+      }
       mouse.x = (e.clientX / innerWidth) * 2 - 1;
       mouse.y = -(e.clientY / innerHeight) * 2 + 1;
-      raycaster.setFromCamera(mouse, camera);
-      raycaster.params.Points = { threshold: 0.025 };
-      const hits = raycaster.intersectObjects(currentInteractive(), false);
       const o = hits[0]?.object; if (!o) return;
       const d = o.userData;
       if (d.kind === 'article' || d.kind === 'country') {
@@ -14027,12 +14225,80 @@ PELICAN-9
     const syncTopH = () => document.documentElement.style.setProperty('--top-h', topbarEl.offsetHeight + 'px');
     syncTopH();
     addEventListener('resize', syncTopH);
+    // Phone: the bar changes height between tabs, so follow it live.
+    new ResizeObserver(() => { if (phoneMQ.matches) { syncTopH(); updateGlobeInset(); } }).observe(topbarEl);
 
     // Mobile: the left rail (country search, severity, layers) opens on demand.
     const railToggleEl = document.getElementById('railToggle');
     railToggleEl.addEventListener('click', () => {
       const on = document.body.classList.toggle('show-left');
       railToggleEl.setAttribute('aria-expanded', String(on));
+    });
+    function closePhoneRail() {
+      document.body.classList.remove('show-left');
+      document.getElementById('railToggle').setAttribute('aria-expanded', 'false');
+    }
+    function scrollTabIntoView(name) {
+      const bar = document.getElementById('tabs');
+      const t = bar.querySelector(`.tab[data-tab="${name}"]`);
+      if (t) bar.scrollTo({ left: t.offsetLeft - bar.offsetLeft - (bar.clientWidth - t.offsetWidth) / 2, behavior: 'smooth' });
+    }
+
+    // Phone: the wire panel is a bottom sheet. Tap its header to fold or unfold
+    // it, swipe up for the full list, swipe down to clear the globe.
+    function setPhoneSheet(s) {
+      document.body.classList.toggle('sheet-min', s === 'min');
+      document.body.classList.toggle('sheet-max', s === 'max');
+    }
+    const phoneSheetState = () => document.body.classList.contains('sheet-min') ? 'min' : document.body.classList.contains('sheet-max') ? 'max' : 'mid';
+    const sheetHead = document.querySelector('.right-rail .feed > .panel-h');
+    let sheetStartY = null, sheetSwiped = false;
+    sheetHead.addEventListener('pointerdown', (e) => { if (phoneMQ.matches) sheetStartY = e.clientY; });
+    addEventListener('pointerup', (e) => {
+      if (sheetStartY == null) return;
+      const dy = e.clientY - sheetStartY; sheetStartY = null;
+      if (Math.abs(dy) < 12) return;   // a tap: handled on click below
+      sheetSwiped = true; setTimeout(() => { sheetSwiped = false; }, 350);
+      const cur = phoneSheetState();
+      const sideways = innerWidth > innerHeight;   // the rail is already full height
+      if (dy < 0) setPhoneSheet(cur === 'min' ? 'mid' : sideways ? 'mid' : 'max');
+      else setPhoneSheet(cur === 'max' ? 'mid' : 'min');
+    });
+    // On click, not pointerup: moving the sheet any earlier would drop the
+    // browser's click on whatever just slid under the finger, like an article.
+    sheetHead.addEventListener('click', (e) => {
+      if (!phoneMQ.matches || sheetSwiped || e.target.closest('button, a')) return;
+      setPhoneSheet(phoneSheetState() === 'mid' ? 'min' : 'mid');
+    });
+    addEventListener('pointercancel', () => { sheetStartY = null; });
+
+    // Phone: centre the globe in the part of the screen the panels leave free.
+    function updateGlobeInset() {
+      if (!phoneMQ.matches) { if (camera.view?.enabled) camera.clearViewOffset(); return; }
+      const w = innerWidth, h = innerHeight;
+      const top = topbarEl.offsetHeight;
+      const foot = document.querySelector('.bottom').getBoundingClientRect();
+      let cx = w / 2, cy = (top + foot.top) / 2;
+      const rail = document.querySelector('.right-rail');
+      const r = rail.getBoundingClientRect();
+      if (r.height > 0 && !document.body.classList.contains('sheet-max')) {
+        if (w > h) cx = r.left / 2; else cy = (top + r.top) / 2;
+      }
+      camera.setViewOffset(w, h, Math.round(w / 2 - cx), Math.round(h / 2 - cy), w, h);
+    }
+    new ResizeObserver(updateGlobeInset).observe(document.querySelector('.right-rail'));
+    phoneMQ.addEventListener('change', () => {
+      if (!phoneMQ.matches) { closePhoneRail(); setPhoneSheet('mid'); }
+      syncTopH(); updateGlobeInset();
+    });
+
+    // Phone: THE LINE's filter rows and the camera sources fold away.
+    document.getElementById('lineFilterToggle').addEventListener('click', (e) => {
+      const open = document.getElementById('lineFilters').classList.toggle('open');
+      e.currentTarget.setAttribute('aria-expanded', String(open));
+    });
+    document.getElementById('camSide').addEventListener('click', (e) => {
+      if (phoneMQ.matches && e.target.closest('.cam-side-h')) e.currentTarget.classList.toggle('open');
     });
 
     // ════════════════════════════════════════════════════════════════
@@ -14042,6 +14308,7 @@ PELICAN-9
       camera.aspect = innerWidth / innerHeight;
       camera.updateProjectionMatrix();
       renderer.setSize(innerWidth, innerHeight);
+      updateGlobeInset();
     });
 
     // ════════════════════════════════════════════════════════════════
