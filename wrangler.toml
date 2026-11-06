@@ -21,9 +21,10 @@ compatibility_date = "2024-11-01"
 #   */15        → world news feed
 #   7,22,37,52  → France + business desks
 #   11,41       → conflict intelligence (GDELT timelines, ACLED, UNHCR)
+#   29,59       → satellite TLEs (CelesTrak, at most once per 2 h once it succeeds)
 #   3,18,33,48  → US politics desk + voting intentions
 [triggers]
-crons = ["*/15 * * * *", "7,22,37,52 * * * *", "11,41 * * * *", "3,18,33,48 * * * *"]
+crons = ["*/15 * * * *", "7,22,37,52 * * * *", "11,41 * * * *", "3,18,33,48 * * * *", "29,59 * * * *"]
 
 # Merged news feed store (created with `wrangler kv namespace create NEWS`).
 # Remove this block to fall back to the edge cache (works, but per-region).

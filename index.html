@@ -10019,6 +10019,23 @@ PELICAN-9
       }
     }
 
+    // The full TLE set (about 3 MB) is kept in the browser's Cache Storage, so a
+    // reload within CelesTrak's 2 h window keeps every satellite.
+    const TLE_CACHE = 'wrld-tle', TLE_CACHE_URL = '/saved-tle-active';
+    async function readSavedTle() {
+      try {
+        const r = await (await caches.open(TLE_CACHE)).match(TLE_CACHE_URL);
+        if (!r) return null;
+        return { txt: await r.text(), at: Number(r.headers.get('x-saved-at')) || 0 };
+      } catch { return null; }   // private window, or no Cache Storage here
+    }
+    async function saveTle(txt) {
+      try {
+        const c = await caches.open(TLE_CACHE);
+        await c.put(TLE_CACHE_URL, new Response(txt, { headers: { 'x-saved-at': String(Date.now()) } }));
+      } catch { /* no saved copy: the next reload just falls back further */ }
+    }
+
     // Live TLE acquisition. Order matters:
     //   1. Our Cloudflare Worker (API_PROXY) — fetches CelesTrak once and edge-
     //      caches it, so the per-IP repeat-download 403 never reaches us. This is
@@ -10032,15 +10049,21 @@ PELICAN-9
     // NOTE: corsproxy.io was removed — it became a paid product and now returns
     // its own marketing HTML for free requests, which silently broke this tab.
     async function fetchTLE() {
+      // A copy saved in this browser comes first while it is under 2 h old:
+      // CelesTrak has nothing newer yet and would only answer 403.
+      const saved = await readSavedTle();
+      if (saved && Date.now() - saved.at < 2 * 3600e3) return { txt: saved.txt, source: 'saved', savedAt: saved.at };
       const sources = [];
       if (API_PROXY) sources.push({ url: `${API_PROXY}/tle?group=active`, label: 'worker' });
       sources.push({ url: 'https://celestrak.org/NORAD/elements/gp.php?GROUP=active&FORMAT=tle', label: 'celestrak' });
       for (const s of sources) {
         try {
           const txt = await tryFetchText(s.url);
-          if (txt && /\b1 \d{5}/.test(txt)) return { txt, source: s.label };
+          if (txt && /\b1 \d{5}/.test(txt)) { saveTle(txt); return { txt, source: s.label }; }
         } catch (e) { /* try next */ }
       }
+      // Any saved copy beats the bundled snapshot: it is newer and complete.
+      if (saved) return { txt: saved.txt, source: 'saved', savedAt: saved.at };
       // Bundled snapshot — embedded inline so it works even over file:// (where
       // fetch() of a local file is blocked). ~1700 sats across Starlink/GPS/etc,
       // far richer than the 24-sat stations group, so it's preferred over it.
@@ -10176,6 +10199,11 @@ PELICAN-9
           const ageTxt = ageD == null ? '' : ` · ${ageD < 2 ? 'fresh' : Math.round(ageD) + 'd old'}`;
           const approx = ageD != null && ageD > 14 ? ' · positions approximate' : ' · positions live';
           setStatus(`cached snapshot${ageTxt} · ${N} satellites${approx}`, ageD != null && ageD > 14 ? 'err' : 'warn');
+        }
+        else if (tleSource === 'saved') {
+          const h = (Date.now() - tleResult.savedAt) / 3600e3;
+          const ago = h < 1 ? `${Math.max(1, Math.round(h * 60))} min` : h < 48 ? `${Math.round(h)} h` : `${Math.round(h / 24)} d`;
+          setStatus(`saved copy · ${ago} old · ${N} satellites`, h > 14 * 24 ? 'warn' : '');
         }
         else
           setStatus(`live · ${N} satellites · ${tleSource}`);
@@ -11241,7 +11269,7 @@ PELICAN-9
       const out = await loadNews({ force: true });
       renderCountryList();
       applyFilters();
-      renderFeedWire(state.selectedCountry);
+      if (state.tab === 'wire') renderFeedWire(state.selectedCountry);   // other tabs own the panel
       if (state.tab === 'line') renderLine();
       updateCount();
       drawMap();
@@ -11263,7 +11291,7 @@ PELICAN-9
         await loadNews({ refresh: true });
         renderCountryList();
         applyFilters();
-        renderFeedWire(state.selectedCountry);
+        if (state.tab === 'wire') renderFeedWire(state.selectedCountry);   // other tabs own the panel
         if (state.tab === 'line') renderLine();
         updateCount();
         drawMap();

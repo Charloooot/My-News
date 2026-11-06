@@ -83,7 +83,7 @@ export default {
       if (url.pathname === '/caps')    return await handleCaps(url, ctx);
       if (url.pathname === '/gdelt')   return await handleGdelt(url);
       if (url.pathname === '/extract') return await handleExtract(url);
-      if (url.pathname === '/tle')     return await handleTle(url);
+      if (url.pathname === '/tle')     return await handleTle(url, env, ctx);
       if (url.pathname === '/satcat')  return await handleSatcat(url);
       if (url.pathname === '/' || url.pathname === '/health')
         return json({ ok: true, service: 'wrld-news proxy' });
@@ -98,6 +98,10 @@ export default {
   // budget (50 on the free plan) — running all feeds in one invocation
   // overflowed it and silently dropped the last GDELT slice.
   async scheduled(event, env, ctx) {
+    if (event.cron === TLE_CRON) {
+      ctx.waitUntil(refreshTle(env).catch(err => console.warn('tle refresh:', err.message)));
+      return;
+    }
     const names = CRON_PLAN[event.cron] || Object.keys(FEEDS);   // unknown cron (e.g. local test) → everything
     ctx.waitUntil(Promise.allSettled(names.map(n => refreshFeed(FEEDS[n], env))));
   },
@@ -401,9 +405,48 @@ function scrapeParagraphs(html) {
 // refresh cadence, which also keeps us under its per-IP repeat-download 403.
 // `group` is allow-listed to alphanumerics + dash so it can't be used as an
 // open proxy.
-async function handleTle(reqUrl) {
+//
+// The `active` group is stored in KV by its own cron and served from there:
+// CelesTrak often leaves a live request from a Worker hanging for 20 s before a
+// 522, and a request must not wait on that. TLEs stay usable for days, so one
+// success every so often is enough, and the last good copy keeps being served.
+const TLE_CRON = '29,59 * * * *';      // must match wrangler.toml
+const TLE_KEY = 'tle:active';
+const TLE_MIN_AGE_MS = 2 * 3600e3;     // CelesTrak updates the data every 2 h
+const TLE_MIN_BYTES = 500000;          // the full group is about 3 MB
+
+async function refreshTle(env) {
+  if (!env.NEWS) return;
+  const at = Number(await env.NEWS.get(TLE_KEY + ':at')) || 0;
+  if (Date.now() - at < TLE_MIN_AGE_MS) return;
+  const r = await fetch('https://celestrak.org/NORAD/elements/gp.php?GROUP=active&FORMAT=tle', {
+    headers: { 'User-Agent': 'wrld-news/1.0' }, signal: AbortSignal.timeout(25000),
+  });
+  const text = await r.text();
+  // Refusals and errors come back as short plain text: never store those.
+  if (!r.ok || text.length < TLE_MIN_BYTES || !text.includes('\n1 25544')) {
+    throw new Error(`celestrak ${r.status}: ${text.slice(0, 80)}`);
+  }
+  await env.NEWS.put(TLE_KEY, text);
+  await env.NEWS.put(TLE_KEY + ':at', String(Date.now()));
+}
+
+async function handleTle(reqUrl, env, ctx) {
   let group = (reqUrl.searchParams.get('group') || 'active').toLowerCase();
   if (!/^[a-z0-9-]{2,32}$/.test(group)) group = 'active';
+
+  if (group === 'active' && env.NEWS) {
+    const key = new Request('https://cache/tle-kv?g=active');
+    const hit = await caches.default.match(key);
+    if (hit) return withCors(hit);
+    const text = await env.NEWS.get(TLE_KEY);
+    if (!text) return json({ error: 'no stored TLE yet' }, 503);   // answer fast: the page has its own fallbacks
+    const resp = new Response(text, {
+      headers: { 'Content-Type': 'text/plain; charset=utf-8', 'Cache-Control': 'public, max-age=1800', ...CORS },
+    });
+    ctx.waitUntil(caches.default.put(key, resp.clone()));
+    return resp;
+  }
 
   const upstream =
     `https://celestrak.org/NORAD/elements/gp.php?GROUP=${group}&FORMAT=tle`;
